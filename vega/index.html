@@ -4,840 +4,482 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vega</title>
-<link rel="icon" href="data:,">
+<link rel="icon" href="favicon.svg">
 <style>
 @font-face { font-family: Geist; src: url("fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 @font-face { font-family: "Geist Mono"; src: url("fonts/GeistMono-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 :root {
-  --s100:#fafaf9; --s200:#f0efed; --s300:#dfddd8; --s400:#c6c2b9; --s500:#a8a394;
-  --s600:#8c8573; --s700:#686355; --s800:#464339; --s950:#141310;
-  --red:#b72424; --orange:#be6627; --orange2:#da8549; --yellow:#f9b806; --yellow5:#d19b05;
-  --green:#1b881b; --green4:#2daa22; --teal:#2abea5; --blue:#4b9dd8;
-  --e100:#fcf4ee; --e200:#f4dac8; --e300:#e9b895;
-  --sans: Geist, ui-sans-serif, system-ui, sans-serif;
-  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --bg: #fbfaf9; --fg: #121211; --card: #fff; --muted: #fbfaf9; --muted-fg: #595755;
+  --subtle: #8b8983; --border: #ecebe9; --border-em: #dbdad6; --secondary: #f2f0ee;
+  --brand: #295c55; --brand-800: #074740; --logo: #074740;
+  --active-bg: #ecebe9; --item: #8b8983; --positive: #4b7e3b; --warning: #d0740f;
+  --destructive: #cc2c2b; --sev-low: #4796b0; --sev-med: #eb9915; --sev-high: #e4582b; --sev-crit: #a82120;
+  --radius: 8px; --sans: Geist, Inter, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
 }
-* { box-sizing: border-box; border-radius: 0; }
-html, body { margin: 0; height: 100%; }
-body { font-family: var(--sans); font-size: 14px; line-height: 1.25rem; color: var(--s950); background: var(--s200); }
-button, input, textarea { font: inherit; color: inherit; background: none; border: 0; padding: 0; }
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { font-family: var(--sans); color: var(--fg); background: var(--bg); font-size: 14px; }
+button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
-.app { display: flex; height: 100vh; background: var(--s200); padding: 8px 8px 8px 0; }
-.rail { width: 48px; flex: none; display: flex; flex-direction: column; align-items: stretch; padding: 8px 6px; gap: 4px; overflow: hidden; transition: width .2s; }
-.rail.open { width: 208px; }
-.rail .grp { display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
-.rail .grp.top { gap: 8px; }
-.rail .grow { flex: 1; }
-.rail button, .rail .mark { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0; color: var(--s950); }
-.rail.open button, .rail.open .mark { width: 100%; justify-content: flex-start; padding: 0 8px; }
-.rail button:hover, .rail button.on { background: var(--s300); }
-.rail .lbl { display: none; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; white-space: nowrap; }
-.rail.open .lbl { display: inline; }
-.rail .mark { margin-top: 0; }
-.rail .mark img.flower { width: 20px; height: 20px; flex: none; display: block; }
-.rail .panel-icon { width: 18px; height: 18px; flex: none; transform: rotate(180deg); color: var(--s700); }
-.rail #rail-toggle { color: var(--s700); }
-.panel { flex: 1; min-width: 0; background: var(--s100); border: 1px solid var(--s300); display: flex; flex-direction: column; overflow: hidden; }
-.topbar { height: 48px; flex: none; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--s300); padding-left: 20px; padding-right: 8px; }
-.mono { font-family: var(--mono); font-size: 13px; line-height: 1.25rem; letter-spacing: -0.04em; font-weight: 400; }
-.topbar .crumb { font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; }
-.grow { flex: 1; }
-.scroll { min-height: 0; flex: 1; overflow: auto; }
-.tabs { display: flex; gap: 16px; border-bottom: 1px solid var(--s300); padding: 0 20px; }
-.tabs button { font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; padding: 12px 0; margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--s600); }
-.tabs button.on { color: var(--s950); border-bottom-color: var(--s950); }
-.pad { padding: 20px; }
-.tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.search { width: 288px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--s300); padding: 6px 10px; color: var(--s500); }
-.search input { flex: 1; min-width: 0; outline: none; color: var(--s950); font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; }
-.search input::placeholder { color: var(--s500); }
-.linkish { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; padding: 4px 8px; }
-.linkish:hover { background: var(--s200); }
-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-th { text-align: left; font-weight: 400; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s600); padding: 10px 10px; border-bottom: 1px solid var(--s300); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-td { padding: 16px 10px; border-bottom: 1px solid var(--s200); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+a { color: inherit; }
+.ico { width: 16px; height: 16px; flex: 0 0 16px; display: block; }
+.ico.lg { width: 18px; height: 18px; flex-basis: 18px; }
+.logo { height: 20px; width: 58px; color: var(--logo); }
+.app { display: flex; height: 100%; min-width: 0; }
+nav.rail { flex: 0 0 200px; width: 200px; display: flex; flex-direction: column; transition: width .2s cubic-bezier(.2,0,0,1); background: var(--bg); }
+nav.rail.collapsed { flex-basis: 44px; width: 44px; }
+.rail-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 12px 8px; gap: 8px; }
+.rail.collapsed .rail-top { padding: 16px 6px 8px; justify-content: center; }
+.brand { display: flex; overflow: hidden; }
+.rail.collapsed .brand { max-width: 0; opacity: 0; }
+.icon-btn { width: 24px; height: 24px; border: 0; background: transparent; border-radius: 2px; color: var(--item); display: grid; place-items: center; position: relative; }
+.icon-btn:hover { background: var(--secondary); color: var(--fg); }
+.icon-btn .when-open, .icon-btn .when-shut { position: absolute; }
+.rail.collapsed .icon-btn .when-open { opacity: 0; }
+.rail:not(.collapsed) .icon-btn .flower, .rail:not(.collapsed) .icon-btn .when-shut { opacity: 0; }
+.rail.collapsed .icon-btn:hover .flower { opacity: 0; }
+.rail.collapsed .icon-btn:hover .when-shut { opacity: 1; }
+.rail-scroll { flex: 1; overflow: auto; padding: 4px 8px 8px; display: flex; flex-direction: column; gap: 2px; }
+.nav-btn, .back-btn { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: transparent; border-radius: 2px; color: var(--item); text-align: left; padding: 6px 8px; min-height: 32px; }
+.nav-btn:hover, .back-btn:hover { background: var(--secondary); color: var(--fg); }
+.nav-btn.on { background: var(--active-bg); color: var(--brand-800); }
+.nav-btn .lbl, .back-btn .lbl, .soon { white-space: nowrap; overflow: hidden; }
+.rail.collapsed .lbl, .rail.collapsed .soon, .rail.collapsed .tenant b, .rail.collapsed .tenant small { display: none; }
+.soon { margin-left: auto; font-size: 10px; color: var(--subtle); }
+.rail-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 2px; }
+.tenant { display: flex; align-items: center; gap: 8px; margin: 8px; padding: 8px; border: 0; background: transparent; border-radius: 2px; text-align: left; }
+.tenant:hover { background: var(--secondary); }
+.mark { width: 16px; height: 16px; border-radius: 3px; background: var(--brand-800); color: #fff; display: grid; place-items: center; flex: 0 0 16px; }
+.mark svg { width: 12px; height: 12px; }
+.tenant b { display: block; font-size: 12px; font-weight: 600; }
+.tenant small { display: block; color: var(--subtle); font-size: 11px; }
+.stage { flex: 1; min-width: 0; padding: 8px 8px 8px 0; display: flex; }
+.panel { flex: 1; min-width: 0; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; }
+.top { min-height: 48px; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--border); }
+.crumbs { display: flex; align-items: center; gap: 6px; color: var(--muted-fg); font-size: 13px; min-width: 0; }
+.crumbs b { color: var(--fg); font-weight: 600; }
+.slash { opacity: .45; }
+.spacer { flex: 1; }
+.scroll { flex: 1; overflow: auto; }
+.pad { padding: 16px 20px 28px; }
+h1 { font-size: 20px; line-height: 1.3; margin: 0; font-weight: 600; }
+.h1row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.count { color: var(--muted-fg); font-size: 13px; }
+.tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip, .btn, .seg button { border: 1px solid var(--border-em); background: #fff; border-radius: 6px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
+.chip.on, .seg button.on { background: var(--secondary); border-color: var(--border-em); }
+.btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+.btn.ghost, .linkish { border: 0; background: transparent; color: var(--brand); padding: 0; }
+.seg { display: inline-flex; border: 1px solid var(--border-em); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; border-right: 1px solid var(--border); border-radius: 0; }
+.seg button:last-child { border-right: 0; }
+.search { margin-left: auto; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border-em); border-radius: 6px; padding: 4px 8px; min-width: 180px; }
+.search input { border: 0; outline: 0; width: 100%; background: transparent; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 500; color: var(--subtle); font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--border); background: #fbfaf9; position: sticky; top: 0; }
+td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr.click { cursor: pointer; }
-tr.click:hover td { background: var(--s200); }
-.name { font-size: 14px; }
-.cell { display: inline-flex; align-items: center; gap: 6px; color: var(--s800); }
-.esc { position: relative; display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s800); }
-.esc .ids { color: var(--s500); display: inline-flex; gap: 6px; }
-.tip { display: none; position: absolute; left: 0; top: calc(100% + 4px); width: 320px; white-space: normal; border: 1px solid var(--s300); background: var(--s100); padding: 12px; box-shadow: 4px 4px 0 var(--s950); z-index: 5; }
-.esc:hover .tip { display: block; }
-.tip b { font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; font-weight: 400; }
-.tip p { margin: 4px 0 0; color: var(--s700); font-size: 14px; line-height: 1.25rem; }
-.sq { width: 8px; height: 8px; background: var(--green); flex: none; }
-.av { width: 24px; height: 24px; display: grid; place-items: center; color: var(--s100); font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; flex: none; }
-.sev { display: inline-flex; align-items: center; gap: 6px; }
-.foot { flex: none; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--s300); padding: 12px 20px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s600); }
-.foot b { color: var(--s950); font-weight: 400; }
-.pages { display: flex; align-items: center; gap: 2px; }
-.pages button { width: 28px; height: 28px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s600); }
-.pages button.on { background: var(--s200); color: var(--s950); }
-.pages button:hover { background: var(--s200); }
-.hard { border: 1px solid var(--s950); box-shadow: 0 0 0 var(--s950); transition: transform .15s, box-shadow .15s; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; padding: 4px 10px; display: inline-flex; align-items: center; gap: 6px; background: transparent; }
-.hard:hover { transform: translate(-3px, -3px); box-shadow: 3px 3px 0 var(--s950); }
-.cta { background: var(--yellow); border-color: transparent; }
-.kpis { display: flex; gap: 16px; align-items: stretch; }
-.kpi h3 { margin: 0 0 8px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; font-weight: 400; }
-.kpi .box { display: flex; border: 1px solid var(--s300); min-height: 84px; }
-.kpi .box > div { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; min-width: 0; }
-.kpi .box > div + div { border-left: 1px solid var(--s300); }
-.kpi .lbl { font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s600); }
-.kpi .num { margin-top: auto; padding-top: 8px; font-size: 20px; font-weight: 500; line-height: 1.25; }
-.filters { display: flex; gap: 8px; align-items: center; margin: 16px 0; }
-.filters button, .chip { border: 1px solid var(--s300); padding: 6px 10px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s800); background: var(--s100); }
-.ok { color: var(--green); } .bad { color: var(--red); } .warn { color: var(--yellow5); } .muted { color: var(--s600); }
-.mitre { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--s300); padding: 2px 6px; font-family: var(--mono); font-size: 12px; letter-spacing: -0.04em; color: var(--s700); }
-.mitre i { font-style: normal; color: var(--s500); }
-.h1 { font-size: 20px; font-weight: 500; line-height: 1.25; display: flex; align-items: center; gap: 8px; margin: 0; }
-.badge { width: 20px; height: 20px; display: grid; place-items: center; background: var(--orange); color: var(--s100); font-family: var(--mono); font-size: 12px; letter-spacing: -0.04em; flex: none; }
-.doc { max-width: 896px; margin: 0 auto; padding: 20px 24px 48px; }
-.aibox { margin-top: 20px; border: 1px solid var(--e300); background: var(--e100); padding: 16px; }
-.mal { font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; text-transform: uppercase; background: var(--e200); color: var(--orange); padding: 0 8px; }
-.aibar { margin-top: 16px; background: var(--e200); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.find { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--s200); }
-.find .n { width: 16px; color: var(--s500); font-family: var(--mono); font-size: 13px; }
-.ask { max-width: 640px; margin: 8vh auto 0; padding: 0 20px 40px; }
-.ask h1 { text-align: center; font-size: 28px; font-weight: 500; margin: 18px 0 8px; letter-spacing: -0.02em; }
-.ask .sub { text-align: center; color: var(--s600); margin: 0 0 18px; }
-.mode { display: flex; justify-content: center; }
-.mode span, .mode button { border: 1px solid var(--s300); padding: 4px 10px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s700); }
-.mode span.on, .mode button.on { background: var(--s200); color: var(--s950); }
-.boxq { border: 1px solid var(--s300); min-height: 96px; padding: 12px; margin-top: 18px; display: flex; flex-direction: column; }
-.boxq textarea { flex: 1; resize: none; outline: none; min-height: 64px; font-family: var(--sans); font-size: 14px; }
-.sugs { margin-top: 12px; }
-.sugs button { display: flex; width: 100%; text-align: left; gap: 8px; padding: 8px 10px; color: var(--s800); }
-.sugs button:hover, .sugs button.hot { background: var(--s200); }
-.pills { display: flex; gap: 8px; margin-top: 10px; }
-.pills button { border: 1px solid var(--s300); padding: 6px 8px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; }
-.answer { margin-top: 16px; border: 1px solid var(--s300); padding: 14px 16px; }
-.cats { width: 220px; flex: none; border-right: 1px solid var(--s300); padding: 8px 0; }
-.cats button { width: 100%; display: flex; justify-content: space-between; padding: 8px 12px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s800); text-align: left; }
-.cats button.on, .cats button:hover { background: var(--s200); }
-.lib { display: flex; min-height: 0; flex: 1; }
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.card { border: 1px solid var(--s300); padding: 14px; display: flex; flex-direction: column; gap: 8px; min-height: 168px; }
-.card p { margin: 0; color: var(--s700); font-size: 14px; line-height: 1.35; }
-.card .footc { margin-top: auto; display: flex; align-items: center; justify-content: space-between; }
-.tag { font-family: var(--mono); font-size: 12px; letter-spacing: -0.04em; background: var(--s200); color: var(--s700); padding: 2px 6px; }
-.stats { display: flex; flex-wrap: wrap; gap: 8px; }
-.stat { border: 1px solid var(--s300); display: flex; align-items: center; gap: 10px; padding: 8px 10px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; }
-.stat b { font-weight: 500; font-family: var(--sans); font-size: 16px; }
-.heat { display: flex; align-items: flex-start; gap: 6px; margin-top: 18px; }
-.col { display: flex; flex-direction: column; gap: 2px; }
-.cellb { width: 14px; height: 14px; }
-.intel { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--s200); cursor: pointer; }
-.intel:hover { background: var(--s200); }
-.thumb { width: 184px; height: 128px; flex: none; overflow: hidden; background: #111; }
-td:has(.esc) { overflow: visible; }
-.rail img.glyph, .rail svg.glyph { width: 18px; height: 18px; flex: none; display: block; image-rendering: pixelated; }
-.cats button { gap: 8px; min-width: 0; }
-.cats button .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chev { color: var(--s500); }
-.card .footc { border-top: 1px solid var(--s300); margin: auto -14px -14px; padding: 10px 14px; }
-.logo.sm svg, .logo.sm img { width: 16px; height: 16px; }
-.logo.sm.word svg { width: 34px; height: 14px; }
-.rowl { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.vbar { height: 3px; background: #1f8a72; margin-top: 6px; }
-.roi-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: start; }
-.roi-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; margin: 18px 0; }
-.roi-metrics b { display: block; font-size: 28px; font-weight: 500; letter-spacing: -0.03em; }
-.roi-metrics b.teal { color: #1f8a72; }
-.chipq { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--s300); background: var(--s100); padding: 16px 14px; max-width: 640px; margin: 18px auto 0; text-align: left; }
-.chipq b { font-weight: 500; }
-.wires { width: min(920px, 100%); height: 220px; display: block; margin: 0 auto; }
-.story { border: 1px solid var(--s300); padding: 14px 16px; margin-top: 12px; }
-.story h2 { margin: 0 0 6px; font-size: 16px; font-weight: 500; }
-.kql { font-family: var(--mono); font-size: 13px; line-height: 1.5; background: var(--s200); padding: 12px; white-space: pre-wrap; }
-.brief h2 { margin: 4px 0; font-size: 16px; font-weight: 500; }
-.meta { display: flex; gap: 12px; color: var(--s700); font-family: var(--mono); font-size: 12px; letter-spacing: -0.03em; margin-bottom: 6px; }
-.logo { display: inline-flex; align-items: center; justify-content: center; flex: none; line-height: 0; }
-.logo.tile { width: 36px; height: 36px; background: var(--s200); }
-.logo svg, .logo img { display: block; max-width: 22px; max-height: 22px; }
-.logo.word svg { max-width: 34px; }
-.cellb { width: 18px; height: 18px; }
-.cellb.hatch { background: repeating-linear-gradient(-45deg, #f6c9c9, #f6c9c9 2px, #fff 2px, #fff 4px); box-shadow: inset 0 0 0 1px #f0b4b4; }
-.cellb.red { background: #e24b4b; }
-.cellb.yellow { background: #f0c43a; }
-.cellb.green { background: #37a84a; }
-.cellb.gray { background: #e7e5e1; }
-.heat { align-items: flex-start; gap: 6px; }
-.heat .col { gap: 3px; background: #f3f1ee; padding: 4px; }
-.funnel-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.funnel-top b { font-weight: 500; }
-.legend { display: flex; gap: 12px; align-items: center; color: var(--s600); font-family: var(--mono); font-size: 12px; }
-.legend i { width: 8px; height: 8px; display: inline-block; margin-right: 4px; }
-.lg { background: #d9d6d0; } .lh { background: #e39a45; } .lc { background: #d23b32; }
-.funnel-body { display: grid; grid-template-columns: 280px 1fr; min-height: 520px; }
-.funnel-svg { width: 280px; height: 520px; }
-.funnel-rows { display: flex; flex-direction: column; }
-.funnel-rows button { flex: 1; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--s300); text-align: left; padding: 0 8px 0 18px; }
-.funnel-rows button:hover { background: var(--s200); }
-.funnel-rows strong { display: block; font-size: 28px; font-weight: 500; letter-spacing: -0.03em; }
-.funnel-rows span { color: var(--s600); font-size: 13px; }
-.funnel-rows em { font-style: normal; color: var(--s500); font-family: var(--mono); }
-.matter { max-width: 720px; margin: 48px auto; border: 1px solid var(--s300); }
-.matter button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--s200); text-align: left; }
-.matter button:last-child { border-bottom: 0; }
-.matter button:hover { background: var(--s200); }
-.matter button.hot { outline: 2px solid var(--s950); outline-offset: -2px; position: relative; z-index: 1; background: #fff; }
-.matter .nm { flex: 1; }
-.matter .tagchip { background: var(--s200); color: var(--s600); font-size: 12px; padding: 2px 6px; }
-.sevletter { width: 18px; height: 18px; display: grid; place-items: center; color: #fff; font-family: var(--mono); font-size: 11px; }
-.sevletter.h { background: #c2410c; } .sevletter.c { background: #dc2626; }
-.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.river { margin-top: 28px; position: relative; height: 280px; }
-.river svg.wires { position: absolute; inset: 0; width: 100%; height: 220px; }
-.logo-row { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 8px; justify-content: space-between; align-items: center; border-top: 1px solid var(--s300); padding-top: 10px; }
-.logo-row .logo { width: 36px; height: 36px; opacity: .35; }
-.logo-row .logo.on { opacity: 1; background: var(--s200); }
-.hero { font-size: 42px; font-weight: 500; letter-spacing: -0.03em; margin: 8px 0; }
-.roi-pills { display: flex; gap: 0; }
-.roi-pills button { border: 1px solid var(--s300); padding: 4px 10px; font-family: var(--mono); font-size: 13px; }
-.roi-pills button.on { background: var(--s950); color: var(--s100); }
-.subnav { display: flex; flex-wrap: wrap; gap: 0; border-bottom: 1px solid var(--s300); margin-bottom: 16px; }
-.subnav button { padding: 8px 12px; font-family: var(--mono); font-size: 13px; letter-spacing: -0.04em; color: var(--s700); }
-.subnav button.on { color: var(--s950); box-shadow: inset 0 -2px 0 var(--s950); }
-.pre { white-space: pre-wrap; font-family: var(--mono); font-size: 13px; line-height: 1.5; margin: 0; }
-.stack { display: flex; flex-direction: column; gap: 8px; max-width: 720px; }
-.stack .rowl { display: flex; justify-content: space-between; gap: 16px; border: 1px solid var(--s300); padding: 10px 12px; }
-.arch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.arch article { border: 1px solid var(--s300); padding: 12px; }
-@media (max-width: 1100px) { .grid, .arch { grid-template-columns: 1fr 1fr; } .kpis { flex-direction: column; } }
+tr.click:hover td { background: #fbfaf9; }
+.name b { display: block; font-weight: 600; }
+.name small, .mono { font-family: var(--mono); color: var(--subtle); font-size: 12px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 4px; padding: 2px 6px; font-size: 12px; background: var(--secondary); }
+.pill i { width: 8px; height: 8px; border-radius: 2px; display: block; }
+.sev { color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 12px; font-weight: 600; }
+.who { display: inline-flex; align-items: center; gap: 6px; }
+.av { width: 18px; height: 18px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-size: 10px; font-weight: 700; }
+.src { display: inline-flex; align-items: center; gap: 6px; }
+.funnel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+.stage-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: #fff; text-align: left; }
+.stage-card.on { outline: 2px solid var(--brand); }
+.stage-card b { display: block; font-size: 18px; }
+.bars { display: flex; height: 6px; border-radius: 99px; overflow: hidden; margin-top: 8px; background: var(--secondary); }
+.bars span { display: block; height: 100%; }
+.tabs { display: flex; gap: 4px; padding: 0 8px; border-bottom: 1px solid var(--border); }
+.tabs button { border: 0; background: transparent; padding: 10px 12px; color: var(--muted-fg); border-bottom: 2px solid transparent; }
+.tabs button.on { color: var(--brand-800); border-bottom-color: var(--brand); font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--border); border-radius: 8px; padding: 14px; background: #fff; text-align: left; }
+.card h3 { margin: 8px 0 4px; font-size: 14px; }
+.card p { margin: 0; color: var(--muted-fg); font-size: 12px; }
+.composer { border: 1px solid var(--border-em); border-radius: 12px; padding: 12px; max-width: 760px; }
+.composer textarea { width: 100%; border: 0; resize: vertical; min-height: 72px; outline: 0; }
+.modes { display: flex; gap: 6px; margin-bottom: 8px; }
+.suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.kv { display: grid; grid-template-columns: 160px 1fr; gap: 8px 12px; max-width: 720px; }
+.kv span { color: var(--subtle); }
+.note { color: var(--subtle); font-size: 12px; margin-top: 16px; }
+.login { min-height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg); }
+.auth { width: 420px; max-width: calc(100% - 32px); background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(18,18,17,.06); padding: 28px; display: flex; flex-direction: column; gap: 16px; }
+.auth h1 { text-align: center; font-size: 22px; }
+.auth .logo-wrap { display: flex; justify-content: center; color: var(--brand-800); }
+.auth .logo-wrap svg { width: 92px; height: 32px; }
+label.fld { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+label.fld input { border: 1px solid var(--border-em); border-radius: 6px; padding: 8px 10px; }
+.or { display: flex; align-items: center; gap: 8px; color: var(--subtle); font-size: 12px; }
+.or i { flex: 1; height: 1px; background: var(--border); }
+.stack { display: flex; flex-direction: column; gap: 8px; }
+.foot { text-align: center; color: var(--subtle); font-size: 12px; }
+.empty { padding: 32px; text-align: center; color: var(--muted-fg); }
+.toast { position: fixed; bottom: 16px; right: 16px; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
 </style>
 </head>
 <body>
-<div class="app">
-  <nav class="rail" id="rail"></nav>
-  <section class="panel" id="panel"></section>
-</div>
+<div id="root"></div>
 <script>
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-function icon(rows) {
-  const h = rows.length, w = rows[0].length;
-  let body = "";
-  rows.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (row[x] === "#") body += `<rect x="${x}" y="${y}" width="1" height="1"/>`; });
-  return `<svg viewBox="0 0 ${w} ${h}" width="18" height="18" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true">${body}</svg>`;
-}
-const ICONS = {
-  sidebar: [".########.", ".#......#.", ".#.#....#.", ".#.#....#.", ".#.#....#.", ".#.#....#.", ".#.#....#.", ".#......#.", ".########."],
-  chat: ["########.", "#..#...#.", "#.###..#.", "#..#...#.", "#......#.", "########.", "#........", ".#......."],
-  notebook: [".######..", ".#....##.", ".#.##.#.#", ".#....#.#", ".#.##.#.#", ".#....#.#", ".######.#"],
-  chart: ["##########", "#..#.#...#", "#..#.##..#", "#..####..#", "##########", "....#..#..", "....#..#.."],
-  compass: ["#....#....", ".#..#.....", "..##......", "...#..#...", ".....#.#..", "......#..."],
-  shield: [".######.", "#..##..#", "#..##..#", "########", "#..##..#", ".#....#.", "..#..#..", "...##..."],
-  blocks: [".##..#..", ".##..##.", ".##.....", ".##.##..", ".....##."],
-  siren: ["#..##..#", ".#.##.#.", "..#..#..", "..####..", ".######.", "########", "...##..."],
-  eye: ["..####..", ".#....#.", "#..##..#", "#..##..#", ".#....#.", "..####.."],
-  cog: ["..#..#..", ".######.", "###..###", "#..##..#", "#..##..#", "###..###", ".######.", "..#..#.."],
-  sliders: ["#####...", "..#.....", "...#####", "...#....", ".#####..", ".#......"],
-  mark: ["#..#", ".##.", ".##.", "#..#"]
-};
-const FLOWER = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><g fill="currentColor"><circle cx="12" cy="4.2" r="3.15"/><circle cx="18.7" cy="8.1" r="3.15"/><circle cx="18.7" cy="15.9" r="3.15"/><circle cx="12" cy="19.8" r="3.15"/><circle cx="5.3" cy="15.9" r="3.15"/><circle cx="5.3" cy="8.1" r="3.15"/></g><circle cx="12" cy="12" r="2.35" fill="#f0efed"/></svg>`;
-const RAIL = [
-  ["search", "New chat", "chat"],
-  ["notebooks", "Notebooks", "notebook"],
-  ["dashboards", "Dashboards", "dash"],
-  ["coverage", "Assessment", "coverage"],
-  ["detections", "Detections", "shield"],
-  ["skills", "AI library", "blocks"],
-  ["alerts", "Incidents", "siren"],
-  ["intel", "Threat Intel", "eye"]
+const NAV = [
+  { path: "/search", name: "Search", icon: "sidebar-search" },
+  { path: "/notebooks", name: "Notebooks", icon: "sidebar-notebook", soon: true, children: [
+    ["/notebooks/my", "My notebooks"], ["/notebooks/library", "Vega library"]
+  ]},
+  { path: "/dashboards", name: "Dashboards", icon: "sidebar-dashboard" },
+  { path: "/assessment", name: "Assessment", icon: "sidebar-assessment", children: [
+    ["/assessment/mitre", "MITRE coverage"], ["/assessment/discovery", "Data discovery"],
+    ["/assessment/plan", "Action plan"], ["/assessment/detections", "Detections"]
+  ]},
+  { path: "/detections", name: "Detections", icon: "sidebar-detections", soon: true, children: [
+    ["/detections/my", "Configured detections"], ["/detections/library", "Vega library"], ["/detections/external", "SIEM detections"]
+  ]},
+  { path: "/incidents", name: "Incidents", icon: "sidebar-incidents", children: [
+    ["/incidents/list", "Incidents"], ["/incidents/signals", "Signals"]
+  ]},
+  { path: "/agentic", name: "Agents", icon: "sidebar-settings-ai-preferences", children: [
+    ["/agentic/skills", "Skills"], ["/agentic/memories", "Memories"]
+  ]},
+  { path: "/intel", name: "Threat Intel", icon: "sidebar-ti-hub", soon: true },
+  { path: "/connectors", name: "Connectors", icon: "sidebar-connectors", section: "bottom", children: [
+    ["/connectors/library", "Connector library"], ["/connectors/configured", "Configured connections"]
+  ]},
+  { path: "/settings", name: "Settings", icon: "sidebar-settings", section: "bottom", children: [
+    ["/settings/users", "Users"], ["/settings/groups", "Groups"], ["/settings/roles", "Roles"],
+    ["/settings/access-keys", "Access keys"], ["/settings/scopes", "Scopes"],
+    ["/settings/audit-log", "Audit log"], ["/settings/connector-requests", "Connector requests"],
+    ["/settings/lookup-tables", "Lookup tables"], ["/settings/labels", "Labels"],
+    ["/settings/webhook-rules", "Webhook rules"], ["/settings/automations", "Automations"],
+    ["/settings/ai-preferences", "AI preferences"], ["/settings/time-preferences", "Time preferences"],
+    ["/settings/sso", "SSO"]
+  ]}
 ];
-const PANEL_ICON = `<svg class="panel-icon" width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.52313 1.26141H12.6144V2.52282H2.52313V1.26141Z"/><path d="M2.52313 12.6141H12.6144V13.8755H2.52313V12.6141Z"/><path d="M8.83018 2.52282H10.0916V12.6141H8.83018V2.52282Z"/><path d="M1.26172 2.52282H2.52313V12.6141H1.26172V2.52282Z"/><path d="M12.6144 2.52282H13.8758V12.6141H12.6144V2.52282Z"/></svg>`;
-let railOpen = false;
-const RAIL_BOT = [
-  ["connectors", "Organization", "cog"],
-  ["prefs", "Preferences", "sliders"]
+const PEOPLE = [
+  ["A. Example", "#295c55", "a.example@example.com"],
+  ["M. Sample", "#3657da", "m.sample@example.com"],
+  ["J. Demo", "#815fc8", "j.demo@example.com"],
+  ["P. North", "#d54021", "p.north@example.com"],
+  ["S. Case", "#4b7e3b", "s.case@example.com"]
 ];
-const TRIAGE = "This alert contributes to a potential account takeover investigation involving shani@vega.io. Multiple MFA factors were reset from 62.0.191.146, which may indicate an attempt to bypass authentication controls and maintain access to the account.";
-const alerts = [
-  { id:"mfa", name:"MFA Fatigue attack", esc:"Escalated", incs:["INC-012","INC-013"], src:["azure"], sev:"Critical", actor:"shani@vega.io", actorIcon:"mail", target:"Entra ID SSO", targetIcon:"key", who:"J", person:"Jessica Miller", av:"#2abea5", note:TRIAGE },
-  { id:"spray", name:"Password Spray - Multiple Users Failing From Single IP…", esc:"Escalated", incs:["Correlating"], src:["guard","config","aws"], sev:"High", actor:"185.220.101.42", actorIcon:"pin", target:"jdoe@acme.example,", targetIcon:"mail", who:"M", person:"Michael Brown", av:"#da8549", note:TRIAGE },
-  { id:"task", name:"SystemHealthMonitor Scheduled Task Created", esc:"Escalated", incs:["INC-012","INC-013"], src:["aws"], sev:"Medium", actor:"svc_backup@acme", actorIcon:"mail", target:"WIN-DC01", targetIcon:"monitor", who:"D", person:"David Johnson", av:"#4b9dd8", note:TRIAGE },
-  { id:"ssm", name:"AWS SSM Parameter Store Enumeration…", esc:"Not escalated", incs:[], src:["config"], sev:"High", actor:"user/dev-ci", actorIcon:"user", target:"ssm:/prod/db/credentials", targetIcon:"key", who:"E", person:"Emily Davis", av:"#2abea5" },
-  { id:"secrets", name:"AWS Secrets Manager Enumeration…", esc:"Escalated", incs:["INC-014"], src:["config"], sev:"High", actor:"890123456789", actorIcon:"pin", target:"sec:/prod/api-keys", targetIcon:"lock", who:"C", person:"Chris Wilson", av:"#f9b806", note:TRIAGE },
-  { id:"script", name:"Script Interpreter Execution From Suspicious Folder", esc:"Not escalated", incs:[], src:["config"], sev:"Medium", actor:"rwilson@acme.example", actorIcon:"mail", target:"FIN-WKS-08", targetIcon:"monitor", who:"S", person:"Sarah Thompson", av:"#da8549" },
-  { id:"ps", name:"Suspicious Encoded PowerShell Command Line", esc:"Escalated", incs:["INC-012"], src:["config"], sev:"Medium", actor:"powershell.exe", actorIcon:"user", target:"HR-WKS-12", targetIcon:"monitor", who:"K", person:"Kevin Moore", av:"#4b9dd8", note:TRIAGE },
-  { id:"svc", name:"Service Used for Command Execution", esc:"Not escalated", incs:[], src:["config"], sev:"High", actor:"SYSTEM", actorIcon:"pin", target:"SRV-APP-03", targetIcon:"server", who:"A", person:"Amanda Taylor", av:"#2abea5" },
-  { id:"auth", name:"Authentication Success After Multiple Failed MFA Atte…", esc:"Escalated", incs:["INC-012","INC-013"], src:["config"], sev:"Critical", actor:"00u139faed0d3…", actorIcon:"mail", target:"Okta SSO", targetIcon:"key", who:"B", person:"Brian Clark", av:"#f9b806", note:TRIAGE },
-  { id:"hta", name:"Remotely Hosted HTA File Executed Via Mshta.EXE…", esc:"Evaluating", incs:[], src:["guard","config"], sev:"Medium", actor:"tgarcia@acme.io", actorIcon:"mail", target:"MKT-WKS-21", targetIcon:"monitor", who:"J", person:"Jennifer Lewis", av:"#4b9dd8" },
-  { id:"ec2", name:"AWS EC2 Instance Enumeration Across Regions", esc:"Not escalated", incs:[], src:["guard","config"], sev:"Medium", actor:"alee@acme.io", actorIcon:"user", target:"ENG-WKS-04", targetIcon:"monitor", who:"R", person:"Ryan Walker", av:"#2abea5" }
+const SOURCES = [
+  ["okta", "Okta"], ["microsoft-entraid", "Microsoft Entra ID"], ["crowdstrike-falcon", "CrowdStrike Falcon"],
+  ["amazon-s3", "Amazon S3"], ["cloudtrail", "CloudTrail"], ["github", "GitHub"],
+  ["google", "Google"], ["sentinel", "Microsoft Sentinel"], ["splunk", "Splunk"], ["wiz", "Wiz"]
 ];
-const findings = [
-  "30 failed SMS MFA attempts targeted angel.doyle@northwind.onmicrosoft.com, from Tor exit node 185.220.101.42 (Bucharest, Romania) at 15-second intervals, followed by a successful MFA authentication, indicating MFA fatigue attack.",
-  "An attacker-controlled Okta session was established from 185.220.101.42 and used to SSO into Microsoft Office 365 and Amazon Web Services.",
-  "A malicious transport rule 'Auto-Forward External Backup' was created in Office 365 to blind-copy all emails to external address angel.doyle.backup@googlemail.com.",
-  "57 credential-related files were accessed in Office 365, including Break-Glass-VPN-Credentials.xlsx, AWS-IAM-Role-Mapping.xlsx, Infrastructure-Credentials-Vault.pdf, Service-Account-Registry.xlsx, SSH-Keys-Backup.zip, and Saved-Passwords.txt.",
-  "Four security notification emails were moved to Deleted Items to evade detection.",
-  "The attacker assumed AWS role AWSReservedSSO_AdministratorAccess_a87f9a032aa784f3 with full administrative access in account 123456789012 via SAML federation.",
-  "10 secrets were retrieved from AWS Secrets Manager across 6 regions, including prod/database/admin, infra/vpn/psk, prod/oauth/client-secret, prod/stripe/secret-key, and code/repository/access-token.",
-  "A persistent access key (KIAKAXIHJSYRJLWWY5O) was created on service account terraform-automation to maintain access independent of the compromised user account.",
-  "Data was exfiltrated from multiple internal S3 buckets (northwind-prod-data, northwind-customer-pii, northwind-financial-reports, northwind-secrets-backup, northwind-employee-data) and uploaded to attacker-controlled bucket scattered-spider-exfil-bucket in external AWS account 999888777666."
+const SIGNALS = [
+  ["sig-1", "Unusual sign-in from a documentation network", "unusual_signin_docnet", "Open", "okta", "Critical", "198.51.100.24", "a.example@example.com", 0, "Suspicious", false],
+  ["sig-2", "New OAuth grant on a sample application", "oauth_grant_sample_app", "Open", "microsoft-entraid", "High", "203.0.113.10", "m.sample@example.com", 1, "Suspicious", false],
+  ["sig-3", "Sample process started a network connection", "sample_process_network", "In progress", "crowdstrike-falcon", "High", "FIN-SAMPLE-14", "192.0.2.40", 2, "Malicious", false],
+  ["sig-4", "Object upload to an example bucket", "sample_object_upload", "Open", "amazon-s3", "Medium", "sample-pipeline", "s3://example-bucket/export", 3, "Inconclusive", false],
+  ["sig-5", "Role assumption from a TEST-NET address", "sample_assume_role", "Open", "cloudtrail", "High", "192.0.2.55", "arn:aws:iam::123456789012:role/Example", 0, "Suspicious", false],
+  ["sig-6", "Public repository received a sample token file", "sample_token_file", "Peer review", "github", "Medium", "p.north@example.com", "example-org/sample-repo", 3, "Benign", false],
+  ["sig-7", "Mailbox rule created in the sample tenant", "sample_mailbox_rule", "Open", "google", "Low", "s.case@example.com", "s.case@example.com", 4, "Inconclusive", true],
+  ["sig-8", "Scheduled task created on a lab host", "sample_scheduled_task", "Resolved", "crowdstrike-falcon", "Medium", "LAB-HOST-2", "example.local\\lab", 2, "Benign", true],
+  ["sig-9", "Impossible travel between two example sites", "sample_impossible_travel", "Open", "okta", "High", "j.demo@example.com", "Example City", 2, "Suspicious", false],
+  ["sig-10", "Endpoint alert on a renamed sample binary", "sample_renamed_binary", "In progress", "sentinel", "Critical", "WS-SAMPLE-7", "C:\\Temp\\sample.exe", 1, "Malicious", false],
+  ["sig-11", "Lookup of an example domain", "sample_domain_lookup", "Open", "splunk", "Low", "192.0.2.80", "example.com", 4, "Benign", false],
+  ["sig-12", "Identity finding on a sample guest account", "sample_guest_account", "Resolved", "wiz", "High", "guest.sample@example.com", "Example subscription", 0, "Inconclusive", false]
 ];
-const detections = [
-  ["Ransom Note Object Written to S3 Bucket","Enabled","Critical",["s3","guard","aws"],"3","IM","Data Encrypted","Healthy","S3","Jul 22, 2:47 PM","N","Noa Levi","#da8549"],
-  ["Mass Object Deletion in Versioned Bucket","Enabled","Critical",["s3"],"12","IM","Data Destruction","Healthy","Prod","Jul 21, 11:02 AM","D","Daniel Cohen","#4b9dd8"],
-  ["S3 Bucket Public Access Block Disabled","Disabled","High",["aws"],"4","DE","Impair Defenses +2","Healthy","AWS","Jul 20, 6:15 PM","M","Maya Katz","#d83b3b"],
-  ["Mass GetObject from Single IAM Principal","Disabled","High",["guard"],"156","CO","Cloud Storage","Healthy","S3","Jul 19, 9:38 AM","T","Tom Shapira","#2abea5"],
-  ["CloudTrail S3 Data Events Logging Stopped","Disabled","Medium",["guard"],"2","DE","Disable Logs +1","Healthy","CloudTrail","Jul 17, 4:51 PM","O","Or Aharon","#da8549"],
-  ["Presigned URL Generation Spike","Enabled","Medium",["s3"],"89","EF","Web Service +2","Unhealthy","S3","Jul 15, 8:24 AM","Y","Yuval Ben-Ami","#f9b806"],
-  ["Cross-Account Replication Rule Added","Test mode","Low",["aws"],"7","EF","Cloud Account","Healthy","AWS","Jul 12, 3:19 PM","Z","Zhenya Orlov","#2abea5"],
-  ["Unusual ListBuckets Enumeration Burst","Enabled","Low",["guard"],"62","DS","Cloud Discovery","Unhealthy","Recon","Jul 9, 10:45 AM","O","Omri Peled","#da8549"],
-  ["S3 Bucket Versioning Suspended","Test mode","Low",["s3"],"9","IM","Inhibit Recovery","Healthy","Backup","Jul 5, 1:33 PM","V","Vish Kumar","#2abea5"]
+const INCIDENTS = [
+  ["inc-1", "Sample identity incident", "Investigating", "High", "Suspicious", 0, 4],
+  ["inc-2", "Sample endpoint incident", "New", "Critical", "Malicious", 1, 2],
+  ["inc-3", "Sample cloud storage incident", "On hold", "Medium", "Inconclusive", 3, 3],
+  ["inc-4", "Sample source-control incident", "External escalation", "Medium", "Benign", 3, 1],
+  ["inc-5", "Sample mail incident", "Resolved", "Low", "Benign", 4, 2],
+  ["inc-6", "Sample reopened finding", "Reopened", "High", "Suspicious", 2, 2]
 ];
-const briefs = [
-  ["hollow","2026-07-22","HOLLOWGRAPH: Microsoft 365 Calendar Dead-Drop C2 and Graph API Exfiltration","Critical","HOLLOWGRAPH is a Windows espionage implant that turns a victim's own Microsoft 365 tenant into its command-and-control and exfiltration infrastructure, abusing the Microsoft Graph API and a compromised mailbox calendar as a covert dead-drop.","#1f6b4a"],
-  ["muddy","2026-07-22","MuddyWater Behind Chaos Ransomware: Iranian Espionage Masquerading as Ransomware via Microsoft Teams","Critical","This intrusion set operates under the Chaos ransomware-as-a-service brand and displays the outward indicators of an extortion operation, including data-leak-site branding and ransom demands.","#c4a15a"],
-  ["vidar","2026-07-16","Vidar Stealer and XMRig X3D MINER Cracked Software Campaign","Critical","Unit 42 documents a financially motivated affiliate, tracked by the operator moniker X3D MINER, running a Vidar stealer malware as a service operation that pairs credential theft with cryptocurrency mining.","#2f6b4f"],
-  ["async","2026-07-15","AsyncAPI npm Supply Chain Compromise: GitHub Actions Abuse to Miasma Implant","Critical","On July 14, 2026, researchers disclosed a supply chain compromise of the @asyncapi npm organization affecting five releases across four packages, including @asyncapi/specs.","#d7c4a3"]
+const DETECTS = [
+  ["det-1", "Sample sign-in burst", "Configured", "Okta", "High"],
+  ["det-2", "Sample OAuth grant", "Configured", "Entra ID", "High"],
+  ["det-3", "Sample object upload", "Library", "Amazon S3", "Medium"],
+  ["det-4", "Sample role assumption", "Library", "CloudTrail", "High"],
+  ["det-5", "Sample token in a repository", "SIEM", "GitHub", "Medium"],
+  ["det-6", "Sample scheduled task", "SIEM", "CrowdStrike", "Medium"]
 ];
-const connectors = [
-  ["Data Lakes & Analytics","AWS S3","Connect Vega to your S3 buckets to index your data and enable querying and detection, all without moving it.",["Federated Query"],6,"s3"],
-  ["Data Lakes & Analytics","Azure Data Explorer","Connect to Azure Data Explorer for querying and analyzing large amounts of data in real-time.",["Federated Query","Query"],5,"kusto"],
-  ["Data Lakes & Analytics","Azure Blob Storage","Connect to Azure Blob Storage for secure and scalable object storage.",["Federated Query","Query"],0,"blob"],
-  ["Data Lakes & Analytics","Databricks","Connect to Databricks SQL warehouses to query discovered tables.",["Federated Query","Query"],0,"databricks"],
-  ["Data Lakes & Analytics","Elasticsearch","Enhance monitoring and detection with Elastic's search and analytics capabilities.",["Federated Query","Query"],3,"elastic"],
-  ["Data Lakes & Analytics","Google BigQuery","Enhance data analytics with Google BigQuery for powerful data querying and analysis.",["Federated Query","Query"],1,"bigquery"],
-  ["Data Lakes & Analytics","Google Cloud Storage","Connect to Google Cloud Storage for secure and scalable object storage.",["Federated Query","Query"],2,"gcs"],
-  ["Data Lakes & Analytics","SentinelOne","Connect to SentinelOne Management and Data Lake to access and manage your endpoint protection.",["Federated Query","Query"],1,"s1"],
-  ["Data Lakes & Analytics","Snowflake","Unlock data-driven threat insights with Snowflake integration.",["Use Cases","Query"],0,"snowflake"],
-  ["Endpoint Detection and Response","CrowdStrike Falcon","Stream endpoint detections and host telemetry for triage without a second copy of the lake.",["Federated Query"],4,"crowdstrike"],
-  ["Endpoint Detection and Response","Windows Defender","Endpoint alerts and device events. Ingestion on this source is the one that goes quiet in the drift view.",["Federated Query"],1,"defender"],
-  ["Enrichment & Context Providers","Wiz","Cloud context for the mesh. Last check on the configured row is Apr 9, 2026.",["Federated Query"],3,"wiz"],
-  ["Enrichment & Context Providers","Wiz - EU","EU tenant of the same enrichment provider.",["Federated Query"],2,"wiz"],
-  ["Enrichment & Context Providers","Wiz - Sandbox","Sandbox tenant. The configured row is the one that fails on rate limits.",["Federated Query"],1,"wiz"],
-  ["Identity and Access Management","Okta","Sign-in, MFA, and system-log events for identity investigations.",["Federated Query","Query"],2,"okta"],
-  ["Identity and Access Management","Entra ID","Directory, sign-in, and audit events from Microsoft Entra.",["Federated Query"],3,"entra"],
-  ["SIEM & XDR","Splunk Enterprise","Search the on-prem lake in place.",["Federated Query","Query"],2,"splunk"],
-  ["SIEM & XDR","Splunk Cloud","Search the cloud lake in place.",["Federated Query","Query"],1,"splunk"],
-  ["SOAR & Automation","Tines","Automation stories on the Peloton architecture.",["Query"],1,"tines"],
-  ["SOAR & Automation","Cortex XSOAR","Response platform on the bank architecture.",["Query"],1,"cortex"]
+const BOOKS = [
+  ["nb-1", "Sample identity questions", "Mine"],
+  ["nb-2", "Sample cloud questions", "Mine"],
+  ["nb-3", "Vega library: sign-in overview", "Library"],
+  ["nb-4", "Vega library: endpoint overview", "Library"]
 ];
-const cats = [["All",52],["Custom",4],["Data Lakes & Analytics",11],["Endpoint Detection and Response",2],["Enrichment & Context Providers",3],["Identity and Access Management",3],["SIEM & XDR",6],["Threat Intelligence",1],["SOAR & Automation",4],["Ticketing & Collaboration",3],["External Integration",11]];
-let q = "", cat = "All", detTab = "configured", connTab = "library";
-function route() {
-  const [page, id, tab] = (location.hash.replace(/^#\/?/, "") || "alerts").split("/");
-  return { page: page || "alerts", id: id || "", tab: tab || "" };
+const BOARDS = [
+  ["ops", "Operations"], ["coverage", "Coverage"], ["response", "Response"]
+];
+const BRIEFS = [
+  ["brief-1", "Sample brief: credential use", "Critical"],
+  ["brief-2", "Sample brief: public repository", "High"],
+  ["brief-3", "Sample brief: guest account", "Medium"]
+];
+const SKILLS = [
+  ["skill-1", "Summarize a signal", "Read"],
+  ["skill-2", "Draft a detection", "Write"],
+  ["skill-3", "Explain a verdict", "Read"]
+];
+const MEMORIES = [
+  ["mem-1", "Sample preference: example.com is a documentation domain"],
+  ["mem-2", "Sample preference: TEST-NET addresses are not production"]
+];
+const CONNECTORS = [
+  ["okta", "Okta", "Configured"], ["microsoft-entraid", "Microsoft Entra ID", "Configured"],
+  ["crowdstrike-falcon", "CrowdStrike Falcon", "Configured"], ["amazon-s3", "Amazon S3", "Library"],
+  ["github", "GitHub", "Configured"], ["splunk", "Splunk", "Library"],
+  ["sentinel", "Microsoft Sentinel", "Configured"], ["wiz", "Wiz", "Error"]
+];
+let collapsed = false;
+let section = null;
+let q = "";
+let sev = "All";
+let status = "All";
+let testMode = false;
+let composerMode = "ask";
+let toast = "";
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function ico(name, cls) { return `<svg class="ico${cls ? " " + cls : ""}" aria-hidden="true"><use href="sprite.svg#${esc(name)}"></use></svg>`; }
+function person(i) { const p = PEOPLE[i % PEOPLE.length]; return `<span class="who"><span class="av" style="background:${p[1]}">${esc(p[0][0])}</span>${esc(p[0])}</span>`; }
+function source(id) { const s = SOURCES.find(x => x[0] === id) || [id, id]; return `<span class="src">${ico(s[0])}${esc(s[1])}</span>`; }
+function sevPill(name) {
+  const color = { Critical: "var(--sev-crit)", High: "var(--sev-high)", Medium: "var(--sev-med)", Low: "var(--sev-low)" }[name] || "var(--subtle)";
+  return `<span class="sev" style="background:${color}">${esc(name)}</span>`;
 }
-function go(path) { location.hash = "#/" + path; }
-function glyph(name) {
-  if (name === "notebook") return `<svg class="glyph" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 20h2v2H6v-2h10v-8h2v8ZM6 7h2v2H6v2h2v2H6v2h2v2H6v3H4v-3H2v-2h2v-2H2v-2h2V9H2V7h2V4h2v3Zm16 13h-2V10h2v10ZM16 8h2v2h-4V6h2v2Zm4 0h-2V6h2v2Zm-2-2h-2V4h2v2Zm4 0h-2V4h2v2Zm-8-2H6V2h8v2Zm6 0h-2V2h2v2Z"/></svg>`;
-  return `<img class="glyph" src="icons/${name}.png" alt="">`;
+function statusPill(name) {
+  const color = { Open: "var(--positive)", New: "var(--positive)", Investigating: "var(--warning)", "In progress": "var(--warning)", "Peer review": "var(--brand)", Resolved: "var(--subtle)", "On hold": "var(--subtle)", "External escalation": "var(--sev-high)", Reopened: "var(--sev-med)", Configured: "var(--positive)", Library: "var(--brand)", SIEM: "var(--subtle)", Error: "var(--destructive)", Mine: "var(--brand)" }[name] || "var(--subtle)";
+  return `<span class="pill"><i style="background:${color}"></i>${esc(name)}</span>`;
 }
-function signal(sev) {
-  const on = sev === "Critical" ? "#d31b1b" : sev === "High" ? "#e07a1f" : sev === "Medium" ? "#e2b007" : "#1b881b";
-  const n = sev === "Critical" ? 4 : sev === "High" ? 3 : sev === "Medium" ? 2 : 1;
-  const bars = [1, 2, 3, 4].map((i) => `<rect x="${(i - 1) * 4}" y="${16 - i * 3}" width="2" height="${i * 3}" fill="${i <= n ? on : "#dfddd8"}"/>`).join("");
-  return `<svg width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${bars}</svg>`;
+function path() {
+  let h = decodeURIComponent(location.hash.replace(/^#/, "") || "/incidents/signals");
+  if (!h.startsWith("/")) h = "/" + h;
+  if (h === "/alerts" || h === "/incidents/alerts") h = "/incidents/signals";
+  return h;
 }
-function sevCell(sev) {
-  return `<span class="sev">${signal(sev)}<span>${esc(sev)}</span></span>`;
+function go(p) { location.hash = p; }
+function itemFor(p) {
+  for (const item of NAV) {
+    if (item.path === p) return item;
+    if (item.children && item.children.some(([c]) => p === c || p.startsWith(c + "/"))) return item;
+    if (p === item.path || p.startsWith(item.path + "/")) return item;
+  }
+  return null;
 }
-function person(letter, name, color) {
-  return `<span class="cell"><span class="av" style="background:${color}">${esc(letter)}</span>${esc(name)}</span>`;
+function crumb(parts) {
+  return `<div class="crumbs">${parts.map((p, i) => `${i ? '<span class="slash">/</span>' : ""}${i === parts.length - 1 ? `<b>${esc(p)}</b>` : esc(p)}`).join("")}</div>`;
 }
-function match(text) {
-  const s = String(q || "").trim().toLowerCase();
-  if (!s) return true;
-  return String(text).toLowerCase().includes(s);
-}
-function mini(kind, color) {
-  const paths = {
-    mail: "M1 3h12v8H1V3zm1 1 5 3 5-3",
-    pin: "M7 1a4 4 0 0 0-4 4c0 3 4 8 4 8s4-5 4-8a4 4 0 0 0-4-4zm0 5.2A1.2 1.2 0 1 1 7 3.8a1.2 1.2 0 0 1 0 2.4z",
-    user: "M7 2a2.2 2.2 0 1 1 0 4.4A2.2 2.2 0 0 1 7 2zM2.5 12.5c.6-2 2.3-3 4.5-3s3.9 1 4.5 3",
-    monitor: "M1 2h12v8H1V2zm3 9h6",
-    key: "M6 2a3 3 0 1 0 1.5 5.6L13 3.2 11.8 2l-1.2 1.2L9.4 2 8.2 3.2l1.2 1.2-1.6 1.6A3 3 0 0 0 6 2z",
-    lock: "M4 6V4.5a3 3 0 0 1 6 0V6h1v7H3V6h1zm1.2 0h3.6V4.5a1.8 1.8 0 0 0-3.6 0V6z",
-    server: "M2 2h10v4H2V2zm0 6h10v4H2V8zM3.5 4h.1M3.5 10h.1",
-    up: "M7 2 3 7h2.2v5h3.6V7H11L7 2z",
-    off: "M7 1.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11zM3 7h8",
-    spark: "M7 0l1.2 4.2L12 5.5 8.2 6.8 7 11 5.8 6.8 2 5.5l3.8-1.3L7 0z"
-  };
-  const d = paths[kind] || paths.mail;
-  return `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="${color || "#a8a394"}" stroke-width="1.2" aria-hidden="true"><path d="${d}"/></svg>`;
-}
-const FILE_LOGO = {
-  snowflake: "logos/snowflake.svg",
-  databricks: "logos/databricks.svg",
-  elastic: "logos/elastic.svg",
-  gcs: "logos/googlecloud.svg",
-  bigquery: "logos/bigquery.svg",
-  okta: "logos/okta.svg",
-  splunk: "logos/splunk.svg",
-  cortex: "logos/paloalto.svg"
-};
-function logoSvg(id) {
-  if (id === "azure") id = "entra";
-  const common = {
-    entra: `<svg viewBox="0 0 16 16"><path fill="#00bcf2" d="M8 1.2 14.8 8 8 14.8 1.2 8Z"/><path fill="#fff" d="M8 4.4 11.6 8 8 11.6 4.4 8Z"/></svg>`,
-    aws: `<svg viewBox="0 0 36 16"><text x="1" y="11" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#232f3e">aws</text><path d="M6 13.2c6 2.2 16 2.2 22-1" fill="none" stroke="#ff9900" stroke-width="1.4"/></svg>`,
-    guard: `<svg viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="#e11d48"/><path fill="#fff" d="M8 3.1 12.2 4.6v3.3c0 2.5-1.7 4.1-4.2 5.1-2.5-1-4.2-2.6-4.2-5.1V4.6Z"/></svg>`,
-    config: `<svg viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="#d946a6"/><path fill="#fff" d="M4.2 3.2h6.2l1.4 1.4v8.2H4.2Z"/><path stroke="#d946a6" stroke-width="1" d="M6 7h4M6 9h4M6 11h2.5"/></svg>`,
-    s3: `<svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#e5f6df"/><path fill="#1b881b" d="M3.4 5.2h9.2v1.2H3.4zM4.2 7h7.6l-.7 5.2H4.9Z"/></svg>`,
-    kusto: `<svg viewBox="0 0 16 16"><path fill="#0089d6" d="M8 1.5 14.5 13H1.5Z"/><path fill="#fff" d="M8 5.2 11.2 11H4.8Z"/></svg>`,
-    blob: `<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#0089d6"/><circle cx="8" cy="8" r="2.2" fill="#fff"/></svg>`,
-    s1: `<svg viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="#6d28d9"/><path fill="#fff" d="M8 3.2 11.5 8 8 12.8 4.5 8Z"/></svg>`,
-    crowdstrike: `<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#e11d2e"/><path fill="#fff" d="M3.5 9.2c2.2-3 5-4.2 9-3.2-2.4 1.2-3.6 2.4-4.2 4.2-1.6-.2-3.2-.4-4.8-1z"/></svg>`,
-    defender: `<svg viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="#0078d4"/><path fill="#fff" d="M8 2.8 12.4 4.4v3.6c0 2.6-1.8 4.2-4.4 5.2-2.6-1-4.4-2.6-4.4-5.2V4.4Z"/></svg>`,
-    wiz: `<svg viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="#1d4ed8"/><path fill="#fff" d="M4 11.5 8 3.5l4 8H4z"/></svg>`,
-    tines: `<svg viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="#111"/><circle cx="6" cy="8" r="1.3" fill="#fff"/><circle cx="10" cy="8" r="1.3" fill="#fff"/></svg>`,
-    microsoft: `<svg viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="6" fill="#f25022"/><rect x="9" y="1" width="6" height="6" fill="#7fba00"/><rect x="1" y="9" width="6" height="6" fill="#00a4ef"/><rect x="9" y="9" width="6" height="6" fill="#ffb900"/></svg>`,
-    ping: `<svg viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#b91c1c"/><circle cx="8" cy="8" r="3" fill="#fff"/></svg>`,
-    salesforce: `<svg viewBox="0 0 16 16"><path fill="#00a1e0" d="M6 4.2a2.4 2.4 0 0 1 4.4 1 2.6 2.6 0 0 1 .2 5.2 2.2 2.2 0 0 1-3.8 1.2A2.4 2.4 0 0 1 4 9.2 2.3 2.3 0 0 1 6 4.2z"/></svg>`
-  };
-  if (common[id]) return common[id];
-  if (FILE_LOGO[id]) return `<img src="${FILE_LOGO[id]}" alt="">`;
-  return `<svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#dfddd8"/></svg>`;
-}
-function brand(id, tile) {
-  const word = id === "aws" ? " word" : "";
-  return `<span class="logo${tile ? " tile" : " sm"}${word}">${logoSvg(id)}</span>`;
-}
-function escMark(state) {
-  if (state === "Not escalated") return `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.2" fill="none" stroke="#b9b3a6" stroke-width="1.4"/><path d="M4.2 7h5.6" stroke="#b9b3a6" stroke-width="1.4"/></svg>`;
-  if (state === "Evaluating") return `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path fill="#e2b007" d="M7 .4 8.2 4.8 12.6 6 8.2 7.2 7 11.6 5.8 7.2 1.4 6 5.8 4.8Z"/></svg>`;
-  return `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.1" y="1.1" width="11.8" height="11.8" rx="2.2" fill="none" stroke="#e07a1f" stroke-width="1.3"/><path d="M7 10V4.2M4.7 6.3 7 3.9l2.3 2.4" fill="none" stroke="#e07a1f" stroke-width="1.3"/></svg>`;
+function shell(crumbs, body, tabs) {
+  return `<div class="app">${rail()}<div class="stage"><div class="panel">${tabs || ""}<div class="top">${crumbs}<span class="spacer"></span><button class="btn" type="button" id="ask" data-testid="ask-sam-button">${ico("sparkles")} Ask Sam</button></div><div class="scroll"><div class="pad">${body}<p class="note">Sample rows only. The public app.vega.io bundles describe this layout and do not include a tenant export. Nothing on this page signs in.</p></div></div></div></div></div>${toast ? `<div class="toast">${esc(toast)}</div>` : ""}`;
 }
 function rail() {
-  const page = route().page === "incident" ? "alerts" : route().page;
-  const btn = ([id, label, key]) => {
-    const tip = railOpen ? "" : ` title="${esc(label)}" aria-label="${esc(label)}"`;
-    return `<button class="${page === id ? "on" : ""}" data-go="${id}" type="button"${tip}>${glyph(key)}<span class="lbl">${esc(label)}</span></button>`;
+  const p = path();
+  const current = itemFor(p);
+  const open = section && NAV.find(n => n.path === section);
+  const items = open && open.children ? open.children.map(([c, name]) => ({ path: c, name, icon: open.icon, child: true })) : NAV.filter(n => n.section !== "bottom");
+  const bottom = open ? [] : NAV.filter(n => n.section === "bottom");
+  const btn = (item) => {
+    const on = item.child ? p === item.path || p.startsWith(item.path + "/") : itemFor(p)?.path === item.path;
+    return `<button class="nav-btn${on ? " on" : ""}" type="button" data-go="${esc(item.child ? item.path : item.path)}" data-section="${item.child ? "" : esc(item.path)}" title="${esc(item.name)}">${ico(item.icon)}<span class="lbl">${esc(item.name)}</span>${item.soon ? '<span class="soon">Soon</span>' : ""}</button>`;
   };
-  const nav = document.getElementById("rail");
-  nav.classList.toggle("open", railOpen);
-  const tip = railOpen ? "Collapse sidebar" : "Expand sidebar";
-  nav.innerHTML =
-    `<div class="grp top"><button id="rail-toggle" type="button" title="${tip}" aria-label="${tip}" aria-expanded="${railOpen}">${PANEL_ICON}</button>${btn(RAIL[0])}</div>` +
-    `<div class="grp">${RAIL.slice(1).map(btn).join("")}</div><div class="grow"></div>` +
-    `<div class="grp">${RAIL_BOT.map(btn).join("")}<div class="mark" title="Vega"><img class="flower" src="logos/vega-flower.svg" alt="Vega"><span class="lbl">Vega</span></div></div>`;
+  return `<nav class="rail${collapsed ? " collapsed" : ""}" aria-label="Primary">
+    <div class="rail-top"><a class="brand" href="#/search" aria-label="Vega">${ico("vega-full-logo", "logo")}</a>
+      <button class="icon-btn" id="rail-toggle" type="button" aria-label="${collapsed ? "Expand sidebar" : "Collapse sidebar"}">${ico("vega", "flower")}${ico("sidebar-expand", "when-shut")}${ico("sidebar-collapse", "when-open")}</button></div>
+    <div class="rail-scroll">${open ? `<button class="back-btn" type="button" id="back" aria-label="Back to main menu from ${esc(open.name)}">${ico("central/IconArrowLeft")}<span class="lbl">${esc(open.name)}</span></button>` : ""}${items.map(btn).join("")}
+      <div class="rail-bottom">${bottom.map(btn).join("")}</div>
+      <button class="tenant" type="button" id="tenant" title="Switch tenant"><span class="mark">${ico("vega")}</span><span><b>VegaSecurity</b><small>Sample workspace</small></span></button>
+    </div></nav>`;
 }
-function alertTable(rows) {
-  const cols = ["24%", "16%", "9%", "10%", "13%", "12%", "7%", "9%"];
-  return `<table><colgroup>${cols.map((w) => `<col style="width:${w}">`).join("")}</colgroup><thead><tr>${["Name", "Escalation", "Data source", "Severity", "Actor", "Target", "Status", "Assignee"].map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map((a) => {
-    const tip = a.note ? `<div class="tip"><div class="cell"><b>Triage Decision</b><span class="muted">${esc(a.esc)}</span></div><p>${esc(a.note)}</p></div>` : "";
-    const tail = a.incs.length ? `<span class="chev">›</span><span class="ids">${a.incs.map(esc).join(" ")}</span>` : "";
-    return `<tr class="click" data-go="incident/${a.id}"><td class="name">${esc(a.name)}</td><td><span class="esc">${escMark(a.esc)}<span>${esc(a.esc)}</span>${tail}${tip}</span></td><td><span class="cell">${a.src.map((s) => brand(s)).join("")}</span></td><td>${sevCell(a.sev)}</td><td><span class="cell">${mini(a.actorIcon)}${esc(a.actor)}</span></td><td><span class="cell">${mini(a.targetIcon)}${esc(a.target)}</span></td><td><span class="cell"><i class="sq"></i>Open</span></td><td>${person(a.who, a.person, a.av)}</td></tr>`;
-  }).join("")}</tbody></table>`;
+function tabs(item) {
+  if (!item || !item.children) return "";
+  const p = path();
+  return `<div class="tabs">${item.children.map(([c, name]) => `<button type="button" class="${p === c || p.startsWith(c + "/") ? "on" : ""}" data-go="${c}">${esc(name)}</button>`).join("")}</div>`;
 }
-function alertsPage() {
-  const view = route().id === "incidents" ? "incidents" : route().id === "matters" ? "matters" : "alerts";
-  if (view === "matters") {
-    const rows = [
-      ["secrets", "Compromised Developer Account", "h", ""],
-      ["spray", "High Volume SharePoint File Access Within 30 Minutes", "h", ""],
-      ["ec2", "Large Data Transfer from northwind-customer-pii to External S3 Bucket", "h", ""],
-      ["mfa", "MFA Fatigue Push Bombing Against angel.doyle", "c", "Scattered Spider"],
-      ["auth", "Multiple Credential and Access Escalation Activities in AWS", "h", ""],
-      ["task", "Okta Session Established from Tor Exit Node 185.220.101.42", "h", ""],
-      ["ps", "PowerShell Credential Dumping with Defense Evasion", "h", ""]
-    ];
-    const spark = `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path fill="#8c8573" d="M7 .6 8.1 4.8 12.4 6 8.1 7.2 7 11.4 5.9 7.2 1.6 6 5.9 4.8Z"/></svg>`;
-    return `<header class="topbar"><button class="linkish" data-go="alerts" type="button">Alerts</button></header>
-      <div class="scroll"><div class="matter">${rows.map((r) => `<button type="button" class="${r[0] === "mfa" ? "hot" : ""}" data-go="incident/${r[0]}"><span>${spark}</span><span class="nm">${esc(r[1])}</span>${r[3] ? `<span class="tagchip">${esc(r[3])}</span>` : ""}<span class="sevletter ${r[2]}">${r[2] === "c" ? "C" : "H"}</span></button>`).join("")}</div></div>`;
-  }
-  const rows = alerts.filter((a) => (view === "alerts" || a.esc !== "Not escalated") && match(a.name + a.actor + a.target + a.person));
-  return `<header class="topbar"><span class="crumb">Alerts</span></header>
-    <div class="tabs"><button data-go="alerts/incidents" class="${view === "incidents" ? "on" : ""}">Incidents</button><button data-go="alerts" class="${view === "alerts" ? "on" : ""}">Alerts</button></div>
-    <div class="scroll"><div class="pad" style="padding-bottom:8px"><div class="tools"><label class="search"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="6" cy="6" r="4.2" fill="none" stroke="#a8a394" stroke-width="1.3"/><path d="M9.2 9.2 12 12" stroke="#a8a394" stroke-width="1.3"/></svg><input id="q" placeholder="Search" value="${esc(q)}"></label><span class="grow"></span><button class="linkish" data-go="alerts/matters" type="button">Why it matters</button><button class="linkish" type="button">+ Add Filter</button></div>
-    <div style="margin-top:16px">${alertTable(rows)}</div></div></div>
-    <div class="foot"><span>Showing <b>${view === "alerts" ? 54 : rows.length}</b> out of <b>217</b> Alerts</span><div class="pages"><button aria-label="Previous">‹</button><button class="on">1</button><button>2</button><button>3</button><span>…</span><button>32</button><button>33</button><button>34</button><button aria-label="Next">›</button></div></div>`;
+function table(heads, rows) {
+  if (!rows.length) return `<div class="empty"><b>No matching signals</b><div>Try adjusting your search or filters</div></div>`;
+  return `<table><thead><tr>${heads.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
 }
-function incidentPage() {
-  const item = alerts.find((a) => a.id === route().id) || alerts.find((a) => a.id === "ps");
-  const tab = route().tab || "overview";
-  const title = item.id === "ps" ? "PowerShell AMSI Bypass → Certutil File Download on EC2AMAZ-IELCMNC" : item.name;
-  const tabs = [["overview", "Overview"], ["alerts", "Alerts 4"], ["timeline", "Timeline"], ["investigation", "Investigation 1"], ["actions", "Actions 5"], ["activity", "Activity"]];
-  const overview = `<div class="aibox"><div class="cell"><b>AI conclusion</b><span class="mal">Malicious</span></div>
-      <p>The investigation confirms a malicious verdict due to confirmed MFA-fatigue bypass enabling multi-cloud compromise with credential theft, persistence mechanisms, and data exfiltration.</p>
-      <div class="cell" style="margin-top:10px;color:var(--s700)">${mini("spark", "#d19b05")} By Investigation agent <span class="muted">|</span> Investigation - Endpoint skill</div>
-      <div class="aibar"><span class="cell">${mini("spark", "#d19b05")} 9 recommended actions</span><button class="linkish" data-go="incident/${item.id}/actions">See actions</button></div></div>
-    <div class="tools" style="margin-top:24px"><h2 style="font-size:14px;font-weight:500;margin:0">Key findings</h2><button class="hard" data-go="incident/${item.id}/investigation">See investigation</button></div>
-    ${findings.map((f, i) => `<div class="find"><span class="n">${i + 1}</span><span>${esc(f)}</span></div>`).join("")}`;
-  const bodies = {
-    overview,
-    alerts: alertTable(alerts.filter((a) => ["mfa", "spray", "auth", "ps"].includes(a.id))),
-    timeline: [["02:14", "30 SMS MFA prompts to angel.doyle from 185.220.101.42"], ["02:19", "MFA accepted. Okta session opened."], ["02:22", "Mailbox rule Auto-Forward External Backup created."], ["02:31", "SAML into AWSReservedSSO_AdministratorAccess."], ["02:44", "Secrets read across 6 regions. Access key created."]].map((r) => `<div class="find"><span class="mono muted">${r[0]}</span><span>${esc(r[1])}</span></div>`).join(""),
-    investigation: `<div class="story"><div class="mono muted">Incident investigation</div><h2>Vega AI · SMS MFA Authentication Success After Multiple Failed Attempts</h2><p class="muted">2 origin · 4 data sources · 9 queries · 5 steps</p></div>` + ["Validate the alert and scope the user", "Rule out a Conditional Access change", "Correlate the accepted prompt to Okta and AWS", "Trace the mailbox rule and the deleted warnings", "Confirm the S3 exfil destination"].map((s, i) => `<div class="find"><span class="n">${i + 1}</span><span>${esc(s)}</span></div>`).join("") + `<p><button class="linkish" data-go="notebooks" type="button">Open the investigation notebook</button> <button class="linkish" data-go="search/transparency" type="button">Transparency</button></p>`,
-    actions: ["Reset MFA for angel.doyle and revoke Okta sessions", "Remove the Auto-Forward External Backup transport rule", "Disable access key KIAKAXIHJSYRJLWWY5O", "Block 185.220.101.42 at the identity provider", "Rotate secrets read from Secrets Manager", "Contain EC2AMAZ-IELCMNC", "Review SAML role AWSReservedSSO_AdministratorAccess", "Notify the mailbox owner and identity team", "Open the exfil bucket takedown with the destination account"].map((s, i) => `<div class="find"><span class="n">${i + 1}</span><span>${esc(s)}</span></div>`).join(""),
-    activity: `<div class="find"><span class="av" style="background:#2abea5">J</span><span>Jessica Miller assigned the incident and marked the verdict malicious.</span></div>`
-  };
-  return `<div class="scroll"><div class="doc"><h1 class="h1"><span class="badge">H</span>${esc(title)}</h1>
-    <div class="tabs" style="padding-left:0;margin-top:16px">${tabs.map(([id, label]) => `<button data-go="incident/${item.id}/${id}" class="${tab === id ? "on" : ""}">${label}</button>`).join("")}</div>
-    ${bodies[tab] || overview}</div></div>`;
+function sevStack(rows, index) {
+  const order = ["Critical", "High", "Medium", "Low"];
+  const counts = { Critical: 0, High: 0, Medium: 0, Low: 0 };
+  rows.forEach(row => { if (counts[row[index]] != null) counts[row[index]] += 1; });
+  return order.map(name => counts[name]);
 }
-function detStatus(state) {
-  const color = state === "Enabled" ? "#1b881b" : state === "Test mode" ? "#297fbc" : "#8c8573";
-  const mark = state === "Disabled" ? mini("off", color) : state === "Test mode" ? `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 1.5h4M4 4h6l-1 6.2a2 2 0 0 1-2 .8 2 2 0 0 1-2-.8Z" fill="none" stroke="${color}" stroke-width="1.2"/></svg>` : `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="${color}"/><path d="M4.5 7.2 6.2 8.8 9.6 5.2" fill="none" stroke="#fff" stroke-width="1.3"/></svg>`;
-  return `<span class="cell" style="color:${color}">${mark}<span>${esc(state)}</span></span>`;
+function funnel() {
+  const stages = [
+    ["Total signals", SIGNALS, 5, "/incidents/signals"],
+    ["Escalated", SIGNALS.filter(s => s[9] === "Malicious" || s[9] === "Suspicious"), 5, "/incidents/signals"],
+    ["Incidents", INCIDENTS, 3, "/incidents/list"],
+    ["Needs review", SIGNALS.filter(s => s[3] === "In progress" || s[3] === "Peer review"), 5, "/incidents/signals"]
+  ];
+  const colors = ["var(--sev-crit)", "var(--sev-high)", "var(--sev-med)", "var(--sev-low)"];
+  return `<div class="funnel" aria-label="Triage funnel">${stages.map(s => {
+    const parts = sevStack(s[1], s[2]);
+    const sum = parts.reduce((a, b) => a + b, 0) || 1;
+    return `<button class="stage-card" type="button" data-go="${s[3]}"><span class="count">${esc(s[0])}</span><b>${s[1].length}</b><span class="bars">${parts.map((n, i) => `<span style="width:${n / sum * 100}%;background:${colors[i]}"></span>`).join("")}</span></button>`;
+  }).join("")}</div>`;
 }
-function detectionsPage() {
-  const id = route().id;
-  if (id === "new") {
-    return `<header class="topbar"><span class="crumb">Detections hub / Create detection</span><span class="grow"></span><button class="hard" data-go="detections" type="button">Cancel</button><button class="hard cta" data-go="detections/ship" type="button">Save detection</button></header>
-      <div class="scroll"><div class="pad" style="max-width:760px"><h1 class="h1">Generate New Detection</h1><p>Start by describing what you want to detect or create your first query cell. Or <button class="linkish" data-go="detections/cells" type="button">Create query cell</button></p>
-      <div class="boxq"><textarea id="q" placeholder="Describe what you want to detect">${esc(q || "Impossible travel that excludes the corporate VPN egress")}</textarea></div>
-      <p class="muted">Saving opens the detection the way the sandbox shows it: actively running, with its triage and investigation steps attached.</p></div></div>`;
-  }
-  if (id === "ship") {
-    return `<header class="topbar"><button class="linkish" data-go="detections" type="button">Detections hub</button></header><div class="scroll"><div class="pad" style="max-width:720px"><div class="cell"><b>Impossible Travel Activity</b><span class="tag">Actively running</span><span class="sevletter h">H</span></div><p class="muted">12× fired today</p>
-      <div class="kpis"><div class="kpi"><h3>Grouping</h3><div class="box"><div><div class="lbl">Triage steps</div><div class="num">2</div></div><div><div class="lbl">Investigation steps</div><div class="num">2</div></div><div><div class="lbl">Tuning</div><div class="num">1</div></div></div></div>
-      <div class="kpi"><h3>Alerts 12</h3><div class="box"><div><div class="lbl">Dismissed</div><div class="num">8</div></div><div><div class="lbl">Escalated</div><div class="num">4</div></div></div></div>
-      <div class="kpi"><h3>Incidents 4</h3><div class="box"><div><div class="lbl">Benign</div><div class="num">3</div></div><div><div class="lbl">Suspicious</div><div class="num">1</div></div></div></div></div>
-      <p><button class="linkish" data-go="detections/cells" type="button">Detection cells</button> <button class="linkish" data-go="detections/loop" type="button">The detection loop</button> <button class="linkish" data-go="coverage/ships" type="button">Coverage that ships</button></p></div></div>`;
-  }
-  if (id === "cells") {
-    return `<header class="topbar"><span class="crumb">Impossible Travel Activity</span></header><div class="scroll"><div class="pad"><h1 class="h1">Detection logic</h1><pre class="kql">@data_type:pqwlt/Okta-System-Logs, @data_type:vhnru/Entra-ID-SignIns
-| where event_name == "user.session.start" and outcome.result == "SUCCESS"
-| project timestamp, actor.user.name, client.ip_address</pre>
-      <p><button class="linkish" data-go="detections/loop" type="button">Run it as a loop</button> <button class="linkish" data-go="search/query" type="button">Open in a notebook</button></p></div></div>`;
-  }
-  if (id === "loop") {
-    const steps = ["Correlating sign-ins for the account", "Checking corporate VPN and known travel", "Comparing against the account's baseline", "Found 4 related sign-ins from 2 countries", "Escalated the alert"];
-    return `<header class="topbar"><span class="crumb">Vega AI · Investigating detection</span></header><div class="scroll"><div class="pad" style="max-width:680px"><h1 class="h1">Impossible Travel Activity</h1><p class="muted">A detection is a loop, not a rule.</p>${steps.map((s, i) => `<div class="find"><span class="n">${i + 1}</span><span>${esc(s)}</span></div>`).join("")}<p><button class="linkish" data-go="incident/auth" type="button">Open the escalated incident</button></p></div></div>`;
-  }
-  if (id === "ideas") {
-    const ideas = [["T1219", "Endpoint", "Silently Installed RMM via Command Line Interpreter", "Generated"], ["T1552.001", "Endpoint", "Credential Named Text File Created On Windows Endpoint", "Generated"]];
-    return `<header class="topbar"><span class="crumb">Detection ideas generated by Vega</span></header><div class="scroll"><div class="pad"><p class="muted">From briefing: MuddyWater Behind Chaos Ransomware · 6 ideas</p><div class="stack">${ideas.map((r) => `<div class="rowl"><span><b>${esc(r[0])}</b> ${esc(r[1])} · ${esc(r[2])}</span><b>${esc(r[3])}</b></div>`).join("")}</div><p><button class="hard cta" data-go="detections/new" type="button">Generate New Detection</button> <button class="linkish" data-go="intel/muddy" type="button">Back to the briefing</button></p></div></div>`;
-  }
-  const rows = detections.filter((d) => match(d[0] + d[10]));
-  const body = detTab === "external"
-    ? `<div class="stack"><div class="rowl"><span class="cell">${brand("crowdstrike", true)} CrowdStrike Falcon</span><b>External</b></div><div class="rowl"><span class="cell">${brand("s1", true)} SentinelOne</span><b>External</b></div></div><p class="muted">External detections from the connected EDRs. The sandbox frame does not expand individual external rule names.</p>`
-    : `<div class="filters"><button>Domain <b>All</b></button><button>Data Source <b>All</b></button><button>Status <b>All</b></button><button>Created by <b>All</b></button><button>+</button><span class="grow"></span><label class="search"><input id="q" placeholder="Search" value="${esc(q)}"></label></div>
-      <div style="overflow:auto"><table><colgroup>${["18%", "9%", "8%", "8%", "8%", "14%", "9%", "8%", "9%", "9%"].map((w) => `<col style="width:${w}">`).join("")}</colgroup><thead><tr>${["Name", "Status", "Severity", "Data source", "Historical matches", "MITRE ATT&CK", "Health", "Labels", "Created", "Created by"].map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>
-      ${rows.map((d) => `<tr class="click" data-go="detections/ship"><td class="name">${esc(d[0])}</td><td>${detStatus(d[1])}</td><td>${sevCell(d[2])}</td><td><span class="cell">${d[3].map((s) => brand(s)).join("")}</span></td><td>${esc(d[4])}</td><td><span class="mitre"><i>${esc(d[5])}</i> ${esc(d[6])}</span></td><td><span class="cell"><i class="sq" style="background:${d[7] === "Healthy" ? "var(--green)" : "var(--red)"}"></i>${esc(d[7])}</span></td><td class="muted">${esc(d[8])}</td><td class="muted">${esc(d[9])}</td><td>${person(d[10], d[11], d[12])}</td></tr>`).join("")}
-      </tbody></table></div>`;
-  return `<header class="topbar"><span class="crumb">Detections hub</span><span class="grow"></span><button class="hard cta" data-go="detections/new" type="button">Add Rule</button></header>
-    <div class="tabs"><button type="button" id="tab-conf" class="${detTab === "configured" ? "on" : ""}">Configured Detections</button><button type="button" id="tab-ext" class="${detTab === "external" ? "on" : ""}">External Detections</button></div>
-    <div class="scroll"><div class="pad"><div class="kpis">
-      <div class="kpi" style="flex:1"><h3>Detections</h3><div class="box"><div><div class="lbl">Active</div><div class="num">12</div></div><div><div class="lbl">Unhealthy</div><div class="num">15</div></div></div></div>
-      <div class="kpi" style="flex:1"><h3>Detections by Source</h3><div class="box"><div><div class="lbl">Vega Generated</div><div class="num">116</div></div><div><div class="lbl">User Created</div><div class="num">1,011</div></div></div></div>
-      <div class="kpi" style="flex:1.2"><h3>AI Optimizations</h3><div class="box"><div><div class="lbl">Tuning Opportunities</div><div class="num">55</div></div><div><div class="lbl">Primary noise reduction average</div><div class="num">68%</div></div></div></div>
-    </div>${body}</div></div>`;
+function signalRows() {
+  return SIGNALS.filter(s => (sev === "All" || s[5] === sev) && (status === "All" || s[3] === status) && (!testMode || s[10]) && (!q || (s[1] + s[2] + s[4]).toLowerCase().includes(q.toLowerCase())));
+}
+function signalsPage() {
+  const rows = signalRows();
+  const filters = ["All", "Critical", "High", "Medium", "Low"].map(n => `<button class="chip${sev === n ? " on" : ""}" type="button" data-sev="${n}">Severity ${esc(n)}</button>`).join("");
+  const statuses = ["All", "Open", "In progress", "Peer review", "Resolved"].map(n => `<button class="chip${status === n ? " on" : ""}" type="button" data-status="${n}">Status ${esc(n)}</button>`).join("");
+  const body = `${funnel()}<div class="h1row"><h1>Signals</h1><span class="count">${rows.length} signals</span></div>
+    <div class="tools">${filters}${statuses}<span class="seg"><button type="button" class="${testMode ? "" : "on"}" id="mode-all">All signals</button><button type="button" class="${testMode ? "on" : ""}" id="mode-test">Test mode</button></span>
+      <label class="search">${ico("search")}<input id="q" placeholder="Search" value="${esc(q)}"></label></div>
+    ${table(["Name", "Status", "Data source", "Severity", "Actor", "Target", "Assignee", "Verdict"], rows.map(s => `<tr class="click" data-go="/incidents/signals/${s[0]}"><td class="name"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></td><td>${statusPill(s[3])}</td><td>${source(s[4])}</td><td>${sevPill(s[5])}</td><td class="mono">${esc(s[6])}</td><td class="mono">${esc(s[7])}</td><td>${person(s[8])}</td><td>${esc(s[9])}</td></tr>`))}`;
+  return shell(crumb(["Incidents", "Signals"]), body, tabs(itemFor("/incidents")));
+}
+function signalDetail(id) {
+  const s = SIGNALS.find(x => x[0] === id) || SIGNALS[0];
+  const body = `<div class="h1row"><h1>${esc(s[1])}</h1>${sevPill(s[5])}</div><div class="kv"><span>Signal id</span><b class="mono">${esc(s[2])}</b><span>Status</span><b>${statusPill(s[3])}</b><span>Data source</span><b>${source(s[4])}</b><span>Actor</span><b class="mono">${esc(s[6])}</b><span>Target</span><b class="mono">${esc(s[7])}</b><span>Assignee</span><b>${person(s[8])}</b><span>Verdict</span><b>${esc(s[9])}</b><span>Test mode</span><b>${s[10] ? "Yes" : "No"}</b><span>Comments</span><b>1 comment</b></div><p><button class="btn" type="button" data-go="/incidents/signals">Back to signals</button></p>`;
+  return shell(crumb(["Incidents", "Signals", s[1]]), body, tabs(itemFor("/incidents")));
+}
+function incidentsPage() {
+  const body = `${funnel()}<div class="h1row"><h1>Incidents</h1><span class="count">${INCIDENTS.length} incidents</span></div>
+    ${table(["Name", "Status", "Severity", "Verdict", "Assignee", "Signals"], INCIDENTS.map(s => `<tr class="click" data-go="/incidents/list/${s[0]}"><td class="name"><b>${esc(s[1])}</b><small>${esc(s[0])}</small></td><td>${statusPill(s[2])}</td><td>${sevPill(s[3])}</td><td>${esc(s[4])}</td><td>${person(s[5])}</td><td>${s[6]}</td></tr>`))}`;
+  return shell(crumb(["Incidents", "Incidents"]), body, tabs(itemFor("/incidents")));
+}
+function incidentDetail(id) {
+  const s = INCIDENTS.find(x => x[0] === id) || INCIDENTS[0];
+  const body = `<div class="h1row"><h1>${esc(s[1])}</h1>${sevPill(s[3])}</div><div class="kv"><span>Status</span><b>${statusPill(s[2])}</b><span>Verdict</span><b>${esc(s[4])}</b><span>Assignee</span><b>${person(s[5])}</b><span>Signals</span><b>${s[6]}</b></div>`;
+  return shell(crumb(["Incidents", "Incidents", s[1]]), body, tabs(itemFor("/incidents")));
 }
 function searchPage() {
-  const id = route().id;
-  const queryMode = id === "query";
-  const asked = q.trim();
-  if (id === "findings") {
-    return `<header class="topbar"><span class="crumb">Entra ID · last 7 days</span></header><div class="scroll"><div class="pad" style="max-width:760px"><h1 class="h1">Why are we seeing repeat MFA prompts for a handful of users?</h1>
-      <div class="story"><h2>Shaping the hypothesis</h2><p>6 users · 214 prompts · 3 min apart</p><p class="muted">Ruling out a Conditional Access change</p><div class="kql">Cell 1 @Entra-ID-Audit
-Cell 2 @Entra-ID-Audit</div></div>
-      <p><button class="linkish" data-go="search/expertise" type="button">Expertise that scales</button> <button class="linkish" data-go="incident/mfa" type="button">Open the incident</button></p></div></div>`;
-  }
-  if (id === "expertise") {
-    return `<header class="topbar"><span class="crumb">Ran 8 tools, 2 data sources</span></header><div class="scroll"><div class="pad" style="max-width:760px"><h1 class="h1">I've finished the hunt.</h1><p>I traced the repeat MFA prompts across @Entra-ID and @M365-Audit, ruled out a Conditional Access change, and followed the one accepted prompt to what happened next.</p>
-      ${findings.slice(0, 4).map((f, i) => `<div class="find"><span class="n">${i + 1}</span><span>${esc(f)}</span></div>`).join("")}
-      <p><button class="linkish" data-go="search/transparency" type="button">Show the queries</button> <button class="linkish" data-go="incident/mfa/investigation" type="button">Investigation</button></p></div></div>`;
-  }
-  if (id === "transparency") {
-    return `<header class="topbar"><span class="crumb">Hunt notebook</span></header><div class="scroll"><div class="pad" style="max-width:760px"><h1 class="h1">Transparency in every query, step, and result</h1><p>Hunting the IOCs from the ClickFix macOS infostealer brief. All 48 indicators swept across @EDR-Events, @SSE, @Firewall and @Cloud-Traffic over the last 14 days, with every hit pivoted into a host and C2 timeline.</p>
-      <pre class="kql">@EDR-Events
-| where indicator in (ioc_pack)
-| summarize hits = count() by host, indicator</pre>
-      <p><button class="linkish" data-go="search/hunt" type="button">Hunt across everything</button> <button class="linkish" data-go="notebooks" type="button">Phishing notebook</button></p></div></div>`;
-  }
-  if (id === "hunt") {
-    return `<header class="topbar"><span class="crumb">ClickFix macOS Infostealers</span></header><div class="scroll"><div class="pad" style="max-width:760px"><h1 class="h1">Hunt this threat briefing</h1><div class="stack"><div class="rowl"><span>Parsing threat intelligence blog</span><b>ClickFix macOS Infostealers</b></div><div class="rowl"><span>Extracting IOCs</span><b>48 IOCs found</b></div><div class="rowl"><span>Mapping MITRE techniques</span><b>Generating hunting notebook</b></div></div>
-      <p class="muted">Cell 1 through Cell 6 are the generated notebook.</p>
-      <p><button class="linkish" data-go="search/verdict" type="button">Leave with a verdict</button> <button class="linkish" data-go="coverage/standing" type="button">Standing coverage</button></p></div></div>`;
-  }
-  if (id === "verdict") {
-    return `<header class="topbar"><span class="crumb">User question</span></header><div class="scroll"><div class="pad" style="max-width:760px"><h1 class="h1">Which of my macOS hosts ran suspicious Terminal commands?</h1>
-      <div class="story"><h2>Threat briefing</h2><p>Researchers have documented a new ClickFix strategy targeting macOS users, moving away from traditional malicious downloads.</p></div>
-      <div class="story"><h2>Verdict</h2><p>Likely malicious. ClickFix infostealer confirmed on MBP-MHERNANDEZ. maya.hernandez pasted a fake-captcha command that fetched a stealer, dumped the Chrome keychain, and beaconed to C2.</p></div>
-      <p><button class="linkish" data-go="coverage/standing" type="button">Convert to standing coverage</button> <button class="linkish" data-go="dashboards/baselines" type="button">Check the baseline</button></p></div></div>`;
-  }
-  if (queryMode) {
-    const ideas = ["Show me all login events by browser name", "Show senders that sent emails to a large number of recipients", "Show email subjects that were sent to large number of recipients", "Show the IP addresses sending the most emails"];
-    return `<header class="topbar"><span class="crumb">Explore with KQL</span><span class="grow"></span><button class="linkish" data-go="notebooks" type="button">Notebooks</button></header>
-      <div class="scroll"><div class="ask"><div class="mode"><button type="button" data-go="search">Agent</button><button type="button" class="on" data-go="search/query">Query</button></div>
-      <h1>Search across all your data sources with KQL</h1><p class="sub">Search with KQL, select a data source, or ask Vega to write a query.</p>
-      <div class="boxq"><textarea id="q" placeholder="Ask Vega to write a query">${esc(q)}</textarea><div style="text-align:right"><button class="hard" id="ask" type="button">Generate</button></div></div>
-      <p class="mono muted">Untitled cell · Last 4 hours · 14 data types, including Cloud Metrics, Cloud Traffic, Cloud User Activity, Container Orchestration, EDR Alerts, EDR Events, Email Flow, Identity Provider Logs.</p>
-      <div class="sugs">${ideas.map((s) => `<button type="button" data-ask="${esc(s)}">${esc(s)}</button>`).join("")}</div>
-      ${asked ? `<pre class="kql">${esc(asked)}
-| where timestamp > ago(4h)
-| summarize count() by browser</pre>` : ""}
-      </div></div>`;
-  }
-  if (id === "river" && !asked) {
-    return `<header class="topbar"><button class="linkish" data-go="search" type="button">Ask anything</button></header>
-      <div class="scroll"><div class="pad" style="text-align:center">
-      <h1 class="h1" style="justify-content:center;font-size:32px;margin-top:28px">Ask anything</h1>
-      <p class="sub">Investigate across all your data sources in plain language.</p>
-      <button class="chipq" type="button" data-ask="Find me all anomalous logins in the last 24h"><b>Find me all anomalous logins in the last 24h</b><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h8M8 4l4 4-4 4" fill="none" stroke="#8c8573" stroke-width="1.3"/></svg></button>
-      <img src="images/logo-river.png" alt="" style="display:block;width:min(1100px,100%);height:auto;margin:28px auto 0">
-      </div></div>`;
-  }
-  if (!asked) {
-    const ideas = [["Find suspicious cloud secrets access", true], ["Find persistence via scheduled tasks", false], ["Find impossible travel logins", false], ["Find Stealth OAuth app backdoor", false]];
-    return `<header class="topbar"><span class="grow"></span><button class="linkish" data-go="search/river" type="button">Every source</button></header>
-      <div class="scroll"><div class="ask">
-      <div class="mode"><button type="button" class="on">Agent</button><button type="button" data-go="search/query">Query</button></div>
-      <h1>Ask anything</h1>
-      <p class="sub">Investigate across all your data sources in plain language.</p>
-      <div class="boxq"><textarea id="q" placeholder="Ask Anything..."></textarea><div style="text-align:right"><button class="hard" id="ask" type="button" aria-label="Ask">↵</button></div></div>
-      <div class="pills"><button type="button" data-go="search/query">Explore your data</button><button type="button" data-go="search/hunt">Hunt for threats</button><button type="button" data-go="alerts">Investigate alerts &amp; incidents</button></div>
-      <div class="sugs">${ideas.map(([s, hot]) => `<button type="button" class="${hot ? "hot" : ""}" data-ask="${esc(s)}">${esc(s)}</button>`).join("")}</div>
-      </div></div>`;
-  }
-  return `<header class="topbar"><span class="crumb">Ask anything</span><span class="grow"></span><button class="linkish" data-go="search/query" type="button">Query</button></header>
-    <div class="scroll"><div class="pad" style="max-width:760px"><div class="mode"><button type="button" class="on" data-go="search">Agent</button><button type="button" data-go="search/query">Query</button></div>
-      <div class="boxq"><textarea id="q">${esc(q)}</textarea><div style="text-align:right"><button class="hard" id="ask" type="button">Ask</button></div></div>
-      <div class="story"><h2>${esc(asked)}</h2><p>Password spray from 185.220.101.42 against jdoe@acme.example, and MFA fatigue for shani@vega.io on Entra ID SSO. Both are open and escalated.</p>
-      ${alerts.filter((a) => match(a.name + a.actor + a.target)).slice(0, 3).map((a) => `<div class="find"><span>${esc(a.name)}</span><button class="linkish" data-go="incident/${a.id}" type="button">${esc(a.sev)}</button></div>`).join("")}</div>
-      <p><button class="linkish" data-go="search/findings" type="button">From question to findings</button> <button class="linkish" data-go="search/expertise" type="button">Expertise</button> <button class="linkish" data-go="search/hunt" type="button">Hunt everything</button> <button class="linkish" data-go="search/verdict" type="button">Verdict</button></p>
-    </div></div>`;
+  const groups = [["Explore", "central/IconLocation"], ["Hunt", "crosshair"], ["Investigate", "sidebar-incidents"], ["Detect", "sidebar-detections"]];
+  const placeholder = composerMode === "ask" ? "Investigate across all your data sources in plain language" : "Search across all your data sources with KQL";
+  const body = `<div class="h1row"><h1>Search</h1></div><div class="composer"><div class="modes"><span class="seg"><button type="button" class="${composerMode === "ask" ? "on" : ""}" id="ask-mode">${ico("message-square-text")} Ask</button><button type="button" class="${composerMode === "query" ? "on" : ""}" id="query-mode">${ico("code-xml")} Query</button></span></div><textarea id="composer" placeholder="${esc(placeholder)}"></textarea><div style="display:flex;justify-content:flex-end"><button class="btn primary" type="button" id="run-search">Search</button></div></div>
+    <div class="suggest">${groups.map(([n, icon]) => `<button class="chip" type="button" data-fill="${esc(n)}">${ico(icon)} ${esc(n)}</button>`).join("")}</div>
+    <div class="suggest"><button class="chip" type="button" data-go="/detections/external">${ico("sidebar-detections")} Convert a SIEM detection</button><button class="chip" type="button" data-go="/detections/my">${ico("sidebar-detections")} Tune a noisy detection</button></div>
+    <h2 style="font-size:14px;margin:22px 0 8px">Sample signals</h2>${table(["Name", "Severity", "Verdict"], SIGNALS.slice(0, 4).map(s => `<tr class="click" data-go="/incidents/signals/${s[0]}"><td>${esc(s[1])}</td><td>${sevPill(s[5])}</td><td>${esc(s[9])}</td></tr>`))}`;
+  return shell(crumb(["Search"]), body);
 }
-function intelPage() {
-  const item = briefs.find((b) => b[0] === route().id);
-  if (item) {
-    return `<header class="topbar"><button class="linkish" data-go="intel" type="button">Threat Intel</button></header><div class="scroll"><div class="doc"><p class="mono muted">${esc(item[1])}</p><h1 class="h1">${esc(item[2])}</h1>
-      <div class="meta"><span>${signal("Critical")} Critical</span><span class="cell">${brand("microsoft")} ${brand("s1")}</span><span>2 Detection Gaps</span><span class="cell">${glyph("eye")} 1 Visibility Gap</span><span>24 IOCs found</span></div>
-      <p>${esc(item[4])}</p>
-      <div class="story"><h2>Active threat</h2><p>Compromised. Rogue app found stealing data through M365, matching the ${esc(item[0] === "hollow" ? "HOLLOWGRAPH" : item[2].split(":")[0])} pattern.</p>
-      <div class="rowl"><span>IOCs search · Hash</span><b>5/12 detected</b></div><div class="rowl"><span>Domains / URLs</span><b>5/5 detected</b></div></div>
-      <p><button class="hard cta" data-go="detections/ideas" type="button">Detection ideas</button> <button class="linkish" data-go="search/hunt" type="button">Hunt this briefing</button></p></div></div>`;
-  }
-  return `<header class="topbar"><span class="crumb">Threat Intel</span></header><div class="scroll"><div class="pad">${briefs.map((b) => `<div class="intel" data-go="intel/${b[0]}"><div class="thumb"><img src="images/${b[0]}.png" alt=""></div><div class="brief"><div class="mono muted">${esc(b[1])}</div><h2>${esc(b[2])}</h2><div class="meta"><span>${signal("Critical")} Critical</span><span class="cell">${brand("microsoft")}</span><span>2 Detection Gaps</span><span>1 Visibility Gap</span><span>24 IOCs found</span></div><p style="margin:0;color:var(--s700)">${esc(b[4])}</p></div></div>`).join("")}</div></div>`;
+function cards(list, goPrefix) {
+  return `<div class="grid">${list.map(item => `<button class="card" type="button" data-go="${goPrefix}/${item[0]}"><h3>${esc(item[1])}</h3><p>${esc(item[2] || "")}</p></button>`).join("")}</div>`;
 }
-function connectorCard(c) {
-  return `<article class="card"><div class="cell">${brand(c[5], true)}<div><b>${esc(c[1])}</b><div class="mono muted">${esc(c[0])}</div></div></div><div>${c[3].map((t) => `<span class="tag">${esc(t)}</span>`).join(" ")}</div><p>${esc(c[2])}</p><div class="footc"><span class="cell" style="color:var(--green)">${c[4] ? `<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4.5 1.2v3M9.5 1.2v3M3 4.2h8v2a4 4 0 0 1-8 0v-2zM7 10.2V13" fill="none" stroke="#1b881b" stroke-width="1.3"/></svg> ${c[4]}` : ""}</span><button class="hard" type="button">Connect</button></div></article>`;
+function notebooks(which) {
+  const rows = BOOKS.filter(b => which === "library" ? b[2] === "Library" : which === "my" ? b[2] === "Mine" : true);
+  const body = `<div class="h1row"><h1>${which === "library" ? "Vega library" : which === "my" ? "My notebooks" : "Notebooks"}</h1><span class="soon">Soon</span></div>${table(["Name", "Library"], rows.map(b => `<tr class="click" data-go="/notebooks/${b[0]}"><td>${esc(b[1])}</td><td>${statusPill(b[2])}</td></tr>`))}<p>The public navigation marks Notebooks coming soon. This sample still opens the page.</p>`;
+  return shell(crumb(["Notebooks", which === "library" ? "Vega library" : "My notebooks"]), body, tabs(itemFor("/notebooks")));
 }
-function connectorsPage() {
-  const mesh = [
-    ["Wiz", "Enrichment & Context Providers", "Healthy", "Last check: Apr 9, 2026 09:26", "940 / 1000 · 60 · 0", "May 21, 9:13 PM", "wiz"],
-    ["Wiz - EU", "Enrichment & Context Providers", "Healthy", "Last check: Apr 9, 2026 09:26", "1000 · 0 · 0", "May 21, 9:13 PM", "wiz"],
-    ["AWS S3", "S3", "Healthy", "Last check: Apr 9, 2026 09:26", "860 / 1000 · 140 · 0", "May 21, 9:13 PM", "s3"],
-    ["Splunk Enterprise", "SIEM & XDR", "Healthy", "Last check: Apr 9, 2026 09:26", "1000 · 0 · 0", "May 21, 9:13 PM", "splunk"],
-    ["Snowflake", "Data lakes & analytics", "Healthy", "Last check: Apr 9, 2026 09:26", "1000 · 0 · 0", "May 21, 9:13 PM", "snowflake"],
-    ["Splunk Cloud", "SIEM & XDR", "Healthy", "Last check: Apr 9, 2026 09:26", "920 / 1000 · 80 · 0", "May 21, 9:13 PM", "splunk"],
-    ["Databricks", "Data lakes & analytics", "Healthy", "Last check: Apr 9, 2026 09:26", "780 / 1000 · 220 · 0", "May 21, 9:13 PM", "databricks"],
-    ["Wiz - Sandbox", "Enrichment & Context Providers", "Unhealthy", "Failed on rate limits", "100 / 1000 · 898 · 2", "May 21, 9:13 PM", "wiz"],
-    ["CrowdStrike Falcon", "Endpoint Detection and Response (EDR)", "Healthy", "Last check: Apr 9, 2026 09:26", "100 / 1000 · 0 · 0", "May 21, 9:13 PM", "crowdstrike"],
-    ["CrowdStrike Falcon - EDR", "Endpoint Detection and Response (EDR)", "Healthy", "Last check: Apr 9, 2026 09:26", "640 / 1000 · 360 · 0", "May 21, 9:13 PM", "crowdstrike"]
-  ];
-  const configured = `<div style="overflow:auto"><table><thead><tr>${["Connector", "Data source", "Connection", "Check", "Counts", "Created"].map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>
-    ${mesh.map((r) => `<tr><td class="name"><span class="cell">${brand(r[6])} ${esc(r[0])}</span></td><td>${esc(r[1])}</td><td><span class="cell"><i class="sq" style="background:${r[2] === "Healthy" ? "var(--green)" : "var(--red)"}"></i>${esc(r[2])}</span></td><td class="muted">${esc(r[3])}</td><td class="mono">${esc(r[4])}</td><td class="muted">${esc(r[5])}</td></tr>`).join("")}
-  </tbody></table></div><p class="muted">Showing 10 out of 217 Connections.</p>`;
-  const scopes = [
-    ["search.query", "read", "Federated search across every connected source", true],
-    ["notebooks.run", "write", "Create and rerun investigation notebooks", true],
-    ["detections.draft", "write", "Draft, validate and version detections", true],
-    ["alerts.triage", "write", "Triage alerts and attach the verdict", true],
-    ["incidents.manage", "write", "Open, assign and close incidents", true],
-    ["response.act", "write", "Revoke sessions, isolate hosts, disable accounts", false]
-  ];
-  const clients = [
-    ["Claude Code", "CLI · local stdio bridge", "—", "Never", "Not connected"],
-    ["Claude Desktop", "Remote MCP · SSE", "18", "4m ago", "Connected"],
-    ["Cursor", "Remote MCP · SSE", "6", "1h ago", "Connected"],
-    ["In-house agents", "Service account · scoped token", "2,431", "12s ago", "Connected"],
-    ["VS Code", "Remote MCP · SSE", "—", "Never", "Not connected"]
-  ];
-  const mcp = `<div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start">
-    <div>
-      <h1 class="h1">MCP Server</h1>
-      <p class="cell" style="margin:10px 0 14px"><i class="sq"></i> Live <span class="muted">34 tools · 11 federated sources · 3 clients connected</span></p>
-      <div style="border:1px solid var(--s300)">
-        <div class="rowl" style="border:0;border-bottom:1px solid var(--s200)"><span>Endpoint</span><b>https://mcp.vega.io/sse</b></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
-          <div style="padding:12px"><div class="muted">Transport</div>Streamable HTTP · SSE</div>
-          <div style="padding:12px;border-left:1px solid var(--s200)"><div class="muted">Workspace</div>vega-prod</div>
-          <div style="padding:12px;border-left:1px solid var(--s200)"><div class="muted">Authentication</div>OAuth 2.1 · device flow</div>
-        </div>
-      </div>
-      <h2 style="font-size:16px;font-weight:500">Clients 5</h2>
-      <table><thead><tr>${["Client", "Transport", "Sessions (24h)", "Last seen", "Status"].map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>
-        ${clients.map((r) => `<tr><td class="name">${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td><span class="cell">${r[4] === "Connected" ? `<i class="sq"></i>` : mini("off")}${esc(r[4])}</span></td></tr>`).join("")}
-      </tbody></table>
-      <h2 style="font-size:16px;font-weight:500">Tool scopes 5 of 6</h2>
-      <p class="muted">What every client reaching this endpoint is allowed to call.</p>
-      ${scopes.map((s) => `<div class="rowl"><span class="cell"><i class="sq" style="background:${s[3] ? "var(--green)" : "var(--s300)"}"></i><b>${esc(s[0])}</b> <span class="tag">${esc(s[1])}</span> ${esc(s[2])}</span>${s[3] ? "" : `<span class="muted">Approval required</span>`}</div>`).join("")}
-      <p class="muted">Tool calls 0</p>
-    </div>
-    <aside>
-      <div class="cell" style="justify-content:space-between"><b>Set up Claude Code</b></div>
-      <p class="muted">Point the client at the endpoint once. It picks up every tool the workspace grants, and nothing it does not.</p>
-      <div class="mono muted">Add the server</div>
-      <pre class="pre">claude mcp add vega --transport sse https://mcp.vega.io/sse</pre>
-      <div class="mono muted">Or write the config</div>
-      <pre class="pre">{
-  "mcpServers": {
-    "vega": {
-      "type": "sse",
-      "url": "https://mcp.vega.io/sse",
-      "headers": { "Authorization": "Bearer $VEGA_TOKEN" }
-    }
-  }
-}</pre>
-      <div class="rowl" style="border:0"><span>Token</span><b>sk-vega-live-…f3a1</b></div>
-      <div class="rowl" style="border:0"><span>Expires</span><b>in 30 days</b></div>
-      <p class="muted">The token on the sandbox screen is a truncated sample. It is placeholder copy, not a live credential.</p>
-      <button class="hard" type="button">Rotate token</button> <button class="hard" type="button">MCP docs</button>
-    </aside>
-  </div>`;
-  let library = "";
-  if (cat === "All") {
-    library = cats.filter((c) => c[0] !== "All").map(([name, count]) => {
-      const list = connectors.filter((row) => row[0] === name && match(row[1] + row[2]));
-      if (!list.length) return "";
-      return `<h2 style="font-size:16px;font-weight:500;margin:8px 0 12px">${esc(name)} (${count})</h2><div class="grid">${list.map(connectorCard).join("")}</div>`;
-    }).join("");
-  } else {
-    const count = (cats.find((c) => c[0] === cat) || [cat, 0])[1];
-    const list = connectors.filter((row) => row[0] === cat && match(row[1] + row[2]));
-    library = `<h2 style="font-size:16px;font-weight:500;margin:0 0 12px">${esc(cat)} (${count})</h2>` + (list.length ? `<div class="grid">${list.map(connectorCard).join("")}</div>` : `<p class="muted">The sandbox lists ${count} in this category. The card titles in that frame were not readable, so none are invented here.</p>`);
-  }
-  const cards = `<div class="tools" style="margin-bottom:12px"><span class="filters" style="margin:0"><button type="button">Status All</button><button type="button">Connected All</button></span><span class="grow"></span><label class="search"><input id="q" placeholder="Search" value="${esc(q)}"></label></div>${library}`;
-  const body = connTab === "library" ? cards : connTab === "mcp" ? mcp : configured;
-  const crumb = connTab === "mcp" ? "Organization / MCP" : "Connectors";
-  const extra = connTab === "mcp" ? `<button class="linkish" id="tab-lib" type="button">Connectors</button><button class="hard" type="button">Add client</button>` : `<button class="linkish" id="tab-mcp" type="button">MCP</button>`;
-  return `<header class="topbar"><span class="crumb">${crumb}</span><span class="grow"></span>${extra}</header>
-    ${connTab === "mcp" ? "" : `<div class="tabs"><button type="button" id="tab-lib" class="${connTab === "library" ? "on" : ""}">Connectors Library</button><button type="button" id="tab-cfg" class="${connTab === "configured" ? "on" : ""}">Configured Connections</button></div>`}
-    <div class="lib">${connTab === "library" ? `<div class="cats">${cats.map(([n, c]) => `<button type="button" data-cat="${esc(n)}" class="${cat === n ? "on" : ""}"><span class="nm">${esc(n)}</span><span class="muted">${c}</span></button>`).join("")}</div>` : ""}
-    <div class="scroll"><div class="pad">${body}</div></div></div>`;
+function notebookDetail(id) {
+  const b = BOOKS.find(x => x[0] === id) || BOOKS[0];
+  return shell(crumb(["Notebooks", b[1]]), `<div class="h1row"><h1>${esc(b[1])}</h1></div><p>Untitled notebook</p><div class="composer"><textarea placeholder="Sample query"></textarea><button class="btn" type="button" id="save-nb">Save notebook</button></div>`, tabs(itemFor("/notebooks")));
 }
-function coveragePage() {
-  const id = route().id || "heatmap";
-  const tabs = [["heatmap", "Heatmap"], ["plan", "Detection plan"], ["real", "Real coverage"], ["drift", "Drift"], ["cost", "Cost"], ["standing", "Standing coverage"], ["ships", "Ships"]];
-  const nav = `<div class="subnav">${tabs.map(([k, l]) => `<button data-go="coverage/${k === "heatmap" ? "" : k}" class="${(id === k || (k === "heatmap" && !route().id)) ? "on" : ""}" type="button">${l}</button>`).join("")}<button data-go="dashboards/funnel" type="button">Dashboards</button></div>`;
-  const heatCols = ["hhygg","hryygggg","hrryyggggggg","rryygggggggggggg","hryygggggggggggggg","ryygggggggggg","hrrygggggggggggggggg","ryygggggggggggggggggggg","yygggggggggg","rygggggggg","ygggggggggggg","ryygggggggggggggg","gggggg","ygggg","rggggggg","yygggggg"];
-  const klass = { h: "hatch", r: "red", y: "yellow", g: "green" };
-  const chips = [["Coverage score", "83%"], ["Network", "56%"], ["Application", "77%"], ["Endpoint", "89%"], ["Cloud", "79%"], ["Identity", "86%"], ["Action Items", "99 (−5)"], ["Blind spot", "14"], ["Partial Visibility", "8"], ["Enablement", "31"], ["Tuning", "46"]];
-  const heatmap = `<div class="stats">${chips.map(([k, v]) => `<div class="stat"><span class="muted">${esc(k)}</span><b>${esc(v)}</b></div>`).join("")}</div>
-    <div class="heat">${heatCols.map((col) => `<div class="col">${col.split("").map((n) => `<i class="cellb ${klass[n]}"></i>`).join("")}</div>`).join("")}</div>
-    <p style="margin-top:18px"><button class="linkish" data-go="coverage/plan" type="button">P1 · Brute Force via Password Spraying Across Identity Providers</button></p>`;
-  const plan = `<h1 class="h1">Brute Force via Password Spraying Across Identity Providers</h1><p class="muted">P1 · Technique T1110 · Actions 5</p>
-    <h2>Visibility · 2</h2><div class="stack"><div class="rowl"><span>AWS CloudTrail detected in your environment — not connected</span><b>2 detections unlocked</b></div><div class="rowl"><span>Collect Event ID 4625 on Windows Event Logs</span><b>3 detections unlocked</b></div></div>
-    <p class="muted">AI-generated. Review for accuracy before use.</p>
-    <h2>Enablement · 3</h2><div class="stack"><div class="rowl"><span>Password Spray: Many Users, Single Source</span><b>0 historical matches</b></div><div class="rowl"><span>Failed Logins Followed by Success</span><b>9 historical matches</b></div><div class="rowl"><span>Account Lockout Burst Across Org</span><b>0 historical matches</b></div></div>
-    <p>Related briefing: ShinyHunters — Credential Stuffing at Scale. Midnight Blizzard — Password Spray TTPs.</p>
-    <p><button class="linkish" data-go="coverage/ships" type="button">Coverage that ships</button> <button class="linkish" data-go="coverage/real" type="button">Real coverage</button></p>`;
-  const real = `<h1 class="h1">See your real coverage, not an inflated number</h1>
-    <div class="story"><h2>New data source</h2><p>Connect AWS CloudTrail. Detected in your environment but not yet ingested. Connecting it is the single largest coverage gain available today.</p><b>112 techniques become visible · 83 detections unlocked</b></div>
-    <div class="stack" style="margin-top:12px"><div class="rowl"><span>Partial asset coverage. 1,275 endpoints missing from CrowdStrike, discovered via Windows Event Logs.</span><b>261 techniques · 152 detections</b></div>
-    <div class="rowl"><span>Enable the Scattered Spider package. Zero historical matches.</span><b>12 detections · 0 matches</b></div></div>`;
-  const drift = `<h1 class="h1">Catch coverage drift before attackers do</h1><div class="stack"><div class="rowl"><span>Data sources</span><b>7 reporting · 1 stopped</b></div><div class="rowl"><span class="cell">${brand("defender")} Windows Defender</span><b>No events in 9h. Nothing failed, so nothing alerted.</b></div><div class="rowl"><span>Broken detections</span><b>24 rules still show enabled while their source is silent</b></div></div><p class="muted">Data ingestion trend · last 24 hours.</p>`;
-  const cost = `<h1 class="h1">Query volume climbs, query cost does not</h1><div class="stats"><div class="stat"><span class="muted">Queries run</span><b>4,085 last 24h</b></div><div class="stat"><span class="muted">Query cost</span><b>$0.00 unmetered</b></div></div><p>As queries run against in-place indexes, cost remains 0. Indexed sources aren't metered by query volume.</p>`;
-  const standing = `<h1 class="h1">Convert results into standing coverage</h1><div class="stack"><div class="rowl"><span>MacOS ClickFix Loader URL Pattern</span><button class="hard" data-go="detections/new" type="button">Enable</button></div><div class="rowl"><span>MacOS SHub Stealer C2 Event Beacon</span><button class="hard" data-go="detections/new" type="button">Enable</button></div><div class="rowl"><span>MacOS Killall Terminal During Active Session</span><button class="hard" data-go="detections/new" type="button">Enable</button></div></div>
-    <h2>Conclusion</h2><p>Likely malicious. ClickFix infostealer confirmed on MBP-MHERNANDEZ. maya.hernandez pasted a fake-captcha command that fetched a stealer, dumped the Chrome keychain, and beaconed to C2 95.85.251.177. EDR fired about 67 seconds in, after the keychain was already stolen.</p>`;
-  const ships = `<h1 class="h1">Coverage that ships same-day and keeps improving</h1><div class="stack">
-    <div class="rowl"><span>Password Spray: Many Users, Single Source</span><b>22% noise reduction</b><button class="hard" data-go="detections/new" type="button">Enable</button></div>
-    <div class="rowl"><span>Impossible Travel Excluding Corporate VPN Egress</span><b>48% noise reduction</b><button class="hard" data-go="detections/ship" type="button">Enable</button></div>
-    <div class="rowl"><span>OAuth Consent Granted to a Newly Registered App</span><b>61% noise reduction</b><button class="hard" data-go="detections/new" type="button">Enable</button></div></div>`;
-  const bodies = { heatmap, plan, real, drift, cost, standing, ships };
-  return `<header class="topbar"><span class="crumb">MITRE ATT&CK coverage</span></header><div class="scroll"><div class="pad">${nav}${bodies[id] || heatmap}</div></div>`;
+function simpleList(title, crumbs, heads, rows, tabItem) {
+  return shell(crumb(crumbs), `<div class="h1row"><h1>${esc(title)}</h1></div>${table(heads, rows)}`, tabItem ? tabs(tabItem) : "");
 }
-function dashPage() {
-  const id = route().id || "funnel";
-  const tabs = [["funnel", "Decision funnel"], ["roi", "Security ROI"], ["baselines", "Baselines"], ["peloton", "Peloton"], ["bank", "Bank"], ["defense", "AI agent defense"]];
-  const nav = `<div class="subnav">${tabs.map(([k, l]) => `<button data-go="dashboards/${k}" class="${id === k ? "on" : ""}" type="button">${l}</button>`).join("")}<button data-go="coverage" type="button">Coverage</button></div>`;
-  const funnel = `<div class="funnel-top"><b>AI Decision Funnel</b><span class="legend"><i class="lg"></i>Other <i class="lh"></i>High <i class="lc"></i>Critical</span></div>
-    <div class="funnel-body"><svg class="funnel-svg" viewBox="0 0 260 520" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 0 H188 C210 36 168 92 118 150 C62 214 36 290 22 370 C12 430 8 480 6 520 H0 Z" fill="#d9d6d0"/>
-      <path d="M0 0 H46 C58 70 40 150 28 240 C18 330 12 420 8 520 H0 Z" fill="#e08a3a"/>
-      <path d="M0 0 H7 V520 H0 Z" fill="#d23b32"/>
-    </svg><div class="funnel-rows">
-      <button type="button" data-go="alerts"><span><strong>32.1k</strong><span>Total Alerts created</span></span></button>
-      <button type="button" data-go="alerts"><span><strong>23.1k</strong><span>Alerts correlated</span></span><em>71.96%</em></button>
-      <button type="button" data-go="alerts"><span><strong>1200</strong><span>Alerts Escalated</span></span><em>3.74%</em></button>
-      <button type="button" data-go="alerts/incidents"><span><strong>340</strong><span>Incidents</span></span><em>1.06%</em></button>
-      <button type="button" data-go="alerts/incidents"><span><strong>30</strong><span>Benign Incidents</span></span><em>0.09%</em></button>
-      <button type="button" data-go="alerts/matters"><span><strong>4</strong><span>Require attention</span></span><em>0.01%</em></button>
-    </div></div>`;
-  const roi = `<div class="funnel-top"><span class="muted">NET VALUE REALIZED · TRAILING 12 MONTHS</span><span class="roi-pills"><button type="button">30D</button><button type="button">QTD</button><button type="button" class="on">TTM</button><button type="button">All</button></span></div>
-    <div class="hero">$4.17M</div><p class="muted">$5.05M of value delivered against $880K in platform cost.</p>
-    <div class="roi-metrics" style="grid-template-columns:repeat(4,1fr)"><div><span class="muted">Return on investment</span><b class="teal">474%</b></div><div><span class="muted">Payback period</span><b>2.0 mo</b></div><div><span class="muted">Analyst hours returned</span><b>31,488</b></div><div><span class="muted">FTE equivalent</span><b>16.4</b></div></div>
-    <div class="roi-grid"><div>
-      <p class="muted">Cumulative value vs. cost <span style="margin-left:12px">— Value</span> <span style="margin-left:8px">- - Cost</span></p>
-      <svg viewBox="0 0 480 160" width="100%" height="160"><path d="M8 148 L 40 146 L 80 140 L 120 128 L 170 108 L 230 82 L 300 52 L 380 28 L 470 8 L 470 150 L 8 150 Z" fill="#eceae6"/><path d="M8 148 L 40 146 L 80 140 L 120 128 L 170 108 L 230 82 L 300 52 L 380 28 L 470 8" fill="none" stroke="#1f8a72" stroke-width="2"/><path d="M8 150 L 470 138" fill="none" stroke="#b9b3a6" stroke-dasharray="3 3"/></svg>
-      <div class="muted" style="display:flex;justify-content:space-between"><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div></div>
-      <div><h2 style="font-size:14px;font-weight:500">Where the value comes from</h2>
-      ${[["Automated triage & enrichment", "$2.14M", "42%"], ["Avoided incident loss", "$1.14M", "23%"], ["Tool consolidation", "$1.10M", "22%"], ["Ingest tiering & filtering", "$594K", "12%"], ["Audit & reporting effort", "$76K", "2%"]].map((r) => `<div class="rowl" style="border-bottom:1px solid var(--s200);padding:8px 0"><span style="flex:1">${esc(r[0])}<i class="vbar" style="width:${r[2]};display:block"></i></span><b>${esc(r[1])} ${esc(r[2])}</b></div>`).join("")}</div></div>`;
-  const baselines = `<h1 class="h1">Decisions built on your baselines</h1><div class="stack"><div class="rowl"><span>SVPBackup · hitting its usual shares?</span><b>In baseline</b></div><div class="rowl"><span>J.OKAFOR · reading at his normal rate?</span><b>In baseline</b></div><div class="rowl"><span>MBP-Hernandez · running its usual processes?</span><b>Deviation</b></div></div><p>Continuing investigation: traced payload fetch, keychain read by osascript, fixed-interval beacon.</p><p><button class="linkish" data-go="search/verdict" type="button">Open the verdict</button></p>`;
-  const peloton = `<h1 class="h1">Peloton deployed architecture</h1><p>Agentic Cyber Defense Engineering · Security Analytics Mesh · Headless Access</p><div class="arch"><article><b>Object storage</b><p class="cell">${brand("s3", true)} AWS S3</p></article><article><b>Point platforms</b><p class="cell">${brand("crowdstrike")} ${brand("wiz")} ${brand("tines")} ${brand("okta")} CrowdStrike, Wiz, Tines, Okta</p></article></div><p><button class="linkish" data-go="connectors" type="button">Open the mesh</button></p>`;
-  const bank = `<h1 class="h1">Bank deployed architecture</h1><p>Agentic Cyber Defense Engineering · Security Analytics Mesh · No Ingestion, Instant Access</p><div class="arch"><article><b>SIEMs and data lakes</b><p class="cell">${brand("splunk", true)} Splunk</p></article><article><b>Object storage</b><p class="cell">${brand("gcs")} ${brand("blob")} ${brand("s3")} Google Cloud Storage, Azure Blob Storage, AWS S3</p></article><article><b>Point platforms</b><p class="cell">${brand("crowdstrike")} ${brand("wiz")} ${brand("cortex")} CrowdStrike, Wiz, Cortex XSOAR</p></article></div>`;
-  const defense = `<h1 class="h1">AI agent defense</h1><table><thead><tr>${["Step", "Action", "Detail", "Policy"].map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>
-    ${[["Output", "wrote findings-report.md", "Never mentions the read or the upload", "no policy hit"], ["Egress", "POST 2.1 MB", "api.unknown-vendor.io, first seen 6 min earlier", "HIGH"], ["Out of scope", "s3:GetObject", "hr-payroll-exports/, no task references payroll", "CRITICAL"], ["Host cmd", "delete-access-key ×4", "4 stale keys, 180+ days old", "no policy hit"], ["Tool call", "iam:ListAccessKeys", "236 accounts, in scope", "no policy hit"]].map((r) => `<tr><td>${esc(r[0])}</td><td class="name">${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join("")}
-  </tbody></table>`;
-  const bodies = { funnel, roi, baselines, peloton, bank, defense };
-  return `<header class="topbar"><span class="crumb">Dashboards${id === "roi" ? " / Security ROI" : ""}</span></header><div class="scroll"><div class="pad">${nav}${bodies[id] || funnel}</div></div>`;
+function page() {
+  const p = path();
+  if (p === "/login") return login();
+  if (p === "/search" || p === "/") return searchPage();
+  if (p === "/notebooks" || p === "/notebooks/my") return notebooks("my");
+  if (p === "/notebooks/library") return notebooks("library");
+  if (p.startsWith("/notebooks/")) return notebookDetail(p.split("/")[2]);
+  if (p === "/dashboards") return shell(crumb(["Dashboards"]), `<div class="h1row"><h1>Dashboards</h1></div>${cards(BOARDS.map(b => [b[0], b[1], "Sample dashboard"]), "/dashboards")}`);
+  if (p.startsWith("/dashboards/")) { const b = BOARDS.find(x => x[0] === p.split("/")[2]) || BOARDS[0]; return shell(crumb(["Dashboards", b[1]]), `<div class="h1row"><h1>${esc(b[1])}</h1></div><div class="grid"><div class="card"><h3>Open signals</h3><p>${SIGNALS.filter(s => s[3] === "Open").length}</p></div><div class="card"><h3>Incidents</h3><p>${INCIDENTS.length}</p></div><div class="card"><h3>Needs review</h3><p>3</p></div></div>`); }
+  if (p === "/assessment" || p === "/assessment/mitre") return shell(crumb(["Assessment", "MITRE coverage"]), `<div class="h1row"><h1>MITRE coverage</h1></div><div class="grid"><div class="card"><h3>Technique coverage</h3><p>Sample cells. Partial coverage counts as half in this sample.</p></div><div class="card"><h3>Data discovery</h3><p><button class="linkish" type="button" data-go="/assessment/discovery">Open data discovery</button></p></div></div>`, tabs(itemFor("/assessment")));
+  if (p === "/assessment/discovery") return shell(crumb(["Assessment", "Data discovery"]), `<div class="h1row"><h1>Data discovery</h1></div>${table(["Source", "State"], SOURCES.slice(0, 6).map(s => `<tr><td>${source(s[0])}</td><td>${statusPill("Configured")}</td></tr>`))}`, tabs(itemFor("/assessment")));
+  if (p === "/assessment/plan") return shell(crumb(["Assessment", "Action plan"]), `<div class="h1row"><h1>Action plan</h1></div>${table(["Action", "Type"], [["Enable the sample sign-in detection", "Detection"], ["Review the sample guest account", "Memory suggestion"]].map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`))}`, tabs(itemFor("/assessment")));
+  if (p === "/assessment/detections") return shell(crumb(["Assessment", "Detections"]), `<div class="h1row"><h1>Detections</h1></div><p>Assessment detections use the same sample set as the Detections page.</p><p><button class="btn" type="button" data-go="/detections/my">Configured detections</button></p>`, tabs(itemFor("/assessment")));
+  if (p === "/detections" || p === "/detections/my") return shell(crumb(["Detections", "Configured detections"]), `<div class="h1row"><h1>Configured detections</h1><span class="soon">Soon</span></div>${table(["Name", "Source", "Severity"], DETECTS.filter(d => d[2] === "Configured").map(d => `<tr class="click" data-go="/detections/my/${d[0]}"><td>${esc(d[1])}</td><td>${esc(d[3])}</td><td>${sevPill(d[4])}</td></tr>`))}`, tabs(itemFor("/detections")));
+  if (p === "/detections/library") return shell(crumb(["Detections", "Vega library"]), `<div class="h1row"><h1>Vega library</h1></div>${table(["Name", "Source", "Severity"], DETECTS.filter(d => d[2] === "Library").map(d => `<tr><td>${esc(d[1])}</td><td>${esc(d[3])}</td><td>${sevPill(d[4])}</td></tr>`))}`, tabs(itemFor("/detections")));
+  if (p === "/detections/external") return shell(crumb(["Detections", "SIEM detections"]), `<div class="h1row"><h1>SIEM detections</h1></div>${table(["Name", "Source", "Severity"], DETECTS.filter(d => d[2] === "SIEM").map(d => `<tr><td>${esc(d[1])}</td><td>${esc(d[3])}</td><td>${sevPill(d[4])}</td></tr>`))}<p>Convert a SIEM detection stays on this sample page.</p>`, tabs(itemFor("/detections")));
+  if (p.startsWith("/detections/")) { const d = DETECTS.find(x => x[0] === p.split("/").pop()) || DETECTS[0]; return shell(crumb(["Detections", d[1]]), `<div class="h1row"><h1>${esc(d[1])}</h1>${sevPill(d[4])}</div><p>Sample detection. Tune a noisy detection does not change a live rule.</p>`, tabs(itemFor("/detections"))); }
+  if (p === "/incidents" || p === "/incidents/list") return incidentsPage();
+  if (p.startsWith("/incidents/list/")) return incidentDetail(p.split("/")[3]);
+  if (p === "/incidents/signals") return signalsPage();
+  if (p.startsWith("/incidents/signals/")) return signalDetail(p.split("/")[3]);
+  if (p === "/agentic" || p === "/agentic/skills") return shell(crumb(["Agents", "Skills"]), `<div class="h1row"><h1>Skills</h1></div>${table(["Name", "Access"], SKILLS.map(s => `<tr class="click" data-go="/agentic/skills/${s[0]}"><td>${esc(s[1])}</td><td>${esc(s[2])}</td></tr>`))}`, tabs(itemFor("/agentic")));
+  if (p.startsWith("/agentic/skills/")) { const s = SKILLS.find(x => x[0] === p.split("/")[3]) || SKILLS[0]; return shell(crumb(["Agents", "Skills", s[1]]), `<div class="h1row"><h1>${esc(s[1])}</h1></div><p>Access ${esc(s[2])}. This sample does not call a model.</p>`, tabs(itemFor("/agentic"))); }
+  if (p === "/agentic/memories") return shell(crumb(["Agents", "Memories"]), `<div class="h1row"><h1>Memories</h1></div>${table(["Memory"], MEMORIES.map(m => `<tr><td>${esc(m[1])}</td></tr>`))}`, tabs(itemFor("/agentic")));
+  if (p === "/intel") return shell(crumb(["Threat Intel"]), `<div class="h1row"><h1>Threat Intel</h1><span class="soon">Soon</span></div>${cards(BRIEFS.map(b => [b[0], b[1], b[2]]), "/intel/article")}`);
+  if (p.startsWith("/intel/")) { const b = BRIEFS.find(x => x[0] === p.split("/").pop()) || BRIEFS[0]; return shell(crumb(["Threat Intel", b[1]]), `<div class="h1row"><h1>${esc(b[1])}</h1>${sevPill(b[2])}</div><p><button class="btn" type="button" data-go="/search">Hunt</button> <button class="btn" type="button" data-go="/detections/library">Detection</button></p>`); }
+  if (p === "/connectors" || p === "/connectors/configured") return shell(crumb(["Connectors", "Configured connections"]), `<div class="h1row"><h1>Configured connections</h1></div>${table(["Connector", "State"], CONNECTORS.filter(c => c[2] !== "Library").map(c => `<tr class="click" data-go="/connectors/${c[0]}"><td>${source(c[0])}</td><td>${statusPill(c[2] === "Error" ? "Error" : "Configured")}</td></tr>`))}`, tabs(itemFor("/connectors")));
+  if (p === "/connectors/library") return shell(crumb(["Connectors", "Connector library"]), `<div class="h1row"><h1>Connector library</h1></div>${table(["Connector"], CONNECTORS.filter(c => c[2] === "Library").map(c => `<tr><td>${source(c[0])}</td></tr>`))}`, tabs(itemFor("/connectors")));
+  if (p.startsWith("/connectors/")) { const c = CONNECTORS.find(x => x[0] === p.split("/")[2]) || CONNECTORS[0]; return shell(crumb(["Connectors", c[1]]), `<div class="h1row"><h1>${source(c[0])}</h1></div><div class="kv"><span>State</span><b>${statusPill(c[2] === "Error" ? "Error" : "Configured")}</b><span>Instance</span><b>sample-${esc(c[0])}</b></div>`, tabs(itemFor("/connectors"))); }
+  if (p.startsWith("/settings")) return settings(p);
+  return shell(crumb(["Not found"]), `<div class="h1row"><h1>Not found</h1></div><p>This path is not in the public navigation.</p>`);
 }
-function skillsPage() {
-  return `<header class="topbar"><span class="crumb">AI library / New Skill</span><span class="grow"></span><button class="hard" type="button">Cancel</button><button class="hard cta" type="button">Save skill</button></header>
-    <div style="min-height:0;flex:1;display:flex">
-      <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#f6f5f3">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--s100);border-bottom:1px solid var(--s300)">
-          <span class="cell">${mini("spark", "#2abea5")} Triage <span class="muted">▾</span></span>
-          <span class="cell"><button class="chip" type="button">Preview</button><button class="chip" type="button">Edit</button></span>
-        </div>
-        <div class="mono" style="padding:14px 18px;color:var(--s500)">1</div>
-      </div>
-      <aside style="width:300px;flex:none;border-left:1px solid var(--s300);padding:20px 16px;background:var(--s100)">
-        <b>Skill details</b>
-        <div class="mono muted" style="margin-top:18px">Name</div>
-        <div style="border:1px solid var(--s300);height:34px;margin-top:6px"></div>
-        <div class="mono muted" style="margin-top:16px">Description</div>
-        <div style="border:1px solid var(--s300);height:88px;margin-top:6px"></div>
-        <div class="mono muted" style="margin-top:16px">Labels</div>
-        <div style="border:1px solid var(--s300);height:34px;margin-top:6px;display:flex;align-items:center;padding:0 8px"><span class="tag">Triage</span></div>
-      </aside>
-    </div>`;
+function settings(p) {
+  const item = itemFor("/settings");
+  const name = (item.children.find(([c]) => p === c) || item.children[0])[1];
+  let inner = "";
+  if (p === "/settings/users" || p === "/settings") inner = table(["Name", "Email", "Role"], PEOPLE.map(u => `<tr><td>${esc(u[0])}</td><td class="mono">${esc(u[2])}</td><td>Sample</td></tr>`));
+  else if (p === "/settings/audit-log") inner = table(["When", "Action", "Actor"], [["Today", "Viewed a sample signal", "a.example@example.com"], ["Today", "Opened this sample", "sample"]] .map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td class="mono">${esc(r[2])}</td></tr>`));
+  else if (p === "/settings/access-keys") inner = `<p>No token is stored here.</p>`;
+  else if (p === "/settings/sso") inner = `<p>Use SSO stays on this page. It does not contact an identity provider.</p>`;
+  else if (p === "/settings/ai-preferences") inner = `<p>AI preferences for the sample workspace. Ask Sam does not send a prompt anywhere.</p>`;
+  else if (p === "/settings/lookup-tables") inner = table(["Table", "Kind"], [["Sample identities", "Configured"], ["External sample table", "External"]].map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`));
+  else inner = `<p>${esc(name)} for the sample workspace.</p>`;
+  return shell(crumb(["Settings", name]), `<div class="h1row"><h1>${esc(name)}</h1></div>${inner}`, tabs(item));
 }
-function notebooksPage() {
-  const ideas = ["Show me all login events by browser name","Show senders that sent emails to a large number of recipients","Show email subjects that were sent to large number of recipients","Show the IP addresses sending the most emails"];
-  return `<header class="topbar"><span class="crumb">Notebooks</span></header><div class="scroll"><div class="pad"><h1 class="h1">Phishing Follow-up Notebook</h1>
-    <p class="sub">Explore with KQL. Search across all your data sources with KQL. Search with KQL, select a data source, or ask Vega to write a query.</p>
-    <div class="boxq" style="max-width:720px"><textarea id="q" placeholder="Recent queries">${esc(q)}</textarea></div>
-    <h2>Suggestions</h2><div class="sugs">${ideas.map((s)=>`<button type="button" data-ask="${esc(s)}">${esc(s)}</button>`).join("")}</div></div></div>`;
-}
-function prefsPage() {
-  return `<header class="topbar"><span class="crumb">Preferences</span></header><div class="scroll"><div class="pad"><div class="card" style="max-width:480px"><b>Workspace</b><p>Sample tenant. Notifications, theme, and session length stay on the defaults from the product screens.</p><div class="cell"><i class="sq"></i> Light surface</div><div class="cell"><i class="sq"></i> Mono labels</div></div></div></div>`;
-}
-const pages = { alerts: alertsPage, incident: incidentPage, detections: detectionsPage, search: searchPage, notebooks: notebooksPage, intel: intelPage, connectors: connectorsPage, coverage: coveragePage, dashboards: dashPage, skills: skillsPage, prefs: prefsPage };
-function bindRail() {
-  document.querySelectorAll("#rail [data-go]").forEach((el) => el.addEventListener("click", (e) => { e.preventDefault(); go(el.getAttribute("data-go")); }));
-  const tog = document.getElementById("rail-toggle");
-  if (tog) tog.addEventListener("click", () => { railOpen = !railOpen; rail(); bindRail(); });
+function login() {
+  return `<div class="login"><form class="auth" id="auth">
+    <div class="logo-wrap">${ico("vega-full-logo")}</div>
+    <h1>Sign in</h1>
+    <label class="fld">Email<input type="email" autocomplete="off" placeholder="mail@domain.com" value="sample@example.com"></label>
+    <label class="fld">Password<input type="password" autocomplete="off" placeholder="Password" value="sample-only"></label>
+    <button class="btn primary" type="submit">Sign in</button>
+    <div class="or"><i></i>Or<i></i></div>
+    <div class="stack"><button class="btn" type="button" id="sso">${ico("key-round")} Use SSO</button><button class="linkish" type="button" id="email">Sign in with email instead</button></div>
+    <p class="foot">Sample only. These buttons open the sample workspace. They do not sign in to app.vega.io.</p>
+  </form></div>`;
 }
 function bind() {
-  document.querySelectorAll("#panel [data-go]").forEach((el) => el.addEventListener("click", (e) => { e.preventDefault(); go(el.getAttribute("data-go")); }));
-  bindRail();
-  document.querySelectorAll("[data-cat]").forEach((el) => el.addEventListener("click", () => { cat = el.getAttribute("data-cat"); render(); }));
-  document.querySelectorAll("[data-ask]").forEach((el) => el.addEventListener("click", () => {
-    q = el.getAttribute("data-ask");
-    if (route().page === "search" && route().id === "river") { keepQ = true; go("search"); return; }
-    render();
-    const n = document.getElementById("q");
-    if (n) n.focus();
+  document.querySelectorAll("[data-go]").forEach(el => el.addEventListener("click", () => {
+    const dest = el.getAttribute("data-go");
+    const sectionAttr = el.getAttribute("data-section");
+    if (sectionAttr) {
+      const item = NAV.find(n => n.path === sectionAttr);
+      section = item && item.children ? item.path : null;
+    }
+    go(dest);
   }));
+  document.querySelectorAll("[data-sev]").forEach(el => el.addEventListener("click", () => { sev = el.getAttribute("data-sev"); render(); }));
+  document.querySelectorAll("[data-status]").forEach(el => el.addEventListener("click", () => { status = el.getAttribute("data-status"); render(); }));
   const qel = document.getElementById("q");
-  if (qel) qel.addEventListener("input", () => { q = qel.value; const pos = qel.selectionStart; render(); const n = document.getElementById("q"); if (n) { n.focus(); if (n.setSelectionRange) n.setSelectionRange(pos, pos); } });
+  if (qel) qel.addEventListener("input", () => { q = qel.value; render(); const again = document.getElementById("q"); if (again) { again.focus(); again.setSelectionRange(q.length, q.length); } });
+  const askMode = document.getElementById("ask-mode");
+  const queryMode = document.getElementById("query-mode");
+  if (askMode) askMode.addEventListener("click", () => { composerMode = "ask"; render(); });
+  if (queryMode) queryMode.addEventListener("click", () => { composerMode = "query"; render(); });
+  const all = document.getElementById("mode-all");
+  const test = document.getElementById("mode-test");
+  if (all) all.addEventListener("click", () => { testMode = false; render(); });
+  if (test) test.addEventListener("click", () => { testMode = true; render(); });
+  const toggle = document.getElementById("rail-toggle");
+  if (toggle) toggle.addEventListener("click", () => { collapsed = !collapsed; render(); });
+  const back = document.getElementById("back");
+  if (back) back.addEventListener("click", () => { section = null; go("/search"); });
   const ask = document.getElementById("ask");
-  if (ask) ask.addEventListener("click", () => { const n = document.getElementById("q"); q = n ? n.value : q; render(); });
-  const conf = document.getElementById("tab-conf"), ext = document.getElementById("tab-ext");
-  if (conf) conf.addEventListener("click", () => { detTab = "configured"; render(); });
-  if (ext) ext.addEventListener("click", () => { detTab = "external"; render(); });
-  const lib = document.getElementById("tab-lib"), cfg = document.getElementById("tab-cfg"), mcp = document.getElementById("tab-mcp");
-  if (lib) lib.addEventListener("click", () => { connTab = "library"; render(); });
-  if (cfg) cfg.addEventListener("click", () => { connTab = "configured"; render(); });
-  if (mcp) mcp.addEventListener("click", () => { connTab = "mcp"; render(); });
+  if (ask) ask.addEventListener("click", () => { toast = "Ask Sam stays in this sample."; render(); });
+  const tenant = document.getElementById("tenant");
+  if (tenant) tenant.addEventListener("click", () => { toast = "Switch tenant stays in this sample. Workspace name VegaSecurity is a string from the public bundle."; render(); });
+  const auth = document.getElementById("auth");
+  if (auth) auth.addEventListener("submit", e => { e.preventDefault(); go("/search"); });
+  const sso = document.getElementById("sso");
+  if (sso) sso.addEventListener("click", () => go("/search"));
+  const email = document.getElementById("email");
+  if (email) email.addEventListener("click", () => { toast = "Continue with email stays on this sign-in card."; render(); });
+  const run = document.getElementById("run-search");
+  if (run) run.addEventListener("click", () => { q = document.getElementById("composer").value; go("/incidents/signals"); });
+  document.querySelectorAll("[data-fill]").forEach(el => el.addEventListener("click", () => { const box = document.getElementById("composer"); if (box) box.value = el.getAttribute("data-fill"); }));
+  const save = document.getElementById("save-nb");
+  if (save) save.addEventListener("click", () => { toast = "Sample only. No notebook was saved."; render(); });
 }
 function render() {
-  const draw = pages[route().page];
-  rail();
-  document.getElementById("panel").innerHTML = draw ? draw() : `<header class="topbar"><span class="crumb">Not captured</span></header><div class="scroll"><div class="pad"><p>This route is not one of the public screens.</p><button class="linkish" data-go="alerts" type="button">Back to alerts</button></div></div>`;
+  const here = itemFor(path());
+  section = here && here.children && (path() === here.path || path().startsWith(here.path + "/")) ? here.path : null;
+  document.getElementById("root").innerHTML = page();
   bind();
+  if (toast) setTimeout(() => { if (toast) { toast = ""; render(); } }, 2400);
 }
-let keepQ = false;
-window.addEventListener("hashchange", () => { if (!keepQ) q = ""; keepQ = false; render(); });
-if (!location.hash) location.hash = "#/alerts";
-render();
+window.addEventListener("hashchange", () => { q = ""; sev = "All"; status = "All"; testMode = false; composerMode = "ask"; toast = ""; render(); });
+if (!location.hash) location.hash = "/incidents/signals";
+else render();
 </script>
 </body>
 </html>
