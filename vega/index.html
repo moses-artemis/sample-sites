@@ -22,9 +22,9 @@ body { font-family: var(--sans); color: var(--fg); background: var(--bg); font-s
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 a { color: inherit; }
-.ico { width: 16px; height: 16px; flex: 0 0 16px; display: block; }
-.ico.lg { width: 18px; height: 18px; flex-basis: 18px; }
-.logo { height: 20px; width: 58px; color: var(--logo); }
+.ico { width: 16px; height: 16px; flex: 0 0 16px; display: block; overflow: hidden; }
+.ico.wide { width: 28px; height: 16px; flex-basis: 28px; }
+.logo { height: 20px; width: 58px; flex: 0 0 58px; color: var(--logo); overflow: visible; }
 .app { display: flex; height: 100%; min-width: 0; }
 nav.rail { flex: 0 0 200px; width: 200px; display: flex; flex-direction: column; transition: width .2s cubic-bezier(.2,0,0,1); background: var(--bg); }
 nav.rail.collapsed { flex-basis: 44px; width: 44px; }
@@ -86,7 +86,7 @@ tr.click:hover td { background: #fbfaf9; }
 .pill i { width: 8px; height: 8px; border-radius: 2px; display: block; }
 .sev { color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 12px; font-weight: 600; }
 .who { display: inline-flex; align-items: center; gap: 6px; }
-.av { width: 18px; height: 18px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-size: 10px; font-weight: 700; }
+.av { width: 16px; height: 16px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-size: 9px; font-weight: 700; flex: 0 0 16px; }
 .src { display: inline-flex; align-items: center; gap: 6px; }
 .funnel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
 .stage-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: #fff; text-align: left; }
@@ -112,7 +112,7 @@ tr.click:hover td { background: #fbfaf9; }
 .auth { width: 420px; max-width: calc(100% - 32px); background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(18,18,17,.06); padding: 28px; display: flex; flex-direction: column; gap: 16px; }
 .auth h1 { text-align: center; font-size: 22px; }
 .auth .logo-wrap { display: flex; justify-content: center; color: var(--brand-800); }
-.auth .logo-wrap svg { width: 92px; height: 32px; }
+.auth .logo-wrap svg { width: 92px; height: 32px; flex-basis: 92px; }
 label.fld { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
 label.fld input { border: 1px solid var(--border-em); border-radius: 6px; padding: 8px 10px; }
 .or { display: flex; align-items: center; gap: 8px; color: var(--subtle); font-size: 12px; }
@@ -240,7 +240,20 @@ let composerMode = "ask";
 let toast = "";
 
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
-function ico(name, cls) { return `<svg class="ico${cls ? " " + cls : ""}" aria-hidden="true"><use href="sprite.svg#${esc(name)}"></use></svg>`; }
+const FIT = {
+  "sidebar-dashboard": 1.27, "sidebar-notebook": 1.08, "sidebar-search": 1.08,
+  "sidebar-assessment": 1.04, "sidebar-detections": 1.04, "sidebar-incidents": 0.93,
+  okta: 0.93, "microsoft-entraid": 0.9, "crowdstrike-falcon": 0.9,
+  "amazon-s3": 0.88, cloudtrail: 0.88, github: 0.92, google: 0.88, sentinel: 0.92, splunk: 0.92
+};
+function ico(name, cls) {
+  const extra = cls ? " " + cls : "";
+  if (name === "vega-full-logo") return `<svg class="ico logo${extra}" viewBox="0 0 52 18" aria-hidden="true"><use href="sprite.svg#vega-full-logo"></use></svg>`;
+  if (name === "wiz") return `<svg class="ico wide${extra}" viewBox="0 0 128.7 64" aria-hidden="true"><use href="sprite.svg#wiz"></use></svg>`;
+  const scale = FIT[name];
+  const style = scale ? ` style="transform:scale(${scale})"` : "";
+  return `<svg class="ico${extra}"${style} aria-hidden="true"><use href="sprite.svg#${esc(name)}"></use></svg>`;
+}
 function person(i) { const p = PEOPLE[i % PEOPLE.length]; return `<span class="who"><span class="av" style="background:${p[1]}">${esc(p[0][0])}</span>${esc(p[0])}</span>`; }
 function source(id) { const s = SOURCES.find(x => x[0] === id) || [id, id]; return `<span class="src">${ico(s[0])}${esc(s[1])}</span>`; }
 function sevPill(name) {
