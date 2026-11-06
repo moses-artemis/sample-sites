@@ -419,14 +419,67 @@ function page() {
 function settings(p) {
   const item = itemFor("/settings");
   const name = (item.children.find(([c]) => p === c) || item.children[0])[1];
+  const line = (cells) => `<tr>${cells.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`;
   let inner = "";
-  if (p === "/settings/users" || p === "/settings") inner = table(["Name", "Email", "Role"], PEOPLE.map(u => `<tr><td>${esc(u[0])}</td><td class="mono">${esc(u[2])}</td><td>Sample</td></tr>`));
-  else if (p === "/settings/audit-log") inner = table(["When", "Action", "Actor"], [["Today", "Viewed a sample signal", "a.example@example.com"], ["Today", "Opened this sample", "sample"]] .map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td class="mono">${esc(r[2])}</td></tr>`));
-  else if (p === "/settings/access-keys") inner = `<p>No token is stored here.</p>`;
-  else if (p === "/settings/sso") inner = `<p>Use SSO stays on this page. It does not contact an identity provider.</p>`;
-  else if (p === "/settings/ai-preferences") inner = `<p>AI preferences for the sample workspace. Ask Sam does not send a prompt anywhere.</p>`;
-  else if (p === "/settings/lookup-tables") inner = table(["Table", "Kind"], [["Sample identities", "Configured"], ["External sample table", "External"]].map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`));
-  else inner = `<p>${esc(name)} for the sample workspace.</p>`;
+  if (p === "/settings/users" || p === "/settings") inner = table(["Name", "Email", "Access", "Vega groups", "Status"], [
+    ["A. Example", "a.example@example.com", "Sample admin · Sample workspace", "Sample analysts", "Active"],
+    ["M. Sample", "m.sample@example.com", "Sample analyst · Sample workspace", "Sample analysts", "Active"],
+    ["J. Demo", "j.demo@example.com", "Sample responder · Sample workspace", "Sample responders", "Active"],
+    ["P. North", "p.north@example.com", "Sample analyst · Sample workspace", "Sample viewers", "Active"],
+    ["S. Case", "s.case@example.com", "Sample responder · Sample workspace", "Sample responders", "Active"]
+  ].map(line));
+  else if (p === "/settings/groups") inner = table(["Vega group", "Active members", "Access", "IdP group", "Created"], [
+    ["Sample analysts", "A. Example, M. Sample", "Sample analyst · Sample workspace", "Not linked", "Nov 5, 2026"],
+    ["Sample responders", "J. Demo, S. Case", "Sample responder · Sample workspace", "Not linked", "Nov 5, 2026"],
+    ["Sample viewers", "P. North", "Sample analyst · Sample workspace", "Not linked", "Nov 4, 2026"]
+  ].map(line));
+  else if (p === "/settings/roles") inner = table(["Name", "Description", "Access"], [
+    ["Sample analyst", "Read signals, incidents, and notebooks in the sample workspace", "Sample workspace"],
+    ["Sample responder", "Update sample incident status", "Sample workspace"],
+    ["Sample admin", "Manage sample groups, connectors, and roles", "Sample workspace"]
+  ].map(line));
+  else if (p === "/settings/scopes") inner = table(["Name", "Description", "Default"], [
+    ["Sample workspace", "Default scope for sample users", "Yes"],
+    ["Sample library", "Read-only library content", "No"]
+  ].map(line)) + `<p>You cannot edit scopes provided by Vega. These two scopes are sample rows.</p>`;
+  else if (p === "/settings/access-keys") inner = table(["Name", "Description", "Status", "Expires", "Created by"], [
+    ["sample-read", "Read sample signals. The secret is not stored.", "Disabled", "Nov 5, 2027", "a.example@example.com"],
+    ["sample-expired", "Expired sample key. The secret is not stored.", "Expired", "Oct 1, 2026", "m.sample@example.com"]
+  ].map(line)) + `<p>No token is stored here.</p>`;
+  else if (p === "/settings/audit-log") inner = table(["When", "Action", "Actor"], [
+    ["Nov 5, 2026", "Viewed a sample signal", "a.example@example.com"],
+    ["Nov 5, 2026", "Opened the sample groups", "m.sample@example.com"],
+    ["Nov 4, 2026", "Opened this sample", "sample"]
+  ].map(line));
+  else if (p === "/settings/connector-requests") inner = table(["Requested at", "Connector name", "Method", "Route", "Decision", "Status"], [
+    ["Nov 5, 2026", "Okta", "GET", "/api/v1/logs", "Allow", "200"],
+    ["Nov 5, 2026", "Wiz", "POST", "/graphql", "Reject", "429"],
+    ["Nov 4, 2026", "Splunk", "GET", "/services/search/jobs", "Bypass", "200"]
+  ].map(line));
+  else if (p === "/settings/lookup-tables") inner = table(["Table", "Kind", "Rows"], [
+    ["Sample identities", "Configured", "5"],
+    ["External sample table", "External", "12"]
+  ].map(line));
+  else if (p === "/settings/labels") inner = table(["Category", "Label"], [
+    ["Stand Alone Labels", "Sample review"],
+    ["Severity", "Critical"],
+    ["Source", "Okta"]
+  ].map(line));
+  else if (p === "/settings/webhook-rules") inner = table(["Name", "Created by", "Status"], [
+    ["Sample signal created", "a.example@example.com", "Enabled"],
+    ["Sample incident resolved", "m.sample@example.com", "Disabled"]
+  ].map(line));
+  else if (p === "/settings/automations") inner = table(["Name", "Source", "Condition", "Action", "Scope", "Health", "Enabled"], [
+    ["Sample incident note", "Okta", "New critical signal", "Add a sample note", "Sample workspace", "Healthy", "Enabled"],
+    ["Sample quiet source", "Wiz", "Connector error", "Open a sample incident", "Sample workspace", "Degraded", "Disabled"]
+  ].map(line));
+  else if (p === "/settings/ai-preferences") inner = `<div class="kv"><span>Memory mode</span><b>Review</b><span>Memory contributor</span><b>Sample analyst</b><span>Region</span><b>us-east-1 · N. Virginia</b><span>Sam sessions</span><b>On</b><span>Incident investigation</span><b>On</b><span>Natural language to KQL</span><b>On</b></div><p>AI preferences for the sample workspace. Ask Sam does not send a prompt anywhere.</p>`;
+  else if (p === "/settings/time-preferences") inner = `<div class="kv"><span>Time zone</span><b>UTC</b><span>Quick picks</span><b>UTC · No offset</b><span>Browser default</span><b>Not selected</b></div><p>The sample clock stays on UTC. Nothing is saved.</p>`;
+  else if (p === "/settings/sso") inner = `<p>Use SSO stays on this page. It does not contact an identity provider.</p>` + table(["Setting", "Value"], [["Status", "Off"], ["Provider", "Not connected"], ["IdP group sync", "Off"]].map(line));
+  else inner = table(["Name", "Detail", "Status"], [
+    ["Sample " + name, "Invented row for this page", "Active"],
+    ["Second sample " + name, "Another invented row", "Disabled"]
+  ].map(line));
   return shell(crumb(["Settings", name]), `<div class="h1row"><h1>${esc(name)}</h1></div>${inner}`, tabs(item));
 }
 function login() {

@@ -738,7 +738,7 @@ function settingsBody(id) {
   if (id === "ioc-management") return `<div class="card"><p>${iocs.filter((i) => i.status === "Active").length} active indicators in the sample.</p><button class="btn" data-go="iocs" type="button">Open IOC Management</button></div>`;
   if (id === "file-allowlist") return table(["Hash", "Note"], [["44d88612fea8a8f36de82e1278abb02f", "Known installer"]].map((r) => `<tr><td class="mono">${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`));
   if (id === "detectors") return `<div class="card"><p>New detectors in this sample start in a learning period. ${detectors.filter((d) => d.status === "Test").length} are there now.</p><button class="btn" data-go="lifecycle" type="button">Open lifecycle</button></div>`;
-  if (id === "reports") return `<div class="card"><p>No scheduled report is sent from this sample.</p><button class="btn" data-set="toast:Sample only. No report file is created." type="button">Download PDF</button></div>`;
+  if (id === "reports") return `${table(["Report", "Schedule", "Status"], [["Weekly sample summary", "Mondays", "Not sent"], ["Connector health", "Daily", "Not sent"]].map((r) => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`))}<p class="muted">No scheduled report is sent from this sample.</p><button class="btn" data-set="toast:Sample only. No report file is created." type="button">Download PDF</button>`;
   if (id === "license") return `<div class="card"><b>Sample workspace</b><p>artdogfood · one workspace · not an Apollo parent.</p></div>`;
   return `<div class="card"><b>Organization</b><p>artdogfood · sample workspace · UTC.</p><p class="muted">Display name, timezone, and retention are shown here. Nothing is saved.</p></div>`;
 }

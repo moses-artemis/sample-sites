@@ -1053,7 +1053,12 @@ function tiSettings() {
   <h2>Hunt rules</h2><p>Rules run in order. The first rule that matches decides whether 7AI hunts. Tracked adversary: hunt whenever intel from any source cites a threat actor, malware family, or campaign on your watchlists. 14 hunted.</p></div>`;
 }
 function audit() {
-  return crumb(["Configuration","Audit Events"])+`<div class="row"><span class="chip">Last 7 days</span><span class="chip">Actor Type (2)</span></div>${table(["Timestamp","Actor","Action","Domain","Resource Type","Resource Identifier","Description"], [])}<div class="pager"><span>No Audit Events found · Showing 0 of 0 Audit Events</span></div>`;
+  const rows = [
+    ["Nov 5, 2026, 9:14 AM EST", "Alex Morgan", "View", "Investigation", "Investigation", "OKAMI-FIN-074", "Opened a sample investigation"],
+    ["Nov 5, 2026, 8:02 AM EST", "Priya Patel", "Update", "Case", "Case", "1784", "Changed a sample case status"],
+    ["Nov 4, 2026, 4:40 PM EST", "demo@sevenai.com", "Sign-in", "Tenant", "Session", "Enterprise Demo", "Sample sign-in. No password is stored."]
+  ].map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`);
+  return crumb(["Configuration","Audit Events"])+`<div class="row"><span class="chip">Last 7 days</span><span class="chip">Actor Type (2)</span></div>${table(["Timestamp","Actor","Action","Domain","Resource Type","Resource Identifier","Description"], rows)}<div class="pager"><span>Showing 3 of 3 Audit Events</span></div>`;
 }
 function lookups(r) {
   const tab = r && r.c==="definitions" ? "definitions" : r && r.c==="create" ? "create" : "tables";
