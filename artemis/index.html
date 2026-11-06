@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Artemis</title>
 <link rel="icon" href="logos/Artemis.svg">
-<style>
-@font-face { font-family: Geist; src: url("../vega/fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: "Geist Mono"; src: url("../vega/fonts/GeistMono-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+<style>.banner{position:fixed;top:0;left:0;right:0;z-index:80;height:32px;display:flex;align-items:center;justify-content:center;background:#245c43;color:#fff;font:13px/1 sans-serif}body{padding-top:32px!important;box-sizing:border-box}header.top{top:32px}
+@font-face { font-family: Geist; src: url("fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("fonts/GeistMono-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 :root {
   --bg: #f4f4f5; --card: #fff; --ink: #09090b; --muted: #71717a; --faint: #a1a1aa;
   --line: #e4e4e7; --hover: #fafafa; --active: #e4e4e7; --blue: #334deb; --blue-text: #0337ae;
@@ -157,7 +157,7 @@ tr.click:hover td { background: var(--hover); }
 @media (max-width: 1000px) { .kpis, .cards, .grid2, .grid3, .lanes, .board, .split, .set, .aiwrap, .matrix { grid-template-columns: 1fr; } }
 </style>
 </head>
-<body>
+<body><div class="banner">Sample of artdogfood.portal.goartemis.ai. Rows are invented. This file does not contact the original site.</div>
 <div id="root"></div>
 <script>
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
