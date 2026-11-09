@@ -107,7 +107,7 @@ tr.click:hover td { background: #fbfaf9; }
 .suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .kv { display: grid; grid-template-columns: 160px 1fr; gap: 8px 12px; max-width: 720px; }
 .kv span { color: var(--subtle); }
-.note { color: var(--subtle); font-size: 12px; margin-top: 16px; }
+.sample-flag { background: #fff4e8; color: #9a3412; border: 1px solid #fdba74; border-radius: 8px; padding: 8px 12px; margin: 0 0 14px; font-size: 13px; font-weight: 650; }
 .login { min-height: 100%; display: flex; align-items: center; justify-content: center; background: var(--bg); }
 .auth { width: 420px; max-width: calc(100% - 32px); background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(18,18,17,.06); padding: 28px; display: flex; flex-direction: column; gap: 16px; }
 .auth h1 { text-align: center; font-size: 22px; }
@@ -283,7 +283,8 @@ function crumb(parts) {
   return `<div class="crumbs">${parts.map((p, i) => `${i ? '<span class="slash">/</span>' : ""}${i === parts.length - 1 ? `<b>${esc(p)}</b>` : esc(p)}`).join("")}</div>`;
 }
 function shell(crumbs, body, tabs) {
-  return `<div class="app">${rail()}<div class="stage"><div class="panel">${tabs || ""}<div class="top">${crumbs}<span class="spacer"></span><button class="btn" type="button" id="ask" data-testid="ask-sam-button">${ico("sparkles")} Ask Sam</button></div><div class="scroll"><div class="pad">${body}<p class="note">Sample rows only. The public app.vega.io bundles describe this layout and do not include a tenant export. Nothing on this page signs in.</p></div></div></div></div></div>${toast ? `<div class="toast">${esc(toast)}</div>` : ""}`;
+  const flag = `<p class="sample-flag">Sample data. This is the public Vega layout. These rows are not a real tenant.</p>`;
+  return `<div class="app">${rail()}<div class="stage"><div class="panel">${tabs || ""}<div class="top">${crumbs}<span class="spacer"></span><button class="btn" type="button" id="ask" data-testid="ask-sam-button">${ico("sparkles")} Ask Sam</button></div><div class="scroll"><div class="pad">${flag}${body}</div></div></div></div></div>${toast ? `<div class="toast">${esc(toast)}</div>` : ""}`;
 }
 function rail() {
   const p = path();
@@ -491,7 +492,7 @@ function login() {
     <button class="btn primary" type="submit">Sign in</button>
     <div class="or"><i></i>Or<i></i></div>
     <div class="stack"><button class="btn" type="button" id="sso">${ico("key-round")} Use SSO</button><button class="linkish" type="button" id="email">Sign in with email instead</button></div>
-    <p class="foot">Sample only. These buttons open the sample workspace. They do not sign in to app.vega.io.</p>
+    <p class="sample-flag">Sample data. These fields are not a real account. Sign in opens the sample workspace and does not contact app.vega.io.</p>
   </form></div>`;
 }
 function bind() {

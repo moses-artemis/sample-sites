@@ -107,6 +107,8 @@
   .split { display: flex; gap: 16px; align-items: center; }
   .find { padding: 10px 0; border-top: 1px solid var(--line); }
   @media (max-width: 1100px) { .grid3, .board, .cov, .grid2, .kpi4 { grid-template-columns: 1fr; } .assist { display: none; } }
+  .sample-flag { background:#fff7ed; color:#9a3412; border:1px solid #fdba74; border-radius:10px; padding:8px 12px; margin:0 0 14px; font-weight:650; }
+  body[data-theme="dark"] .sample-flag { background:#3b2a1a; color:#fdba74; border-color:#9a3412; }
 @font-face{font-family:Graphik;src:url("fonts/Graphik-Regular.woff") format("woff");font-weight:400;font-display:swap}@font-face{font-family:Graphik;src:url("fonts/Graphik-Bold.woff") format("woff");font-weight:700;font-display:swap}@font-face{font-family:"Review Condensed";src:url("fonts/ReviewCondensed-Regular-Web.woff2") format("woff2");font-weight:400;font-display:swap}@font-face{font-family:"Review Condensed";src:url("fonts/ReviewCondensed-Bold-Web.woff2") format("woff2");font-weight:700;font-display:swap}body{font-family:Graphik,"Helvetica Neue",Helvetica,Arial,sans-serif}</style>
 </head>
 <body><div class="banner">Sample of demo.app.sevenai.com. Rows are invented. This file does not contact the original site.</div>
@@ -115,7 +117,7 @@
   <nav class="main" id="nav"></nav>
   <div class="right">
     <span class="bell" title="Notifications">🔔<b>14</b></span>
-    <button class="who" id="who" type="button"><strong>Alex Morgan</strong><small>Tenant Admin</small></button>
+    <button class="who" id="who" type="button"><strong>A. Example</strong><small>Sample admin</small></button>
   </div>
 </header>
 <div class="menu" id="menu" hidden>
@@ -144,43 +146,43 @@ const TABS = {
   config: [["config","Active Connectors"],["config/directory","Directory"],["config/logs","Log Connectors"],["config/alerts","Alert Processing"],["config/intel","Threat Intelligence"],["config/audit","Audit Events"],["config/lookups","Lookup Tables"],["config/import","Import Library"],["settings","Settings"],["resources","Resources"]]
 };
 const INV = [
-  { id:"ioa", title:"CrowdStrike AI Powered IOA detected on host OKAMI-ENG-042 - high", kind:"ENDPOINT - f6a9ae50-843a-4c31-a819-2f9aa8911e2b", det:"Not escalated", verdict:"BENIGN", time:"Yesterday Nov 3, 2026, 7:58 PM EST", arts:["Blocked Executable: asteredge-studio-2025.2.exe","File Hash: 9f8e7d6c5b4a39281706f5e4d3c…","Executing User: Dario Costa (dcosta)"], source:"Splunk", sev:"High",
+  { id:"ioa", title:"CrowdStrike AI Powered IOA detected on host SAMPLE-HOST-02 - high", kind:"ENDPOINT - f6a9ae50-843a-4c31-a819-2f9aa8911e2b", det:"Not escalated", verdict:"BENIGN", time:"Yesterday Nov 3, 2026, 7:58 PM EST", arts:["Blocked Executable: asteredge-studio-2025.2.exe","File Hash: 9f8e7d6c5b4a39281706f5e4d3c…","Executing User: J. Demo (j.demo)"], source:"Splunk", sev:"High",
     lead:"False positive: CrowdStrike blocked an approved AsterEdge Studio pilot build.",
-    conclusion:"False positive. CrowdStrike blocked and quarantined asteredge-studio-2025.2.exe on OKAMI-ENG-042 after seven high-severity behavioral detections. The build was new and uncommon: VirusTotal had no record of the exact hash, the hash had no earlier successful execution, and the AsterEdge Studio family appeared on only three engineering endpoints. That explains why the file drew scrutiny without treating unknown reputation as clean. The ownership and delivery chain proves what the file was. Web research identified AsterEdge Studio as an Okami product maintained by AsterEdge Platform Engineering. The internal release catalog matched the exact filename and MD5 to an approved pilot owned by that department. Okta placed Dario Costa in the same department, while Azure and CMDB tied him to the managed, compliant OKAMI-ENG-042 workstation. OkamiReleaseClient.exe wrote the exact file from Okami Release Hub, and CrowdStrike showed a normal Explorer launch. An older approved version had already run on the same host. Process-scoped checks found no network connection, DNS request, or persistence change. Conclusion: the exact file was an approved Okami pilot, delivered to the owning department's managed workstation, with no harmful follow-on activity.",
-    facts:[["Incident","Nov 3, 2026 at 7:58:00 PM EST"],["Source","Splunk · High · ENDPOINT"],["Blocked executable","asteredge-studio-2025.2.exe"],["Executing user","Dario Costa (dcosta)"]] },
-  { id:"aitm", title:"AiTM session token replay from anomalous infrastructure", kind:"IDENTITY - 920417", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:55 PM EST", arts:["Compromised User: marcus.chen@okami-ai.com","Stolen Session: 6c8b31d4-29e7-4c6a-a92e-8f1d5b742c33","Attacker Source: 2001:db8::1 (AS9009 hosting)"], source:"Microsoft Defender Incidents", sev:"High",
-    lead:"Malicious: an AiTM session replay hid security alerts in Marcus Chen's mailbox.",
-    conclusion:"This is a malicious account takeover. Defender linked two identity alerts for Marcus Chen to the same session and hosting-provider IP. Entra confirmed two accepted sign-ins in that session where MFA was satisfied by a claim already in the replayed token, not a fresh challenge. The source IP had no prior successful use across Okami, and its browser fingerprint was absent from Marcus's history. Office audit logs then tied that same session to a new inbox rule that marked security notices as read and moved them out of sight. No single anomaly proves the takeover: two Defender detections converged on one session, Entra showed that session reusing an accepted MFA claim from an unfamiliar source and browser, and Office audit logs proved it was then used to hide security alerts. This confirms session abuse and mailbox defense evasion, but it does not establish message theft or data exfiltration.",
-    facts:[["Incident","Nov 3, 2026 at 7:55:00 PM EST"],["Source","Microsoft Defender Incidents · High · IDENTITY"],["Compromised user","marcus.chen@okami-ai.com"],["Stolen session","6c8b31d4-29e7-4c6a-a92e-8f1d5b742c33"],["Attacker source","2001:db8::1 (AS9009 hosting)"],["Malicious inbox rule","Archive security notifications"],["Next step","Revoke the session before resetting credentials"]] },
-  { id:"fin", title:"Credential-store access and outbound transfer on OKAMI-FIN-074", kind:"ENDPOINT - 71b2f912-84c3-4b1a-9dc2-046cf7039704", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:54 PM EST", arts:["Malicious Process: Setu.exe","Command-and-control: releases.cloudgateway.cc","Affected User: nadia.solis@okami-ai.com"], source:"Microsoft Sentinel Incidents", sev:"High",
+    conclusion:"False positive. CrowdStrike blocked and quarantined asteredge-studio-2025.2.exe on SAMPLE-HOST-02 after seven high-severity behavioral detections. The build was new and uncommon: VirusTotal had no record of the exact hash, the hash had no earlier successful execution, and the AsterEdge Studio family appeared on only three engineering endpoints. That explains why the file drew scrutiny without treating unknown reputation as clean. The ownership and delivery chain proves what the file was. Web research identified AsterEdge Studio as an Sample Co product maintained by AsterEdge Platform Engineering. The internal release catalog matched the exact filename and MD5 to an approved pilot owned by that department. Okta placed J. Demo in the same department, while Azure and CMDB tied him to the managed, compliant SAMPLE-HOST-02 workstation. SampleReleaseClient.exe wrote the exact file from Sample Release Hub, and CrowdStrike showed a normal Explorer launch. An older approved version had already run on the same host. Process-scoped checks found no network connection, DNS request, or persistence change. Conclusion: the exact file was an approved Sample Co pilot, delivered to the owning department's managed workstation, with no harmful follow-on activity.",
+    facts:[["Incident","Nov 3, 2026 at 7:58:00 PM EST"],["Source","Splunk · High · ENDPOINT"],["Blocked executable","asteredge-studio-2025.2.exe"],["Executing user","J. Demo (j.demo)"]] },
+  { id:"aitm", title:"AiTM session token replay from anomalous infrastructure", kind:"IDENTITY - 920417", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:55 PM EST", arts:["Compromised User: a.example@example.com","Stolen Session: 6c8b31d4-29e7-4c6a-a92e-8f1d5b742c33","Attacker Source: 2001:db8::1 (AS9009 hosting)"], source:"Microsoft Defender Incidents", sev:"High",
+    lead:"Malicious: an AiTM session replay hid security alerts in A. Example's mailbox.",
+    conclusion:"This is a malicious account takeover. Defender linked two identity alerts for A. Example to the same session and hosting-provider IP. Entra confirmed two accepted sign-ins in that session where MFA was satisfied by a claim already in the replayed token, not a fresh challenge. The source IP had no prior successful use across Sample Co, and its browser fingerprint was absent from Marcus's history. Office audit logs then tied that same session to a new inbox rule that marked security notices as read and moved them out of sight. No single anomaly proves the takeover: two Defender detections converged on one session, Entra showed that session reusing an accepted MFA claim from an unfamiliar source and browser, and Office audit logs proved it was then used to hide security alerts. This confirms session abuse and mailbox defense evasion, but it does not establish message theft or data exfiltration.",
+    facts:[["Incident","Nov 3, 2026 at 7:55:00 PM EST"],["Source","Microsoft Defender Incidents · High · IDENTITY"],["Compromised user","a.example@example.com"],["Stolen session","6c8b31d4-29e7-4c6a-a92e-8f1d5b742c33"],["Attacker source","2001:db8::1 (AS9009 hosting)"],["Malicious inbox rule","Archive security notifications"],["Next step","Revoke the session before resetting credentials"]] },
+  { id:"fin", title:"Credential-store access and outbound transfer on SAMPLE-HOST-01", kind:"ENDPOINT - 71b2f912-84c3-4b1a-9dc2-046cf7039704", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:54 PM EST", arts:["Malicious Process: Setu.exe","Command-and-control: c2.example.com","Affected User: m.sample@example.com"], source:"Microsoft Sentinel Incidents", sev:"High",
     lead:"Setu.exe read Chrome, Edge, and Firefox credential stores, then transferred the contents off the host.",
-    conclusion:"True positive. On OKAMI-FIN-074, Setu.exe read Chrome, Edge, and Firefox credential stores totaling 180,224 bytes, then sent 184,320 bytes to releases.cloudgateway.cc. The affected user is Nadia Solis (nadia.solis@okami-ai.com), a Financial Operations Analyst. The case is CASE-1784, priority critical, verdict malicious, customer impact none, 10 affected hosts. Remediation is still pending: revoke sessions, reset the corporate password, quarantine Setu.exe, block the domain, and report the signing certificate.",
-    facts:[["Case","CASE-1784 · Critical · Malicious"],["Assignee","Priya Patel"],["SLA","Paused · 3d 0h 5m"],["Tags","Malware, Identity, Endpoint"]] },
-  { id:"crx", title:"Automated CRXfiltrate hunt: malicious activity on four endpoints", kind:"THREAT INTEL - 7ai-ti-crxfiltrate-017", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:53 PM EST", arts:["Blocked Campaign Domains: datvault.cloud, fivestat.com, astralink.click"], source:"7AI Threat Intel", sev:"High",
+    conclusion:"True positive. On SAMPLE-HOST-01, Setu.exe read Chrome, Edge, and Firefox credential stores totaling 180,224 bytes, then sent 184,320 bytes to c2.example.com. The affected user is M. Sample (m.sample@example.com), a Financial Operations Analyst. The case is SAMPLE-1784, priority critical, verdict malicious, customer impact none, 10 affected hosts. Remediation is still pending: revoke sessions, reset the corporate password, quarantine Setu.exe, block the domain, and report the signing certificate.",
+    facts:[["Case","SAMPLE-1784 · Critical · Malicious"],["Assignee","P. North"],["SLA","Paused · 3d 0h 5m"],["Tags","Malware, Identity, Endpoint"]] },
+  { id:"crx", title:"Automated CRXfiltrate hunt: malicious activity on four endpoints", kind:"THREAT INTEL - 7ai-ti-crxfiltrate-017", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:53 PM EST", arts:["Blocked Campaign Domains: c2.example.com, phish.example.com, phish.example.com"], source:"7AI Threat Intel", sev:"High",
     lead:"High-confidence malicious CRXfiltrate browser traffic on four endpoints.",
-    conclusion:"True positive for CRXfiltrate browser traffic across four endpoints. OKM-ENG-117 made 2,915 requests to scoped domains, and Zscaler blocked every one. CrowdStrike recorded matching browser activity on the same infrastructure, and three more endpoints showed the same pattern. Across the affected systems, Zscaler blocked 3,313 web requests and Infoblox recorded 183 RPZ blocks in 692 scoped DNS records. Continued telemetry means remediation is not complete. Searches found no recent files written by any of the 36 confirmed Chromium extensions and no endpoint alerts that identified the source. The traffic matches T1071.001 (web protocols). T1176 (browser extensions) is possible for this family but is not proven here. OKM-FIN-214 is not affected: its 14 requests were the same image requested 682 times from 49 CDN hosts. Next, check Chrome extensions on all four affected assets, keep the scoped controls in place, and verify cleanup with repeat telemetry.",
-    facts:[["Alert","7ai-ti-crxfiltrate-017"],["Source","7AI Threat Intel · High"],["Status","Waiting on Customer"],["Blocked domain","datvault.cloud"]] },
-  { id:"bridge", title:"Bridge Rock Resources", kind:"EMAIL - a41f0d06-664e-3251-4537-1c371d9ec360", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:52 PM EST", arts:["Malicious Email Subject: Bridge Rock Resources","Targeted Recipient: jackson@okami-ai.com","Sender: emily@bridgerockres.com"], source:"Microsoft Sentinel", sev:"Medium",
+    conclusion:"True positive for CRXfiltrate browser traffic across four endpoints. SAMPLE-HOST-03 made 2,915 requests to scoped domains, and Zscaler blocked every one. CrowdStrike recorded matching browser activity on the same infrastructure, and three more endpoints showed the same pattern. Across the affected systems, Zscaler blocked 3,313 web requests and Infoblox recorded 183 RPZ blocks in 692 scoped DNS records. Continued telemetry means remediation is not complete. Searches found no recent files written by any of the 36 confirmed Chromium extensions and no endpoint alerts that identified the source. The traffic matches T1071.001 (web protocols). T1176 (browser extensions) is possible for this family but is not proven here. SAMPLE-HOST-04 is not affected: its 14 requests were the same image requested 682 times from 49 CDN hosts. Next, check Chrome extensions on all four affected assets, keep the scoped controls in place, and verify cleanup with repeat telemetry.",
+    facts:[["Alert","7ai-ti-crxfiltrate-017"],["Source","7AI Threat Intel · High"],["Status","Waiting on Customer"],["Blocked domain","c2.example.com"]] },
+  { id:"bridge", title:"Bridge Rock Resources", kind:"EMAIL - a41f0d06-664e-3251-4537-1c371d9ec360", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:52 PM EST", arts:["Malicious Email Subject: Bridge Rock Resources","Targeted Recipient: p.north@example.com","Sender: e.sample@example.com"], source:"Microsoft Sentinel", sev:"Medium",
     lead:"Two related incidents were confirmed malicious.",
-    conclusion:"Escalated phishing. A message from emily@bridgerockres.com with the subject Bridge Rock Resources targeted jackson@okami-ai.com. Microsoft Sentinel scored the incident medium. Two related incidents were confirmed malicious. The linked case is CASE-1714, high priority, customer impact none, 6 affected hosts.",
-    facts:[["Sender","emily@bridgerockres.com"],["Recipient","jackson@okami-ai.com"],["Case","CASE-1714"]] },
-  { id:"travel", title:"Risk-Backed Impossible Travel - Entra ID", kind:"IDENTITY - ca0b73fe-8765-4d33-814c-63c2a5944f66", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:52 PM EST", arts:["Compromised Account: maya.santos@okami-ai.com","Adversary Sign-In IP: 192.0.2.160 (Astana)","Baseline Sign-In: 198.51.100.54"], source:"7AI", sev:"High",
-    lead:"A successful sign-in for Maya Santos landed outside her baseline and was not explained by the corporate VPN.",
-    conclusion:"Escalated. Entra ID recorded a successful sign-in for maya.santos@okami-ai.com from 192.0.2.160, against a baseline of 198.51.100.54. 7AI scored the alert high. The same Impossible Travel rule is also the top tuning recommendation: a 72% false-positive rate over 30 days, driven by VPN egress and service accounts. This row is the one that still escalated.",
-    facts:[["Account","maya.santos@okami-ai.com"],["Adversary IP","192.0.2.160"],["Baseline","198.51.100.54"]] },
-  { id:"qq", title:"CrowdStrike blocked QQPCMgr defense evasion on OKM-WKS-217 - high", kind:"ENDPOINT", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:51 PM EST", arts:["Delivery Domain: ark.m.qq.com","Process: QQPCMgr_Setup.exe"], source:"Splunk", sev:"High",
-    lead:"QQPCMgr_Setup.exe launched PowerShell on OKM-WKS-217. CrowdStrike blocked the defense-evasion chain.",
-    conclusion:"Escalated malware on the endpoint. CrowdStrike blocked QQPCMgr_Setup.exe after it launched PowerShell on OKM-WKS-217. The delivery domain was ark.m.qq.com. The linked case is CASE-1678, critical, malware and endpoint, customer impact none, 7 affected hosts. QQPCMgr is not approved for Okami endpoints; Tencent Meeting is approved only when it comes from meeting.tencent.com or the software portal.",
-    facts:[["Host","OKM-WKS-217"],["Process","QQPCMgr_Setup.exe"],["Case","CASE-1678"]] }
+    conclusion:"Escalated phishing. A message from e.sample@example.com with the subject Bridge Rock Resources targeted p.north@example.com. Microsoft Sentinel scored the incident medium. Two related incidents were confirmed malicious. The linked case is SAMPLE-1714, high priority, customer impact none, 6 affected hosts.",
+    facts:[["Sender","e.sample@example.com"],["Recipient","p.north@example.com"],["Case","SAMPLE-1714"]] },
+  { id:"travel", title:"Risk-Backed Impossible Travel - Entra ID", kind:"IDENTITY - ca0b73fe-8765-4d33-814c-63c2a5944f66", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:52 PM EST", arts:["Compromised Account: s.case@example.com","Adversary Sign-In IP: 192.0.2.160 (Astana)","Baseline Sign-In: 198.51.100.54"], source:"7AI", sev:"High",
+    lead:"A successful sign-in for S. Case landed outside her baseline and was not explained by the corporate VPN.",
+    conclusion:"Escalated. Entra ID recorded a successful sign-in for s.case@example.com from 192.0.2.160, against a baseline of 198.51.100.54. 7AI scored the alert high. The same Impossible Travel rule is also the top tuning recommendation: a 72% false-positive rate over 30 days, driven by VPN egress and service accounts. This row is the one that still escalated.",
+    facts:[["Account","s.case@example.com"],["Adversary IP","192.0.2.160"],["Baseline","198.51.100.54"]] },
+  { id:"qq", title:"CrowdStrike blocked QQPCMgr defense evasion on SAMPLE-HOST-05 - high", kind:"ENDPOINT", det:"Escalated", verdict:"MALICIOUS", time:"Yesterday Nov 3, 2026, 7:51 PM EST", arts:["Delivery Domain: ark.m.qq.com","Process: QQPCMgr_Setup.exe"], source:"Splunk", sev:"High",
+    lead:"QQPCMgr_Setup.exe launched PowerShell on SAMPLE-HOST-05. CrowdStrike blocked the defense-evasion chain.",
+    conclusion:"Escalated malware on the endpoint. CrowdStrike blocked QQPCMgr_Setup.exe after it launched PowerShell on SAMPLE-HOST-05. The delivery domain was ark.m.qq.com. The linked case is SAMPLE-1678, critical, malware and endpoint, customer impact none, 7 affected hosts. QQPCMgr is not approved for Sample Co endpoints; Tencent Meeting is approved only when it comes from meeting.tencent.com or the software portal.",
+    facts:[["Host","SAMPLE-HOST-05"],["Process","QQPCMgr_Setup.exe"],["Case","SAMPLE-1678"]] }
 ];
 const CASES = [
   { id:"1728", col:"Open", pri:"MEDIUM", title:"'WinLNK' malware was detected", tags:["MALWARE","ENDPOINT"], body:"Trojan:Win32/WinLNK.GBE!MTB. Customer impact none. 12 hosts. 1 awaiting confirmation.", impact:"None", hosts:"12", sla:"1 awaiting confirmation", team:"Tier 1 Responders" },
-  { id:"1648", col:"Open", pri:"MEDIUM", title:"Email reported by user as malware or phish", tags:["PHISHING","VIP","EMAIL"], body:"From admin@ehardplanner.com. Customer impact high. 11 hosts.", impact:"High", hosts:"11", sla:"Open", team:"Tier 1 Responders" },
+  { id:"1648", col:"Open", pri:"MEDIUM", title:"Email reported by user as malware or phish", tags:["PHISHING","VIP","EMAIL"], body:"From admin.sample@example.com. Customer impact high. 11 hosts.", impact:"High", hosts:"11", sla:"Open", team:"Tier 1 Responders" },
   { id:"1613", col:"Open", pri:"MEDIUM", title:"Human Resources shared 'Employee Pay Increase [Effective 11_29_2024].paper'", tags:["PHISHING","EMAIL"], body:"User-reported lure shared from Human Resources. Phishing, email.", impact:"None", hosts:"—", sla:"Open", team:"Tier 1 Responders" },
-  { id:"1784", col:"Triage", pri:"CRITICAL", title:"Credential-store access and outbound transfer on OKAMI-FIN-074", tags:["MALWARE","IDENTITY","ENDPOINT"], body:"Setu.exe read Chrome, Edge, and Firefox credential stores. Paused · 3d 0h 5m.", impact:"None", hosts:"10", sla:"Paused · 3d 0h 5m", team:"Priya Patel", inv:"fin" },
-  { id:"1746", col:"Triage", pri:"CRITICAL", title:"AiTM session token replay from anomalous infrastructure", tags:["IDENTITY","AITM","ACCOUNT TAKEOVER"], body:"Confirmed AiTM session-token replay. 36m left.", impact:"High", hosts:"—", sla:"36m left", team:"Priya Patel", inv:"aitm" },
-  { id:"1678", col:"Triage", pri:"CRITICAL", title:"CrowdStrike blocked QQPCMgr defense evasion on OKM-WKS-217", tags:["MALWARE","ENDPOINT"], body:"QQPCMgr_Setup.exe launched PowerShell. Customer impact none. 7 hosts.", impact:"None", hosts:"7", sla:"Open", team:"", inv:"qq" },
-  { id:"1701", col:"In Progress", pri:"MEDIUM", title:"Suspicious protocol implementation: blaine_wagner", tags:["INSIDER THREAT","IDENTITY"], body:"User blaine_wagner from okami-ai.com. Customer impact none. 10 hosts. Paused · 4h.", impact:"None", hosts:"10", sla:"Paused · 4h", team:"" },
+  { id:"1784", col:"Triage", pri:"CRITICAL", title:"Credential-store access and outbound transfer on SAMPLE-HOST-01", tags:["MALWARE","IDENTITY","ENDPOINT"], body:"Setu.exe read Chrome, Edge, and Firefox credential stores. Paused · 3d 0h 5m.", impact:"None", hosts:"10", sla:"Paused · 3d 0h 5m", team:"P. North", inv:"fin" },
+  { id:"1746", col:"Triage", pri:"CRITICAL", title:"AiTM session token replay from anomalous infrastructure", tags:["IDENTITY","AITM","ACCOUNT TAKEOVER"], body:"Confirmed AiTM session-token replay. 36m left.", impact:"High", hosts:"—", sla:"36m left", team:"P. North", inv:"aitm" },
+  { id:"1678", col:"Triage", pri:"CRITICAL", title:"CrowdStrike blocked QQPCMgr defense evasion on SAMPLE-HOST-05", tags:["MALWARE","ENDPOINT"], body:"QQPCMgr_Setup.exe launched PowerShell. Customer impact none. 7 hosts.", impact:"None", hosts:"7", sla:"Open", team:"", inv:"qq" },
+  { id:"1701", col:"In Progress", pri:"MEDIUM", title:"Suspicious protocol implementation: sample.user", tags:["INSIDER THREAT","IDENTITY"], body:"User sample.user from example.com. Customer impact none. 10 hosts. Paused · 4h.", impact:"None", hosts:"10", sla:"Paused · 4h", team:"" },
   { id:"1785", col:"In Progress", pri:"LOW", title:"NetOneDrive: regsvr32.exe", tags:["MALWARE","ENDPOINT"], body:"Investigation limited by absence of process telemetry. SLA awaiting confirmation.", impact:"None", hosts:"—", sla:"Awaiting confirmation", team:"" },
   { id:"1787", col:"Waiting", pri:"CRITICAL", title:"CRXfiltrate browser traffic across four endpoints", tags:["MALWARE","ENDPOINT","BROWSER EXTENSION"], body:"Four endpoints, high confidence. Customer impact high. 23 hosts. 36m left. 0/12.", impact:"High", hosts:"23", sla:"36m left · 0/12", team:"", inv:"crx" },
   { id:"1714", col:"Waiting", pri:"HIGH", title:"Bridge Rock Resources", tags:["PHISHING","EMAIL"], body:"Two related incidents were confirmed malicious. Customer impact none. 6 hosts.", impact:"None", hosts:"6", sla:"Paused", team:"", inv:"bridge" },
@@ -242,17 +244,17 @@ function pulse() {
     <article class="card"><h3>Federated SIEM</h3><p class="subd">Query, detect, and act on data wherever it lives</p>
       <div class="kicker">DETECT</div><div class="split"><div><div class="stat">78% <span>ATT&CK coverage</span></div><p>3 detection tuning recommendations to improve ATT&CK coverage are ready for review</p><button class="link" data-go="detect/exfil">Exfiltration: Optimize Coverage for T1567 · Critical</button><div><button class="link" data-go="detect/coverage">Fix the exfiltration coverage gap</button></div></div>${ring(78,"#3346c8")}</div>
       <div class="kicker">DATA LAKES</div><div class="stat">3 <span>Watchlist hits on ingest</span></div>
-      <div class="hit"><span>45.83.12.9 Cobalt Strike C2 — Threat IPs</span><b class="crit">2 HITS</b></div>
+      <div class="hit"><span>198.51.100.9 Cobalt Strike C2 — Threat IPs</span><b class="crit">2 HITS</b></div>
       <div class="hit"><span>3f1c9a2b7e Lumma Stealer — Known Sample</span><b class="crit">1 HIT</b></div>
       <div class="kicker" style="margin-top:10px">LAKE HEALTH</div>
       ${["7AI","Okta","Sumo"].map(n=>`<div class="hit"><span>${n}</span><span class="ok">OPERATIONAL</span></div>`).join("")}
-      <p><button class="link" data-go="detect/search/credential">Review: Credential theft around 185.220.101.45</button></p>
+      <p><button class="link" data-go="detect/search/credential">Review: Credential theft around 203.0.113.45</button></p>
       <button class="link" data-go="detect/search">Dive into your search results</button>
     </article>
     <article class="card"><h3>AI SOC</h3><p class="subd">Investigate and respond to every alert</p>
       <div class="kicker">INVESTIGATE</div><div class="split"><div><div class="stat">14 <span>Escalated investigations</span></div><button class="link" data-go="investigate/aitm">AiTM session token replay from anomalous infrastructure</button><div><button class="link" data-go="investigate/aitm">Investigate this alert</button></div></div>${ring(22,"#c4233c")}</div>
       <div class="kicker">RESPOND</div><div class="split"><div><div class="stat">5 <span>Open remediations</span></div><p class="legend"><span><i class="dot" style="background:#94a3b8"></i>Open</span><span><i class="dot" style="background:#157a45"></i>Closed</span><span><i class="dot" style="background:#3346c8"></i>7AI Auto</span><span><i class="dot" style="background:#7c3aed"></i>7AI PLAID Elite</span><span><i class="dot" style="background:#b45309"></i>Analysts</span></p>
-      <button class="link" data-go="respond/case/1784">Credential-store access and outbound transfer on OKAMI-FIN-074 · Critical</button><div><button class="link" data-go="respond/case/1784">Review the case</button></div></div>${ring(18,"#c2410c")}</div>
+      <button class="link" data-go="respond/case/1784">Credential-store access and outbound transfer on SAMPLE-HOST-01 · Critical</button><div><button class="link" data-go="respond/case/1784">Review the case</button></div></div>${ring(18,"#c2410c")}</div>
     </article>
     <article class="card"><h3>Hunt & Services</h3><p class="subd">Threat hunting and 24/7 managed services</p>
       <div class="kicker">HUNT</div><div class="stat">17 <span>Reports processed</span></div>
@@ -275,7 +277,8 @@ function detectDash() {
     <div><div class="meta">FALSE POSITIVE RATE</div><div class="stat">22%</div></div>
   </div><button class="link" data-go="detect/rules">View Rules</button>
   <h2 style="margin-top:16px">Alert activity</h2>
-  <p class="meta">Last 7 days, Oct 29 – Nov 4. The capture shows a stacked bar for each day. The bar heights were not readable, so they are not drawn as counts.</p>
+  <p class="meta">Last 7 days, Oct 29 – Nov 4. Sample bar heights. The public chart did not include readable counts.</p>
+  <div class="bars" aria-label="Sample alert activity"><i style="height:46%"></i><i style="height:62%"></i><i style="height:38%"></i><i style="height:70%"></i><i style="height:54%"></i><i style="height:80%"></i><i style="height:44%"></i></div>
   <div class="legend"><span>Oct 29</span><span>Oct 30</span><span>Oct 31</span><span>Nov 1</span><span>Nov 2</span><span>Nov 3</span><span>Nov 4</span></div>
   <p class="legend"><span><i class="dot" style="background:#7f1d1d"></i>Critical</span><span><i class="dot" style="background:#c2410c"></i>High</span><span><i class="dot" style="background:#f59e0b"></i>Medium</span><span><i class="dot" style="background:#93c5fd"></i>Low</span><span><i class="dot" style="background:#e5e7eb"></i>Informational</span></p>
   <button class="link" data-go="detect/alerts">6,421 Alerts · View Alerts</button></div>
@@ -350,7 +353,7 @@ function coverage(r) {
   }).join("")}</article>`).join("")}</div>`;
 }
 function exfil() {
-  return crumb(["Detect","Coverage Analysis","Exfiltration T1567"])+`<div class="card"><span class="tag mal">CRITICAL</span><h1>Exfiltration: Optimize Coverage for T1567</h1><p>Fix the exfiltration coverage gap. The detect dashboard calls this the critical recommendation. Credential Access is 89% covered, and Forced Authentication (T1187) is the uncovered technique next to it.</p><p>Watchlist context from Pulse: 45.83.12.9 Cobalt Strike C2 (2 hits) and sample 3f1c9a2b7e Lumma Stealer (1 hit).</p><button class="link" data-go="detect/optimize">Open the tuning queue</button></div>`;
+  return crumb(["Detect","Coverage Analysis","Exfiltration T1567"])+`<div class="card"><span class="tag mal">CRITICAL</span><h1>Exfiltration: Optimize Coverage for T1567</h1><p>Fix the exfiltration coverage gap. The detect dashboard calls this the critical recommendation. Credential Access is 89% covered, and Forced Authentication (T1187) is the uncovered technique next to it.</p><p>Watchlist context from Pulse: 198.51.100.9 Cobalt Strike C2 (2 hits) and sample 3f1c9a2b7e Lumma Stealer (1 hit).</p><button class="link" data-go="detect/optimize">Open the tuning queue</button></div>`;
 }
 function optimize(r) {
   const tab = r && r.c==="applied" ? "applied" : r && r.c==="audit" ? "audit" : "recs";
@@ -369,13 +372,13 @@ function optimize(r) {
   }
   if (tab==="audit") {
     const rows = [
-      ["Applied","Exclude vulnerability scanners from port-sweep detection","Erika Lang","Oct 29, 9:15 AM EDT"],
-      ["Applied","Detection added for password spraying","Marcus Webb","Oct 22, 2:02 PM EDT"],
-      ["Dismissed","Promote the browser-extension hunt","Erika Lang","Oct 16, 11:40 AM EDT"],
-      ["Deferred","Cover container escape techniques","Priya Raman","Oct 13, 4:05 PM EDT"],
-      ["Applied","Tuned DNS-tunneling rule to ignore CDN prefetch","Marcus Webb","Oct 8, 10:30 AM EDT"],
-      ["Dismissed","Widen the brute-force window to 24 hours","Priya Raman","Oct 1, 1:55 PM EDT"],
-      ["Applied","Routed identity alerts to the IAM queue","Erika Lang","Sep 24, 3:20 PM EDT"]
+      ["Applied","Exclude vulnerability scanners from port-sweep detection","A. Example","Oct 29, 9:15 AM EDT"],
+      ["Applied","Detection added for password spraying","M. Sample","Oct 22, 2:02 PM EDT"],
+      ["Dismissed","Promote the browser-extension hunt","A. Example","Oct 16, 11:40 AM EDT"],
+      ["Deferred","Cover container escape techniques","P. North","Oct 13, 4:05 PM EDT"],
+      ["Applied","Tuned DNS-tunneling rule to ignore CDN prefetch","M. Sample","Oct 8, 10:30 AM EDT"],
+      ["Dismissed","Widen the brute-force window to 24 hours","P. North","Oct 1, 1:55 PM EDT"],
+      ["Applied","Routed identity alerts to the IAM queue","A. Example","Sep 24, 3:20 PM EDT"]
     ];
     return head+table(["Action","Recommendation","Actor","When"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td></tr>`))+`<div class="pager"><span>Showing 1 – 7 readable rows. The capture footer read 1 – 10 of 10.</span></div>`;
   }
@@ -412,46 +415,46 @@ function routing(r) {
   }
   if (tab==="audit") {
     const rows = [
-      ["Nov 3, 3:05 AM EST","Priya Patel","Quarantine ransomware indicators","Universal","disabled → enabled"],
-      ["Nov 3, 6:00 AM EST","Priya Patel","Impossible travel sign-in","Per-Rule","— → workflow"],
-      ["Nov 3, 10:30 AM EST","Lisa Martinez","Critical detections always investigate","Universal","do_not_investigate → investigate"]
+      ["Nov 3, 3:05 AM EST","P. North","Quarantine ransomware indicators","Universal","disabled → enabled"],
+      ["Nov 3, 6:00 AM EST","P. North","Impossible travel sign-in","Per-Rule","— → workflow"],
+      ["Nov 3, 10:30 AM EST","M. Sample","Critical detections always investigate","Universal","do_not_investigate → investigate"]
     ];
     return head+table(["When","Actor","Rule","Scope","Change"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td></tr>`))+`<div class="pager"><span>Showing 1 – 3 of 3</span></div>`;
   }
   if (tab==="entities") {
     const rows = [
-      ["VIP users","Users whose alerts should always be investigated","User","sensitive","2","Nov 3, 8:00 AM EST","Priya Patel"],
-      ["Approved scanners","Internal scanner source IPs","IP","normal","3","Nov 3, 8:00 AM EST","Priya Patel"]
+      ["VIP users","Users whose alerts should always be investigated","User","sensitive","2","Nov 3, 8:00 AM EST","P. North"],
+      ["Approved scanners","Internal scanner source IPs","IP","normal","3","Nov 3, 8:00 AM EST","P. North"]
     ];
     return head+table(["List","Description","Type","Sensitivity","Entries","Updated","Owner"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td><td>${esc(row[5])}</td><td>${esc(row[6])}</td></tr>`))+`<div class="pager"><span>Showing 1 – 2 of 2</span></div>`;
   }
   const rows = [
-    ["Critical detections always investigate","Anything rated critical is investigated immediately","ENABLED","on","—","Investigate","42","Lisa Martinez · Nov 3, 10:30 AM EST"],
-    ["Sample low-severity informational alerts","Investigate a sample of low-severity informational alerts","ENABLED","on","—","Investigate · sampling 10%","310","Priya Patel · Nov 3, 4:15 AM EST"],
-    ["Suppress known scanner noise","Do not investigate alerts from the approved internal scanner","ENABLED","on","entity on VIP list","Do not investigate","18","Lisa Martinez · Nov 3, 12:45 PM EST"],
-    ["Quarantine ransomware indicators","Run the quarantine workflow for ransomware detections","DRAFT","off","—","Quarantine and notify","7","Robert Kim"],
+    ["Critical detections always investigate","Anything rated critical is investigated immediately","ENABLED","on","—","Investigate","42","M. Sample · Nov 3, 10:30 AM EST"],
+    ["Sample low-severity informational alerts","Investigate a sample of low-severity informational alerts","ENABLED","on","—","Investigate · sampling 10%","310","P. North · Nov 3, 4:15 AM EST"],
+    ["Suppress known scanner noise","Do not investigate alerts from the approved internal scanner","ENABLED","on","entity on VIP list","Do not investigate","18","M. Sample · Nov 3, 12:45 PM EST"],
+    ["Quarantine ransomware indicators","Run the quarantine workflow for ransomware detections","DRAFT","off","—","Quarantine and notify","7","J. Demo"],
     ["Phishing — enrich and quarantine","Run enrichment and quarantine workflows for confirmed phishing","ENABLED","on","—","Enrich and tag, quarantine and notify","12","—"],
     ["Archived legacy suppression","Old suppression rule, archived","ARCHIVED","off","—","Do not investigate","3","—"]
   ];
   return head+`<div class="row"><input type="search" placeholder="Search universal rules"><span class="chip">Status (3)</span><button type="button" class="chip">Reset all</button><button type="button" class="chip">Create universal rule</button></div>
-  ${table(["Name","Description","Status","Toggle","Exceptions","Outcome","Impacted rules","Last edited"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td><td>${esc(row[5])}</td><td>${esc(row[6])}</td><td>${esc(row[7])}</td></tr>`))}<div class="pager"><span>Showing 1 – 6 of 6 rules</span></div><p class="meta">Phishing and the archived rule have no readable last-edited name. Robert Kim’s time on the ransomware draft was cut off.</p>`;
+  ${table(["Name","Description","Status","Toggle","Exceptions","Outcome","Impacted rules","Last edited"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td><td>${esc(row[5])}</td><td>${esc(row[6])}</td><td>${esc(row[7])}</td></tr>`))}<div class="pager"><span>Showing 1 – 6 of 6 rules</span></div><p class="meta">Phishing and the archived rule have no readable last-edited name. J. Demo’s time on the ransomware draft was cut off.</p>`;
 }
 function watchlists(r) {
   const rows = [
-    ["CRXfiltrate confirmed browser infrastructure","ACTIVE","Alert on exact confirmed CRXfiltrate domains. Shared CDN hosts, advertising services, and IP-only matches are excluded.","DOMAIN","5 Domains","Sarah Chen · Nov 3, 8:20 AM EST","Nov 3, 8:00 PM EST","4 alerts · 3,313 hits"],
-    ["APT29 C2 infrastructure","ACTIVE","Known Cobalt Strike beacons attributed to APT29. Alert on any egress match.","IP, DOMAIN","12 IPs, 4 Domains","Sarah Chen · Nov 3, 10:22 AM EST","Nov 3, 8:00 PM EST","18 alerts · 42 hits"],
-    ["Suspicious VIP accounts","ACTIVE","Executive accounts flagged during phishing campaign review.","USER","1 User","Mike Johnson · Nov 3, 7:00 AM EST","—","1 alert · 3 hits"],
-    ["Legacy malware hashes (paused)","PAUSED","Paused pending hash refresh from the TI feed.","FILE HASH","8 File hashes","Sarah Chen · Nov 3, 4:00 AM EST","—","—"]
+    ["CRXfiltrate confirmed browser infrastructure","ACTIVE","Alert on exact confirmed CRXfiltrate domains. Shared CDN hosts, advertising services, and IP-only matches are excluded.","DOMAIN","5 Domains","S. Case · Nov 3, 8:20 AM EST","Nov 3, 8:00 PM EST","4 alerts · 3,313 hits"],
+    ["APT29 C2 infrastructure","ACTIVE","Known Cobalt Strike beacons attributed to APT29. Alert on any egress match.","IP, DOMAIN","12 IPs, 4 Domains","S. Case · Nov 3, 10:22 AM EST","Nov 3, 8:00 PM EST","18 alerts · 42 hits"],
+    ["Suspicious VIP accounts","ACTIVE","Executive accounts flagged during phishing campaign review.","USER","1 User","A. Example · Nov 3, 7:00 AM EST","—","1 alert · 3 hits"],
+    ["Legacy malware hashes (paused)","PAUSED","Paused pending hash refresh from the TI feed.","FILE HASH","8 File hashes","S. Case · Nov 3, 4:00 AM EST","—","—"]
   ];
   const tab = r && r.c==="audit" ? "audit" : "lists";
   const tabs = pageTabs([["lists","Watchlists","#/detect/watchlists"],["audit","Audit Log","#/detect/watchlists/audit"]], tab);
   const kpis = `<div class="kpis"><div class="card"><div class="meta">Active watchlists</div><div class="stat">3</div></div><div class="card"><div class="meta">Total watchlists</div><div class="stat">4</div></div><div class="card"><div class="meta">Active entries</div><div class="stat">22</div></div><div class="card"><div class="meta">Alerts (30d)</div><div class="stat">23</div></div><div class="card"><div class="meta">Expiring (next 7d)</div><div class="stat">4</div></div></div>`;
   if (tab==="audit") {
     const log = [
-      ["Oct 14, 10:22 AM EDT","Created","APT29 C2 infrastructure","—","Sarah Chen"],
-      ["Oct 14, 10:23 AM EDT","Entry added","APT29 C2 infrastructure","evilmalware.ru (Domain)","Sarah Chen"],
-      ["Oct 30, 12:40 PM EDT","Paused","Legacy malware hashes (paused)","—","Sarah Chen"],
-      ["Nov 3, 7:00 AM EST","Created","Suspicious VIP accounts","—","Mike Johnson"]
+      ["Oct 14, 10:22 AM EDT","Created","APT29 C2 infrastructure","—","S. Case"],
+      ["Oct 14, 10:23 AM EDT","Entry added","APT29 C2 infrastructure","evilmalware.ru (Domain)","S. Case"],
+      ["Oct 30, 12:40 PM EDT","Paused","Legacy malware hashes (paused)","—","S. Case"],
+      ["Nov 3, 7:00 AM EST","Created","Suspicious VIP accounts","—","A. Example"]
     ];
     return crumb(["Detect","Watchlist Management","Audit Log"])+kpis+tabs+table(["When","Action","Watchlist","Entry","Actor"], log.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td></tr>`))+`<div class="pager"><span>Showing 1 – 4 of 4</span></div>`;
   }
@@ -459,7 +462,7 @@ function watchlists(r) {
 }
 function search(r) {
   const query = `from ocsf where
-(class = 'authentication' and activity_id = 1 and status_id = 2 and src_endpoint.ip = '185.220.101.45' and time >= now() - 24h)
+(class = 'authentication' and activity_id = 1 and status_id = 2 and src_endpoint.ip = '203.0.113.45' and time >= now() - 24h)
 or (class = 'detection_finding' and array_contains(attacks[*].tactic.uid, 'TA0006') and device.user.name in (failed_login_users) and time >= now() - 90d)
 | sort time desc`;
   if (r.c==="credential") {
@@ -481,12 +484,12 @@ or (class = 'detection_finding' and array_contains(attacks[*].tactic.uid, 'TA000
     const result = view==="json"
       ? table(["Timestamp","Message"], events.map(e=>`<tr><td>${esc(e[1])}</td><td>{"id":"${esc(e[0])}","time":"${esc(e[1])}","ocsf_class":"authentication","metadata":…}</td></tr>`))
       : table(["Timestamp","Source","id","time","ocsf_class","metadata"], events.filter(e=>e[2]).map(e=>`<tr><td>6 Months Ago<br>${esc(e[2])}</td><td>7AI</td><td>${esc(e[0])}</td><td>${esc(e[1])}</td><td>authentication</td><td>{"original_source":"Okta","product_name":"Okta …</td></tr>`));
-    return crumb(["Detect","Federated Search","Search Details"])+`<div class="row"><b>Credential theft around 185.220.101.45</b><span class="chip">5/16/2026 – 5/17/2026 (24 hours)</span><span class="chip">Connectors · 7AI</span><span class="grow"></span><button class="chip" type="button">Edit</button><button class="chip" type="button">Save and Re-run</button></div>
+    return crumb(["Detect","Federated Search","Search Details"])+`<div class="row"><b>Credential theft around 203.0.113.45</b><span class="chip">5/16/2026 – 5/17/2026 (24 hours)</span><span class="chip">Connectors · 7AI</span><span class="grow"></span><button class="chip" type="button">Edit</button><button class="chip" type="button">Save and Re-run</button></div>
     <div class="grid2"><div>
-      <div class="bubble"><b>Search Assistant</b><p>Show every event tied to source IP 185.220.101.45 or to any of the 18 users it targeted, including auth attempts and any credential-theft endpoint activity in the past 90 days.</p></div>
-      <div class="bubble me"><b>7AI</b><p>I'll search your SIEM for every event tied to 185.220.101.45 and the 18 targeted users, covering authentication attempts and credential-theft endpoint activity over the past 90 days.</p><p>Found 14 events: 5 failed logins from 185.220.101.45 in the last 24 hours plus 9 credential-access detections against the targeted users. The distribution and per-field filters are on the right.</p></div>
+      <div class="bubble"><b>Search Assistant</b><p>Show every event tied to source IP 203.0.113.45 or to any of the 18 users it targeted, including auth attempts and any credential-theft endpoint activity in the past 90 days.</p></div>
+      <div class="bubble me"><b>7AI</b><p>I'll search your SIEM for every event tied to 203.0.113.45 and the 18 targeted users, covering authentication attempts and credential-theft endpoint activity over the past 90 days.</p><p>Found 14 events: 5 failed logins from 203.0.113.45 in the last 24 hours plus 9 credential-access detections against the targeted users. The distribution and per-field filters are on the right.</p></div>
       <div class="bubble"><p>Only keep events where the login actually succeeded.</p></div>
-      <div class="bubble me"><b>7AI</b><p>Narrowed to successful authentications only. 3 events remain, all interactive logons for jmalik from 185.220.101.45.</p></div>
+      <div class="bubble me"><b>7AI</b><p>Narrowed to successful authentications only. 3 events remain, all interactive logons for jmalik from 203.0.113.45.</p></div>
     </div><div class="card"><div class="kicker">Query 1</div><pre style="white-space:pre-wrap;font-size:12px">${esc(query)}</pre>
     <p><b>14 Results</b></p>${pageTabs([["json","JSON","#/detect/search/credential/json"],["table","Table","#/detect/search/credential/table"]], view)}
     ${result}<p class="meta">${view==="table"?"Three table rows were fully visible. Twelve JSON timestamps were readable. The capture footer read Showing 1 – 14 of 14 Events.":"Twelve JSON rows were readable. The fourteenth event was below the fold."}</p></div></div>`;
@@ -494,13 +497,13 @@ or (class = 'detection_finding' and array_contains(attacks[*].tactic.uid, 'TA000
   const mode = r.c==="advanced" ? "advanced" : "chat";
   const tabs = pageTabs([["chat","Chat","#/detect/search"],["advanced","Advanced","#/detect/search/advanced"]], mode);
   if (mode==="advanced") {
-    const fav = [["Credential theft around 185.220.101.45","24 hours","credential"],["Lateral movement indicators","30 days","recent"],["Malware with C2 connections","3 days","recent"]];
-    const recent = [["Credential theft around 185.220.101.45","24 hours","credential"],["Failed external auth attempts (24h)","7 days","recent"],["Lateral movement indicators","30 days","recent"]];
+    const fav = [["Credential theft around 203.0.113.45","24 hours","credential"],["Lateral movement indicators","30 days","recent"],["Malware with C2 connections","3 days","recent"]];
+    const recent = [["Credential theft around 203.0.113.45","24 hours","credential"],["Failed external auth attempts (24h)","7 days","recent"],["Lateral movement indicators","30 days","recent"]];
     return crumb(["Detect","Federated Search"])+`<h1>What do you want to search for in your environment?</h1>`+tabs+`<div class="card"><p>Author a query to run against the selected connector.</p><p class="meta">Last 7 days · Microsoft Defender Instance 1</p><textarea placeholder="Author a query"></textarea><p><button class="chip" type="button" style="background:#14171c;color:#fff">Run</button></p></div>
     <div class="grid2"><div class="card"><h2>Favorite searches</h2>${fav.map(f=>`<div class="hit"><button class="link" data-go="detect/search/${f[2]}">${esc(f[0])}</button><span class="meta">${esc(f[1])}</span></div>`).join("")}</div>
     <div class="card"><h2>Recent searches</h2>${recent.map(f=>`<div class="hit"><button class="link" data-go="detect/search/${f[2]}">${esc(f[0])}</button><span class="meta">${esc(f[1])}</span></div>`).join("")}</div></div>`;
   }
-  const fav = [["Credential theft around 185.220.101.45","24 hours","credential"],["Failed external auth attempts (24h)","7 days","recent"],["Lateral movement indicators","30 days","recent"],["Malware with C2 connections","3 days","recent"]];
+  const fav = [["Credential theft around 203.0.113.45","24 hours","credential"],["Failed external auth attempts (24h)","7 days","recent"],["Lateral movement indicators","30 days","recent"],["Malware with C2 connections","3 days","recent"]];
   return crumb(["Detect","Federated Search"])+`<h1>What do you want to search for in your environment?</h1>`+tabs+`<div class="row"><span class="chip">All sources (20)</span></div>
   <div class="grid2"><div class="card"><h2>Favorite searches</h2>${fav.map(f=>`<div class="hit"><button class="link" data-go="detect/search/${f[2]}">${esc(f[0])}</button><span class="meta">${esc(f[1])}</span></div>`).join("")}</div>
   <div class="card"><h2>Recent searches</h2>${fav.slice(0,3).map(f=>`<div class="hit"><span>${esc(f[0])}</span><span class="meta">${esc(f[1])}</span></div>`).join("")}<button class="link" data-go="lakes">Available connectors</button></div></div>`;
@@ -650,11 +653,11 @@ function invDetail(r) {
   else if (tab==="transcript") body = `<div class="bubble"><b>7AI</b><p>${esc(i.lead)}</p></div><div class="bubble me"><p>${esc(i.conclusion)}</p></div><p class="meta">Press F to search. Replay and feedback stay on the summary.</p>`;
   else if (tab==="io" && i.id==="aitm") body = `<div class="card"><p><b>Microsoft Defender Incidents</b> · Nov 3, 2026 at 7:55:00 PM EST · Severity: High · IDENTITY</p><p>Two Defender identity alerts shared one user, session, hosting source, and novel browser.</p>
     <div class="find"><b>Custom skills (1)</b><div>AiTM Session Token Replay Investigation · last updated Nov 3, 2026 EST</div></div>
-    <div class="find"><b>Enterprise insights (1)</b><div>Marcus Chen is a Cloud Identity Administrator; any session-token replay for this… · marcus.chen@okami-ai.com</div></div>
+    <div class="find"><b>Enterprise insights (1)</b><div>A. Example is a Cloud Identity Administrator; any session-token replay for this… · a.example@example.com</div></div>
     <div class="find"><b>Connectors (2)</b><div>Microsoft Sentinel · 15 queries</div><div>VirusTotal · 1 query</div></div>
-    <div class="find"><b>Linked case</b><div>CRITICAL · CASE-1746 · AiTM session token replay · In Progress</div></div>
+    <div class="find"><b>Linked case</b><div>CRITICAL · SAMPLE-1746 · AiTM session token replay · In Progress</div></div>
     <p class="meta">Remediation actions on this diagram were below the fold.</p></div>`;
-  else if (tab==="io") body = `<p>The I/O diagram that was readable is the AiTM investigation: one custom skill, one enterprise insight, Microsoft Sentinel (15 queries), VirusTotal (1 query), and linked CASE-1746.</p><p><button class="link" data-go="investigate/aitm/io">Open that I/O diagram</button></p>`;
+  else if (tab==="io") body = `<p>The I/O diagram that was readable is the AiTM investigation: one custom skill, one enterprise insight, Microsoft Sentinel (15 queries), VirusTotal (1 query), and linked SAMPLE-1746.</p><p><button class="link" data-go="investigate/aitm/io">Open that I/O diagram</button></p>`;
   else body = `<div class="row">${tag(i.verdict)}<span class="chip">${esc(i.det)}</span><span class="meta">${esc(i.time)}</span><span class="grow"></span><span class="chip">Add Feedback</span><span class="chip">Replay</span><button class="chip" data-go="build/chat" type="button">Open Chat</button></div>
     <div class="card"><div class="meta">${esc(i.source)} · ${esc(i.sev)} · ${esc(i.kind)}</div><h2>${esc(i.title)}</h2><p>${esc(i.lead)}</p><div class="kicker">7AI conclusion</div><p>${esc(i.conclusion)}</p></div>
     <div class="card" style="margin-top:12px">${i.facts.map(f=>`<div class="hit"><span>${esc(f[0])}</span><b>${esc(f[1])}</b></div>`).join("")}</div>`;
@@ -671,19 +674,19 @@ function respondDash(r) {
   <div class="card"><div class="meta">In progress</div><div class="stat">15</div></div>
   <div class="card"><div class="meta">Open cases</div><div class="stat">3</div></div>
   <div class="card"><div class="meta">Closed cases</div><div class="stat">178</div></div></div>
-  <div class="grid2"><div class="card"><h2>Analyst cases</h2><p class="meta">Total 15</p><div class="hit"><span>All cases</span><b>15</b></div><div class="hit"><span>7AI PLAID Elite</span><b>12</b></div><div class="hit"><span>Priya Patel</span><b>3</b></div><div class="hit"><span>Emily Rodriguez</span><b>2</b></div><div class="hit"><span>Sarah Chen</span><b>2</b></div><div class="hit"><span>Lisa Martinez</span><b>2</b></div></div>
-  <div class="card"><h2>Tasks and closure</h2><p>Open vs closed tasks: 539 total. Closed 534 (99%). Open 5 (1%).</p><div class="hit"><span>7AI PLAID Elite</span><b>145 · 27%</b></div><div class="hit"><span>7AI Auto</span><b>320 · 60%</b></div><div class="hit"><span>Sarah</span><b>16 · 3%</b></div><div class="hit"><span>Mike</span><b>14 · 3%</b></div><div class="hit"><span>Emily</span><b>13 · 2%</b></div><div class="hit"><span>David Kim</span><b>10 · 2%</b></div><div class="hit"><span>Priya Patel</span><b>9 · 2%</b></div></div></div>`;
+  <div class="grid2"><div class="card"><h2>Analyst cases</h2><p class="meta">Total 15</p><div class="hit"><span>All cases</span><b>15</b></div><div class="hit"><span>7AI PLAID Elite</span><b>12</b></div><div class="hit"><span>P. North</span><b>3</b></div><div class="hit"><span>M. Sample</span><b>2</b></div><div class="hit"><span>S. Case</span><b>2</b></div><div class="hit"><span>M. Sample</span><b>2</b></div></div>
+  <div class="card"><h2>Tasks and closure</h2><p>Open vs closed tasks: 539 total. Closed 534 (99%). Open 5 (1%).</p><div class="hit"><span>7AI PLAID Elite</span><b>145 · 27%</b></div><div class="hit"><span>7AI Auto</span><b>320 · 60%</b></div><div class="hit"><span>S. Case</span><b>16 · 3%</b></div><div class="hit"><span>A. Example</span><b>14 · 3%</b></div><div class="hit"><span>M. Sample</span><b>13 · 2%</b></div><div class="hit"><span>J. Demo</span><b>10 · 2%</b></div><div class="hit"><span>P. North</span><b>9 · 2%</b></div></div></div>`;
 }
 function casesBoard() {
   const cols = ["Open","Triage","In Progress","Waiting"];
   return crumb(["Respond","Cases"])+`<div class="row"><input id="q" type="search" placeholder="Search" value="${esc(q)}"><span class="chip">Sort by: Priority</span><button class="chip" data-go="respond/table" type="button">Table</button><span class="grow"></span><button class="chip" type="button">+ Create Case</button></div>
   <div class="board">${cols.map(col=>{
     const cards = CASES.filter(c=>c.col===col && (!q || (c.title+c.id).toLowerCase().includes(q.toLowerCase())));
-    return `<section class="col"><h3>${esc(col)} <span>${cards.length}</span></h3>${cards.map(c=>`<article class="ticket" data-go="respond/case/${c.id}"><div class="meta ${c.pri==="CRITICAL"?"crit":c.pri==="HIGH"?"high":""}">${esc(c.pri)} · CASE-${esc(c.id)}</div><b>${esc(c.title)}</b><p>${c.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join(" ")}</p><p class="meta">${esc(c.body)}</p><div class="meta">Impact ${esc(c.impact)} · Hosts ${esc(c.hosts)}</div></article>`).join("")}</section>`;
+    return `<section class="col"><h3>${esc(col)} <span>${cards.length}</span></h3>${cards.map(c=>`<article class="ticket" data-go="respond/case/${c.id}"><div class="meta ${c.pri==="CRITICAL"?"crit":c.pri==="HIGH"?"high":""}">${esc(c.pri)} · SAMPLE-${esc(c.id)}</div><b>${esc(c.title)}</b><p>${c.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join(" ")}</p><p class="meta">${esc(c.body)}</p><div class="meta">Impact ${esc(c.impact)} · Hosts ${esc(c.hosts)}</div></article>`).join("")}</section>`;
   }).join("")}</div>`;
 }
 function casesTable() {
-  return crumb(["Respond","Cases"])+table(["Case","Priority","Status","Title","Impact","Hosts","SLA"], CASES.map(c=>`<tr class="click" data-go="respond/case/${c.id}"><td>CASE-${esc(c.id)}</td><td>${sev(c.pri)}</td><td>${esc(c.col)}</td><td>${esc(c.title)}</td><td>${esc(c.impact)}</td><td>${esc(c.hosts)}</td><td>${esc(c.sla)}</td></tr>`));
+  return crumb(["Respond","Cases"])+table(["Case","Priority","Status","Title","Impact","Hosts","SLA"], CASES.map(c=>`<tr class="click" data-go="respond/case/${c.id}"><td>SAMPLE-${esc(c.id)}</td><td>${sev(c.pri)}</td><td>${esc(c.col)}</td><td>${esc(c.title)}</td><td>${esc(c.impact)}</td><td>${esc(c.hosts)}</td><td>${esc(c.sla)}</td></tr>`));
 }
 function caseDetail(r) {
   const c = CASES.find(x=>x.id===r.c) || CASES.find(x=>x.id==="1784");
@@ -692,8 +695,8 @@ function caseDetail(r) {
   const badges = c.id==="1784" ? { remediation:" 5", linked:" 2", history:" 6" } : {};
   const inv = c.inv ? INV.find(i=>i.id===c.inv) : null;
   let body = "";
-  if (tab==="remediation" && c.id==="1784") body = table(["Status","Task"], ["Revoke all active sessions for nadia.solis@okami-ai.com","Reset the corporate password for nadia.solis@okami-ai.com","Quarantine Setu.exe on OKAMI-FIN-074","Block the malicious domain releases.cloudgateway.cc","Report and monitor the signing certificate"].map((t,n)=>`<tr><td>${n<4?"PENDING":"TO DO"}</td><td>${esc(t)}<div><button class="link" type="button">Execute</button></div></td></tr>`));
-  else if (tab==="remediation") body = `<p>Remediation tasks were captured for CASE-1784. This case shows its own summary instead.</p><p>${esc(c.body)}</p>`;
+  if (tab==="remediation" && c.id==="1784") body = table(["Status","Task"], ["Revoke all active sessions for m.sample@example.com","Reset the corporate password for m.sample@example.com","Quarantine Setu.exe on SAMPLE-HOST-01","Block the malicious domain c2.example.com","Report and monitor the signing certificate"].map((t,n)=>`<tr><td>${n<4?"PENDING":"TO DO"}</td><td>${esc(t)}<div><button class="link" type="button">Execute</button></div></td></tr>`));
+  else if (tab==="remediation") body = `<p>Remediation tasks were captured for SAMPLE-1784. This case shows its own summary instead.</p><p>${esc(c.body)}</p>`;
   else if (tab==="findings") body = `<p>${esc(inv?inv.conclusion:c.body)}</p>`;
   else if (tab==="artifacts") body = (inv?inv.arts:[c.body]).map(a=>`<div class="find">${esc(a)}</div>`).join("");
   else if (tab==="timeline") body = `<div class="find">Nov 3, 2026 7:59 PM EST — case opened</div><div class="find">${esc(c.sla)}</div>`;
@@ -705,15 +708,15 @@ function caseDetail(r) {
     ["Update","Nov 3, 2026 at 1:19:35 PM EST","Case updated","7AI"],
     ["Update","Nov 3, 2026 at 11:02:28 AM EST","Incident attached to case","7AI"]
   ].map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td></tr>`))+`<div class="pager"><span>Showing 1 – 6 of 6 case history</span></div>`;
-  else if (tab==="history") body = `<p>The six case-history rows were captured on CASE-1784.</p><p><button class="link" data-go="respond/case/1784/history">Open CASE-1784 history</button></p>`;
+  else if (tab==="history") body = `<p>The six case-history rows were captured on SAMPLE-1784.</p><p><button class="link" data-go="respond/case/1784/history">Open SAMPLE-1784 history</button></p>`;
   else if (tab==="linked" && c.id==="1784") body = table(["Title","Status","Priority","Assignee","Tags"], [
     `<tr class="click" data-go="respond/case/1714"><td>Bridge Rock Resources</td><td>In Progress</td><td>${sev("HIGH")}</td><td>RK</td><td>Phishing, Email</td></tr>`,
     `<tr class="click" data-go="respond/case/1746"><td>AiTM session token replay</td><td>In Progress</td><td>${sev("CRITICAL")}</td><td>SC</td><td>Identity, AiTM</td></tr>`
   ])+`<div class="pager"><span>Showing 1 – 2 of 2 linked cases</span></div>`;
-  else if (tab==="linked") body = `<p>Linked-case rows were captured on CASE-1784: Bridge Rock Resources and the AiTM session replay.</p><p><button class="link" data-go="respond/case/1784/linked">Open those linked cases</button></p>`;
+  else if (tab==="linked") body = `<p>Linked-case rows were captured on SAMPLE-1784: Bridge Rock Resources and the AiTM session replay.</p><p><button class="link" data-go="respond/case/1784/linked">Open those linked cases</button></p>`;
   else body = `<p>${esc(c.body)}</p><p class="meta">Customer impact ${esc(c.impact)}. Affected hosts ${esc(c.hosts)}.</p>`;
   const side = c.id==="1784" ? `<div class="hit"><span>Group</span><b>No group</b></div><div class="hit"><span>Regulatory report filed</span><b>No</b></div><div class="hit"><span>Escalation deadline</span><b>Nov 11, 2026 19:59</b></div><div class="hit"><span>Response team</span><b>LEGAL</b></div>` : "";
-  return crumb(["Respond","Cases",c.title])+`<div class="row"><span class="${c.pri==="CRITICAL"?"crit":"high"}">${esc(c.pri)}</span><b>CASE-${esc(c.id)}</b><span class="chip">${esc(c.col)}</span>${inv?`<button class="link" data-go="investigate/${inv.id}">Open investigation</button>`:""}</div>
+  return crumb(["Respond","Cases",c.title])+`<div class="row"><span class="${c.pri==="CRITICAL"?"crit":"high"}">${esc(c.pri)}</span><b>SAMPLE-${esc(c.id)}</b><span class="chip">${esc(c.col)}</span>${inv?`<button class="link" data-go="investigate/${inv.id}">Open investigation</button>`:""}</div>
   <div class="tabs">${tabs.map(t=>`<a class="${tab===t[0]?"on":""}" href="#/respond/case/${c.id}/${t[0]}">${t[1]}${badges[t[0]]||""}</a>`).join("")}</div>
   <div class="grid2"><div>${body}</div><aside class="card"><div class="hit"><span>Verdict</span>${inv?tag(inv.verdict):`<span class="meta">Not on this card</span>`}</div><div class="hit"><span>Assignee</span><b>${esc(c.team||"Unassigned")}</b></div><div class="hit"><span>SLA</span><b>${esc(c.sla)}</b></div><div class="hit"><span>Customer impact</span><b>${esc(c.impact)}</b></div><div class="hit"><span>Affected hosts</span><b>${esc(c.hosts)}</b></div>${side}<div class="meta">Created November 3, 2026</div></aside></div>`;
 }
@@ -759,48 +762,48 @@ function workflows(r) {
     return crumb(["Respond","Workflows","History"])+tabs+`<div class="row"><span class="chip">Last 7 days</span></div>`+table(["Run","Status","Trigger","Started","Completed"], rows.map(row=>`<tr><td><b>${esc(row[0])}</b><div class="meta">${esc(row[5])}</div></td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td></tr>`))+`<div class="pager"><span>Showing 6 readable runs. The capture footer read Showing 1 – 25 of 33 Runs.</span></div>`;
   }
   const rows = [
-    ["case","Create case from investigation","Opens a case for every completed investigation, pre-filled from the alert and 7AI's findings.","ENABLED","Investigation Completed","214","Alice Chen","Nov 3, 2026 5:25 AM EST"],
-    ["isolate","CrowdStrike guarded host isolation","After 7AI escalates an endpoint investigation, auto-contains the host only if CrowdStrike reports it as an employee laptop.","ENABLED","Investigation Completed","47","Ben Ortiz","Nov 2, 2026 12:40 PM EST"],
-    ["lock","Compromised credential lockdown","When 7AI confirms stolen credentials, blocks the attacker's IP at the identity provider and signs the account out everywhere.","ENABLED","Investigation Completed","67","Alice Chen","Nov 1, 2026 7:38 AM EST"],
-    ["phish","Phishing email response, blast radius & quarantine","One playbook for user-reported phishing. Malicious reports are quarantined across every mailbox.","ENABLED","Investigation Completed","188","Emma Davis","Oct 31, 2026 10:12 AM EDT"],
-    ["notify","Case notifications — Slack, Teams & email","When a case's priority changes, notifies the right channels. Critical pages on-call.","ENABLED","Case Updated","184","David Brown","Oct 30, 2026 6:17 PM EDT"]
+    ["case","Create case from investigation","Opens a case for every completed investigation, pre-filled from the alert and 7AI's findings.","ENABLED","Investigation Completed","214","A. Example","Nov 3, 2026 5:25 AM EST"],
+    ["isolate","CrowdStrike guarded host isolation","After 7AI escalates an endpoint investigation, auto-contains the host only if CrowdStrike reports it as an employee laptop.","ENABLED","Investigation Completed","47","P. North","Nov 2, 2026 12:40 PM EST"],
+    ["lock","Compromised credential lockdown","When 7AI confirms stolen credentials, blocks the attacker's IP at the identity provider and signs the account out everywhere.","ENABLED","Investigation Completed","67","A. Example","Nov 1, 2026 7:38 AM EST"],
+    ["phish","Phishing email response, blast radius & quarantine","One playbook for user-reported phishing. Malicious reports are quarantined across every mailbox.","ENABLED","Investigation Completed","188","S. Case","Oct 31, 2026 10:12 AM EDT"],
+    ["notify","Case notifications — Slack, Teams & email","When a case's priority changes, notifies the right channels. Critical pages on-call.","ENABLED","Case Updated","184","A. Example","Oct 30, 2026 6:17 PM EDT"]
   ];
   return crumb(["Respond","Workflows"])+`<div class="row"><input type="search" placeholder="Search workflows…">${tabs}<span class="grow"></span><button class="chip" type="button" data-go="respond/workflow/case">Create workflow</button></div>
   ${table(["Workflow","Status","Trigger","Runs (30d)","Last edited by","Last updated"], rows.map(row=>`<tr class="click" data-go="respond/workflow/${row[0]}"><td><b>${esc(row[1])}</b><div class="meta">${esc(row[2])}</div></td><td class="ok">${esc(row[3])}</td><td>${esc(row[4])}</td><td>${esc(row[5])}</td><td>${esc(row[6])}</td><td>${esc(row[7])}</td></tr>`))}<div class="pager"><span>Showing 1 – 5 of 23 Workflows</span></div>`;
 }
 function workflow(r) {
   const known = {
-    case:["Create case from investigation","Enabled. Opens a case for every completed investigation, pre-filled from the alert and 7AI's findings. If the incident already has a case, that case is reused. 214 runs in 30 days. Last edited by Alice Chen, Nov 3, 2026 5:25 AM EST.","Investigation Completed","Open case","—"],
+    case:["Create case from investigation","Enabled. Opens a case for every completed investigation, pre-filled from the alert and 7AI's findings. If the incident already has a case, that case is reused. 214 runs in 30 days. Last edited by A. Example, Nov 3, 2026 5:25 AM EST.","Investigation Completed","Open case","—"],
     block:["Block domain and notify SOC","Enabled. Blocks the domain on the web gateway and notifies the SOC. Confirmation required. 12 runs in 30 days. This is the named custom workflow from Remediation Actions, not one of the five rows on the workflow list.","Investigation completed · malicious domain","Block Domain · Microsoft Defender","SOC channel"],
     draft:["Domain block (draft — actions removed)","Draft. The action steps were removed. Nothing runs until they are added back and the workflow is enabled.","—","No actions","—"],
-    isolate:["CrowdStrike guarded host isolation","After 7AI escalates an endpoint investigation, auto-contains the host only if CrowdStrike reports it as an employee laptop. 47 runs in 30 days. Last edited by Ben Ortiz.","Investigation Completed","Contain host · CrowdStrike","—"],
-    lock:["Compromised credential lockdown","When 7AI confirms stolen credentials, blocks the attacker's IP at the identity provider and signs the account out everywhere. 67 runs in 30 days. Last edited by Alice Chen.","Investigation Completed","Block IP and sign out","—"],
-    phish:["Phishing email response, blast radius and quarantine","One playbook for user-reported phishing. Malicious reports are quarantined across every mailbox. 188 runs in 30 days. Last edited by Emma Davis.","Investigation Completed","Quarantine message","—"],
-    notify:["Case notifications — Slack, Teams and email","When a case's priority changes, notifies the right channels. Critical pages on-call. 184 runs in 30 days. Last edited by David Brown.","Case Updated","Notify channels","On-call"]
+    isolate:["CrowdStrike guarded host isolation","After 7AI escalates an endpoint investigation, auto-contains the host only if CrowdStrike reports it as an employee laptop. 47 runs in 30 days. Last edited by P. North.","Investigation Completed","Contain host · CrowdStrike","—"],
+    lock:["Compromised credential lockdown","When 7AI confirms stolen credentials, blocks the attacker's IP at the identity provider and signs the account out everywhere. 67 runs in 30 days. Last edited by A. Example.","Investigation Completed","Block IP and sign out","—"],
+    phish:["Phishing email response, blast radius and quarantine","One playbook for user-reported phishing. Malicious reports are quarantined across every mailbox. 188 runs in 30 days. Last edited by S. Case.","Investigation Completed","Quarantine message","—"],
+    notify:["Case notifications — Slack, Teams and email","When a case's priority changes, notifies the right channels. Critical pages on-call. 184 runs in 30 days. Last edited by A. Example.","Case Updated","Notify channels","On-call"]
   };
   const row = known[r.c] || ["Workflow","This workflow id is not one of the five rows captured on the list.","—","—","—"];
   return crumb(["Respond","Workflows", row[0]])+`<div class="card"><h1>${esc(row[0])}</h1><p>${esc(row[1])}</p><div class="flow"><div class="card"><div class="kicker">Trigger</div><p>${esc(row[2])}</p></div><div class="card"><div class="kicker">Action</div><p>${esc(row[3])}</p></div><div class="card"><div class="kicker">Notify</div><p>${esc(row[4])}</p></div></div></div>`;
 }
 function runbooks() {
   const rows = [
-    ["ransomware","Ransomware Incident Response","End-to-end response procedure for ransomware detections.","RANSOMWARE","Sarah Chen"],
-    ["phishing","Phishing Email Investigation","Investigation and response procedure for phishing email.","PHISHING, EMAIL","Mike Johnson"],
-    ["account","Account Compromise & Credential Theft","Response procedure for suspected account compromise.","IDENTITY, ACCOUNT-COMPROMISE","Emily Rodriguez"],
-    ["dlp","Data Exfiltration & DLP Alert Response","Response procedure for DLP alerts and anomalous transfer.","DLP, DATA-EXFILTRATION","David Kim"],
-    ["edr","Suspicious Endpoint Activity (EDR Alert)","Investigation procedure for EDR alerts.","ENDPOINT, EDR","Priya Patel"],
-    ["cloud","Cloud Security Anomaly (AWS / Azure)","Response procedure for cloud security alerts.","CLOUD, AWS","Robert Kim"],
-    ["lateral","Lateral Movement Detection","Response procedure for internal lateral movement.","LATERAL-MOVEMENT, NETWORK","Mike Johnson"],
-    ["privesc","Privilege Escalation Alert","Response procedure for privilege escalation.","PRIVILEGE-ESCALATION, ACTIVE-DIRECTORY","Emily Rodriguez"]
+    ["ransomware","Ransomware Incident Response","End-to-end response procedure for ransomware detections.","RANSOMWARE","S. Case"],
+    ["phishing","Phishing Email Investigation","Investigation and response procedure for phishing email.","PHISHING, EMAIL","A. Example"],
+    ["account","Account Compromise & Credential Theft","Response procedure for suspected account compromise.","IDENTITY, ACCOUNT-COMPROMISE","M. Sample"],
+    ["dlp","Data Exfiltration & DLP Alert Response","Response procedure for DLP alerts and anomalous transfer.","DLP, DATA-EXFILTRATION","J. Demo"],
+    ["edr","Suspicious Endpoint Activity (EDR Alert)","Investigation procedure for EDR alerts.","ENDPOINT, EDR","P. North"],
+    ["cloud","Cloud Security Anomaly (AWS / Azure)","Response procedure for cloud security alerts.","CLOUD, AWS","J. Demo"],
+    ["lateral","Lateral Movement Detection","Response procedure for internal lateral movement.","LATERAL-MOVEMENT, NETWORK","A. Example"],
+    ["privesc","Privilege Escalation Alert","Response procedure for privilege escalation.","PRIVILEGE-ESCALATION, ACTIVE-DIRECTORY","M. Sample"]
   ];
   return crumb(["Respond","Runbooks"])+`<div class="row"><input type="search" placeholder="Search"><input type="search" placeholder="Filter by tags…"><span class="grow"></span><button class="chip" type="button">Upload Runbook</button><button class="chip" type="button">+ New Runbook</button></div>
   ${table(["Name","Description","Tags","Created","Last modified"], rows.map(r=>`<tr class="click" data-go="respond/runbook/${r[0]}"><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>Nov 3, 2026 EST · ${esc(r[4])}</td><td>Nov 3, 2026 EST</td></tr>`))}<div class="pager"><span>Showing 1 – 8 of 8 runbooks</span></div>`;
 }
 function runbook(r) {
   const books = {
-    ransomware:["Ransomware Incident Response","Sarah Chen","End-to-end response for ransomware detections, from triage through recovery.","<p>Ransomware incidents are P1 by default. Goals: prevent encryption spread, preserve forensic evidence, restore from clean backups.</p><h2>Phase 1 — Triage (0–15 min)</h2><p>Confirm the alert. Look for rapid file renames, volume shadow copy deletion, ransom notes, and high disk I/O from an unexpected process. Page the incident commander and open #ir-&lt;date&gt;-ransomware.</p><h2>Phase 2 — Containment (15–45 min)</h2><p>Isolate the affected endpoints before investigation. Do not leave the host on the network while evidence is gathered.</p>"],
-    phishing:["Phishing Email Investigation","Mike Johnson","Investigation and response for user-reported and detection-sourced phishing.","<p>1. Quarantine the message across mailboxes. 2. Identify the sender, reply-to, and link or attachment. 3. Search for campaign permutations. 4. Reset any account that interacted, and open a case if a payload executed.</p>"]
+    ransomware:["Ransomware Incident Response","S. Case","End-to-end response for ransomware detections, from triage through recovery.","<p>Ransomware incidents are P1 by default. Goals: prevent encryption spread, preserve forensic evidence, restore from clean backups.</p><h2>Phase 1 — Triage (0–15 min)</h2><p>Confirm the alert. Look for rapid file renames, volume shadow copy deletion, ransom notes, and high disk I/O from an unexpected process. Page the incident commander and open #ir-&lt;date&gt;-ransomware.</p><h2>Phase 2 — Containment (15–45 min)</h2><p>Isolate the affected endpoints before investigation. Do not leave the host on the network while evidence is gathered.</p>"],
+    phishing:["Phishing Email Investigation","A. Example","Investigation and response for user-reported and detection-sourced phishing.","<p>1. Quarantine the message across mailboxes. 2. Identify the sender, reply-to, and link or attachment. 3. Search for campaign permutations. 4. Reset any account that interacted, and open a case if a payload executed.</p>"]
   };
-  const listed = { account:["Account Compromise and Credential Theft","Emily Rodriguez","Response procedure for suspected account compromise."], dlp:["Data Exfiltration and DLP Alert Response","David Kim","Response procedure for DLP alerts and anomalous transfer."], edr:["Suspicious Endpoint Activity (EDR Alert)","Priya Patel","Investigation procedure for EDR alerts."], cloud:["Cloud Security Anomaly (AWS / Azure)","Robert Kim","Response procedure for cloud security alerts."], lateral:["Lateral Movement Detection","Mike Johnson","Response procedure for internal lateral movement."], privesc:["Privilege Escalation Alert","Emily Rodriguez","Response procedure for privilege escalation."] };
+  const listed = { account:["Account Compromise and Credential Theft","M. Sample","Response procedure for suspected account compromise."], dlp:["Data Exfiltration and DLP Alert Response","J. Demo","Response procedure for DLP alerts and anomalous transfer."], edr:["Suspicious Endpoint Activity (EDR Alert)","P. North","Investigation procedure for EDR alerts."], cloud:["Cloud Security Anomaly (AWS / Azure)","J. Demo","Response procedure for cloud security alerts."], lateral:["Lateral Movement Detection","A. Example","Response procedure for internal lateral movement."], privesc:["Privilege Escalation Alert","M. Sample","Response procedure for privilege escalation."] };
   const extra = books[r.c];
   const brief = listed[r.c];
   const name = extra ? extra[0] : brief ? brief[0] : "Runbook";
@@ -838,7 +841,7 @@ function emerging() {
     ["APT42 — Gov Phishing Wave","+14 indicators · +1 malware · +2 techniques · 7AI Threat Intelligence","Government targeting","3 findings · behavior, IOC match","Nov 3, 2026, 10:05 AM EST · 14m","apt42"],
     ["CRXfiltrate Browser Extension Campaign","+1 report · +14 indicators · 7AI Threat Intelligence","Browser extension threats","No findings · all sources checked","Nov 3, 2026, 7:30 AM EST · 22m","crx"],
     ["Operation Nightfall","+32 indicators · +6 techniques · Google Threat Intelligence","Financial sector","Running · started 1d 7h ago","Nov 3, 2026, 5:10 AM EST","night"],
-    ["Scattered Spider","Re-run by Alice Chen","Re-run requested by an analyst","Queued · waiting to start","Nov 2, 2026, 2:20 PM EST","spider"],
+    ["Scattered Spider","Re-run by A. Example","Re-run requested by an analyst","Queued · waiting to start","Nov 2, 2026, 2:20 PM EST","spider"],
     ["Lazarus Group","New threat actor · rest of the card is below the fold","","Status not readable on the capture","","lazarus"]
   ];
   return crumb(["Hunt","Emerging Threat Hunts"])+pageTabs([["all","All","#/hunt"],["emerging","Emerging","#/hunt/emerging"],["adhoc","Ad hoc","#/hunt/adhoc"]],"emerging")+`<p>Hunts 7AI ran against new and changing intelligence, and what they found in your environment.</p>
@@ -848,8 +851,8 @@ function emerging() {
 function report(r) {
   if (r.c==="apt42") return crumb(["Hunt","Emerging Threat Hunts","APT42 — Gov Phishing Wave"])+`<div class="card"><span class="tag sus">SUSPICIOUS</span><h1>APT42 — Gov Phishing Wave</h1><p>New report. 7AI Threat Intelligence. +14 indicators, +1 malware, +2 techniques. Matched rule: Government targeting — the report targets your industry. Result: 3 findings, behavior and IOC match. Nov 3, 2026, 10:05 AM EST, 14 minutes.</p></div>`;
   if (r.c==="night") return crumb(["Hunt","Emerging Threat Hunts","Operation Nightfall"])+`<div class="card"><h1>Operation Nightfall</h1><p>New campaign. Google Threat Intelligence. +32 indicators, +6 techniques. Matched rule: Financial sector — the campaign targets financial services. Status: running, started 1 day 7 hours ago. Nov 3, 2026, 5:10 AM EST.</p></div>`;
-  if (r.c==="spider") return crumb(["Hunt","Emerging Threat Hunts","Scattered Spider"])+`<div class="card"><h1>Scattered Spider</h1><p>Re-run requested by Alice Chen. Status: queued, waiting to start. Nov 2, 2026, 2:20 PM EST.</p></div>`;
-  if (r.c==="lazarus") return crumb(["Hunt","Emerging Threat Hunts","Lazarus Group"])+`<div class="card"><h1>Lazarus Group</h1><p>A new-threat-actor card is partly visible at the bottom of the emerging-hunts screen. The status and indicator counts were cut off.</p></div>`;
+  if (r.c==="spider") return crumb(["Hunt","Emerging Threat Hunts","Scattered Spider"])+`<div class="card"><h1>Scattered Spider</h1><p>Re-run requested by A. Example. Status: queued, waiting to start. Nov 2, 2026, 2:20 PM EST.</p></div>`;
+  if (r.c==="lazarus") return crumb(["Hunt","Emerging Threat Hunts","Lazarus Group"])+`<div class="card"><h1>Lazarus Group</h1><p>Sample status: queued. The public card did not include a count, so this sample uses 4 indicators and 2 techniques. Not a real hunt.</p></div>`;
   if (r.c!=="crx") return crumb(["Hunt","Threat Hunts"])+`<div class="card"><h1>Threat hunt</h1><p>This list row does not have its own captured report. APT42 and CRXfiltrate do.</p><button class="link" data-go="hunt/list">Back to the list</button></div>`;
   const rtabs = pageTabs([["overview","Overview","#/hunt/report/crx"],["details","Report Details","#/hunt/report/crx/details"]], r.d==="details"?"details":"overview");
   if (r.d==="details") return crumb(["Hunt","Emerging Threat Hunts","CRXfiltrate — Remote-Controlled Manifest V3 Browser Extensions"])+`<div class="row">${tag("MALICIOUS")}<span class="chip">3327 hits detected</span><button class="link" data-go="investigate/crx">View investigation</button><button class="link" data-go="hunt/list">View hunt</button></div>`+rtabs+`<article class="card"><h2>Report details</h2>
@@ -882,18 +885,18 @@ function memory(r) {
   const kpis = `<div class="kpis"><div class="card"><div class="meta">Total insights</div><div class="stat">23</div></div><div class="card"><div class="meta">Insight investigations (30d)</div><div class="stat">437</div></div><div class="card"><div class="meta">Users, identities, roles</div><div class="stat">40.9%</div></div><div class="card"><div class="meta">Networks / software</div><div class="stat">31.8% <span>/ 27.3%</span></div></div></div>`;
   if (tab==="generated") {
     const cards = [
-      ["bwinter@okami-ai.com","bwinter · okami-ai.com","89 alerts · 84 not escalated · 5 escalated","Associated with AWS org okami-ai.com, AWS SSO AdministratorAccess, same IP, consistent UA. Email is the UPN. No department, manager, or office."],
-      ["Jackson Miller","jackson.miller · jackson@lab.okami-ai.com · lab.okami-ai.com","156 alerts · 142 not escalated · 14 escalated","Primary user of JACKSON-LAPTOP-7334. Domain lab.okami-ai.com. NTDomain lab1. Defender ATP. Windows endpoints. UPN jackson@lab.okami-ai.com."],
-      ["dale_macejkovic83","dale_macejkovic83@okami-ai.com","","The rest of this card was not readable."],
-      ["leif_borer","Lund HQ, Sweden","","The rest of this card was not readable."]
+      ["a.example@example.com","bwinter · example.com","89 alerts · 84 not escalated · 5 escalated","Associated with AWS org example.com, AWS SSO AdministratorAccess, same IP, consistent UA. Email is the UPN. No department, manager, or office."],
+      ["P. North","p.north · p.north@lab.example.com · lab.example.com","156 alerts · 142 not escalated · 14 escalated","Primary user of SAMPLE-LAPTOP-01. Domain lab.example.com. Sample laptop. UPN p.north@lab.example.com. Not a real tenant record."],
+      ["sample.user","sample.user@example.com","","Sample insight. This sentence fills a card whose text was not in the public file. It is not a real tenant record."],
+      ["sample.user","Lund HQ, Sweden","","Sample insight. This sentence fills a card whose text was not in the public file. It is not a real tenant record."]
     ];
     return crumb(["Memory","Enterprise Insights","7AI Generated"])+kpis+tabs+cards.map(c=>`<article class="card"><h3>${esc(c[0])}</h3><p class="meta">${esc(c[1])}</p><p>${esc(c[2])}</p><p>${esc(c[3])}</p></article>`).join("")+`<div class="pager"><span>Four cards were readable. The capture footer read Showing 1 – 25 of 25.</span></div>`;
   }
-  if (tab==="suggestions") return crumb(["Memory","Enterprise Insights","AI Suggestions"])+kpis+tabs+`<div class="card"><p>Suggestions are generated on demand and not persisted.</p><p>Lookback 7 days. <button class="chip" type="button">Generate suggestions</button></p><p class="meta">0 of 5 used today. Resets at 12:00 AM EDT.</p><p>No result rows.</p></div>`;
+  if (tab==="suggestions") return crumb(["Memory","Enterprise Insights","AI Suggestions"])+kpis+tabs+`<div class="card"><p>Suggestions are generated on demand and not persisted.</p><p>Lookback 7 days. <button class="chip" type="button">Generate suggestions</button></p><p class="meta">0 of 5 used today. Resets at 12:00 AM EDT.</p><div class="find"><b>Sample suggestion.</b> a.example@example.com signed in from 192.0.2.10. Not a real tenant record.</div><div class="find"><b>Sample suggestion.</b> SAMPLE-HOST-01 ran sample.exe. Not a real tenant record.</div></div>`;
   if (tab==="prevalence") {
     const rows = [
       ["Weire_0ZGO-4.5-beta7.exe","File","Software","56 (avg 4/day)","Mar 1, 2025 7:01 AM EST","Mar 15, 2025 6:00:00 AM EDT","previous 39 · SUSPICIOUS 17 · MALICIOUS"],
-      ["Greg Plops (MS Sentinel Query)","Other","Other","8 (avg 8/day)","Mar 1","Mar 1","8 BENIGN"],
+      ["G. Sample (MS Sentinel Query)","Other","Other","8 (avg 8/day)","Mar 1","Mar 1","8 BENIGN"],
       ["SuperSuspiciousSoftware.exe","","","6 (avg 6/day)","Mar 1","Mar 1","6 SUSPICIOUS"],
       ["InternalSoftware.exe","","","5 (avg 5/day)","Mar 1","Mar 1","5 BENIGN"]
     ];
@@ -901,18 +904,18 @@ function memory(r) {
   }
   if (tab==="audit") {
     const rows = [
-      ["Apr 12, 2025 3:51:57 PM EDT","Lisa Martinez","neal6@okami-ai.com","Users","Create","Added Insight with description: NordVPN is allowed for this user: neal6@okami-ai.com"],
-      ["Apr 12, 2025 12:45:00 PM EDT","Robert Kim","DropBox","Networks","Update","Changed artifact DropBox, description File sharing using DropBox, category Networks."],
-      ["Apr 8, 2025 10:31:02 AM EDT","Robert Kim","dropbox.com","Networks","Create","Added Insight with description: File sharing using DropBox (with domain dropbox.com) is against corpo…"],
-      ["Apr 1, 2025 6:30:00 AM EDT","Robert Kim","Gilda Ortiz","Users","Update","Gilda Ortiz is the CEO of Okami AI"],
-      ["Mar 28, 2025 2:19:40 PM EDT","Robert Kim","Gilda Ortiz","Users","Create","Gilda Ortiz is the CEO of Okami AI. Her name is widely known, and is co…"]
+      ["Apr 12, 2025 3:51:57 PM EDT","M. Sample","a.example@example.com","Users","Create","Added Insight with description: NordVPN is allowed for this user: a.example@example.com"],
+      ["Apr 12, 2025 12:45:00 PM EDT","J. Demo","DropBox","Networks","Update","Changed artifact DropBox, description File sharing using DropBox, category Networks."],
+      ["Apr 8, 2025 10:31:02 AM EDT","J. Demo","dropbox.com","Networks","Create","Added Insight with description: File sharing using DropBox (with domain dropbox.com) is against corpo…"],
+      ["Apr 1, 2025 6:30:00 AM EDT","J. Demo","S. Case","Users","Update","S. Case is the CEO of Sample Co"],
+      ["Mar 28, 2025 2:19:40 PM EDT","J. Demo","S. Case","Users","Create","S. Case is the CEO of Sample Co. Her name is widely known, and is co…"]
     ];
     return crumb(["Memory","Enterprise Insights","Audit Log"])+kpis+tabs+table(["When","Actor","Artifact","Category","Action","Description"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td><td>${esc(row[5])}</td></tr>`))+`<div class="pager"><span>Five rows were readable. The capture footer read Showing 1 – 25 of 26.</span></div>`;
   }
   const rows = [
-    ["OKM-ENG-117","Hashes and Signatures","When confirmed CRXfiltrate indicators appear without an identified extension, review Chrome extensions and test malvertising as an alternate delivery path.","7AI Threat Intelligence","Jul 30, 2026 at 10:00:00 AM EDT","1 · last Jul 31, 2026 7:45 AM EDT · 7af63e4d"],
-    ["QQPCMgr","Software, Files, and Processes","QQPCMgr is not approved for Okami endpoints. Tencent Meeting is approved only when obtained from meeting.tencent.com or the software portal.","Priya Patel","Jun 20, 2026 at 10:05:00 AM EDT","1 · last Jul 29, 2026 6:02 PM EDT · 8c6deb8e"],
-    ["nadia.solis@okami-ai.com","Users, Identities, and Roles","Nadia Solis is a Financial Operations Analyst with access to Okami finance systems.","—","Jun 20, 2026 at 10:00:00 AM EDT","1 · last Jul 6, 2026 6:11 PM EDT"]
+    ["SAMPLE-HOST-03","Hashes and Signatures","When confirmed CRXfiltrate indicators appear without an identified extension, review Chrome extensions and test malvertising as an alternate delivery path.","7AI Threat Intelligence","Jul 30, 2026 at 10:00:00 AM EDT","1 · last Jul 31, 2026 7:45 AM EDT · 7af63e4d"],
+    ["QQPCMgr","Software, Files, and Processes","QQPCMgr is not approved for Sample Co endpoints. Tencent Meeting is approved only when obtained from meeting.tencent.com or the software portal.","P. North","Jun 20, 2026 at 10:05:00 AM EDT","1 · last Jul 29, 2026 6:02 PM EDT · 8c6deb8e"],
+    ["m.sample@example.com","Users, Identities, and Roles","M. Sample is a Financial Operations Analyst with access to Sample Co finance systems.","—","Jun 20, 2026 at 10:00:00 AM EDT","1 · last Jul 6, 2026 6:11 PM EDT"]
   ];
   return crumb(["Memory","Enterprise Insights"])+kpis+tabs+`<div class="row"><input type="search" placeholder="Search insights…"><span class="grow"></span><button class="chip" type="button">Add an Insight</button></div>
   ${table(["Artifact","Type","Insight","Source","Added","Use (30d)"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td><td>${esc(row[5])} investigations</td></tr>`))}<div class="pager"><span>Showing 1 – 3 of 59 Analyst Generated Insights</span></div>`;
@@ -933,9 +936,9 @@ function skills(r) {
   const tabs = pageTabs([["custom","My Custom Skills","#/memory/skills"],["augmented","My Augmented Skills","#/memory/skills/augmented"]], tab);
   if (tab==="augmented") {
     const rows = [
-      ["Splunk Query Skill","ACTIVE","AR","Nov 3, 2026 EST","Search and correlate events across Splunk indexes for investigation context."],
-      ["Microsoft Graph Query Skill","DRAFT","PN","Publish to enable","Query Microsoft Graph for identity, sign-in, and audit signals across Microsoft 365."],
-      ["CrowdStrike EDR Query Skill","DISABLED","SC","","Retrieve CrowdStrike Falcon detections and host process trees."]
+      ["Splunk Query Skill","ACTIVE","AE","Nov 3, 2026 EST","Search and correlate events across Splunk indexes for investigation context."],
+      ["Microsoft Graph Query Skill","DRAFT","MS","Publish to enable","Query Microsoft Graph for identity, sign-in, and audit signals across Microsoft 365."],
+      ["CrowdStrike EDR Query Skill","DISABLED","JD","","Retrieve CrowdStrike Falcon detections and host process trees."]
     ];
     return crumb(["Memory","Skills","My Augmented Skills"])+tabs+`<div class="row"><input type="search" placeholder="Search"><span class="grow"></span><button class="chip" type="button">+ Augment Skill</button><button class="chip" type="button">How Skills work</button></div>
     ${table(["Skill","State","Initials","Note","What it does"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td></tr>`))}
@@ -963,21 +966,21 @@ When Okta reports a suspicious Auth application grant, review the user, applicat
   <aside class="card"><h2>Relevance</h2><p>Modules: Investigation, Threat hunt, 7AI Unified Chat. Add a condition only for the constraints you care about. Nothing is required.</p><p class="meta">Source connector · Okta. Files: SKILL.md, reference/checklist.md. Draft and publish stay on this record.</p></aside></div>`;
 }
 function reporting() {
-  const rows = [["soc","Threat Detection & SOC Performance","Nov 3, 2026 at 4:44:00 AM EST","Nov 3, 2026 at 5:01:23 AM EST","priya.patel@okami-ai.com"],["q1","Quarterly Security Program Health Summary","Nov 3, 2026 at 5:14:00 AM EST","Nov 3, 2026 at 5:02:10 AM EST","naomi.brooks@okami-ai.com"],["vuln","Critical Vulnerability Exposure by Business Unit","Nov 3, 2026 at 9:30:00 AM EST","Nov 3, 2026 at 5:03:30 AM EST","carlos.mendes@okami-ai.com"]];
+  const rows = [["soc","Threat Detection & SOC Performance","Nov 3, 2026 at 4:44:00 AM EST","Nov 3, 2026 at 5:01:23 AM EST","p.north@example.com"],["q1","Quarterly Security Program Health Summary","Nov 3, 2026 at 5:14:00 AM EST","Nov 3, 2026 at 5:02:10 AM EST","s.case@example.com"],["vuln","Critical Vulnerability Exposure by Business Unit","Nov 3, 2026 at 9:30:00 AM EST","Nov 3, 2026 at 5:03:30 AM EST","j.demo@example.com"]];
   return crumb(["Build","Custom Reporting"])+`<div class="row"><input type="search" placeholder="Search"><span class="grow"></span><button class="chip" type="button">+ Create New Report</button></div>
   ${table(["Name","Created","Last updated","Created by"], rows.map(r=>`<tr class="click" data-go="build/report/${r[0]}"><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td></tr>`))}<div class="pager"><span>Showing 1 – 3 of 3 Reports</span></div>`;
 }
 function buildReport(r) {
-  if (r.c==="vuln") return crumb(["Build","Custom Reporting","Critical Vulnerability Exposure by Business Unit"])+`<div class="card"><h1>Critical Vulnerability Exposure by Business Unit</h1><p class="meta">Created by carlos.mendes@okami-ai.com · Created Nov 3, 2026 at 9:30:00 AM EST · Updated Nov 3, 2026 at 5:03:30 AM EST</p><p>The report name, author, and timestamps are on the reporting list. The narrative body was captured for the SOC performance report, not this one.</p></div>`;
+  if (r.c==="vuln") return crumb(["Build","Custom Reporting","Critical Vulnerability Exposure by Business Unit"])+`<div class="card"><h1>Critical Vulnerability Exposure by Business Unit</h1><p class="meta">Created by j.demo@example.com · Created Nov 3, 2026 at 9:30:00 AM EST · Updated Nov 3, 2026 at 5:03:30 AM EST</p><p>The report name, author, and timestamps are on the reporting list. The narrative body was captured for the SOC performance report, not this one.</p></div>`;
   const q1 = r.c==="q1";
-  return crumb(["Build","Custom Reporting", q1?"Quarterly Security Program Health Summary":"Threat Detection & SOC Performance"])+`<div class="row"><span class="meta">Created by ${q1?"naomi.brooks@okami-ai.com":"priya.patel@okami-ai.com"} · Last run Nov 3, 2026 at 5:00:00 AM EST</span><span class="grow"></span><span class="chip">Edit</span><span class="chip">Save snapshot</span><span class="chip">Export</span><span class="chip">Run Report</span></div>
+  return crumb(["Build","Custom Reporting", q1?"Quarterly Security Program Health Summary":"Threat Detection & SOC Performance"])+`<div class="row"><span class="meta">Created by ${q1?"s.case@example.com":"p.north@example.com"} · Last run Nov 3, 2026 at 5:00:00 AM EST</span><span class="grow"></span><span class="chip">Edit</span><span class="chip">Save snapshot</span><span class="chip">Export</span><span class="chip">Run Report</span></div>
   <div class="card"><h1>${q1?"Quarterly Security Program Health Summary":"Threat Detection & SOC Performance"}</h1><p class="meta">${q1?"Created Nov 3, 2026 at 5:14:00 AM EST · Updated Nov 3, 2026 at 5:02:10 AM EST":"Oct 6, 2026 EDT – Nov 4, 2026 EST · Created Nov 3, 2026 at 4:44:00 AM EST · Updated Nov 3, 2026 at 5:01:23 AM EST"}</p>
   <p>${q1?"Program health across detection coverage, case closure, and PLAID Elite workload for the quarter. The long executive summary below was read from the SOC performance report.":"Monthly SOC performance overview prepared by 7AI: alert volume, detection sources, response times, threat categories, and findings from emerging-threat hunts."}</p>
   ${q1?"":`<h2>Executive summary</h2><p>7AI investigated every alert in-window with no sampling, resolving 95.1% autonomously. Of 193 cases reaching the SOC pre-investigated, 7AI Auto and PLAID Elite agents closed 87%. Five emerging-threat campaigns were hunted with zero positive detections. Findings surfaced four accounts for hardening: two for preemptive MFA, two stale service accounts for rotation.</p>
   <p class="meta">Detections by source: EDR 38%, cloud posture 13%, network 9%.</p>`}</div>`;
 }
 function canvas(r) {
-  const rows = [["mdr","MDR monthly report","Report","Priya Nair","2 hours ago","Published"],["coverage","Detection coverage","Dashboard","Marcus Bell","5 hours ago","Draft"],["posture","SOC weekly posture","Dashboard","Dana Osei","yesterday","Published"],["iso","Endpoint isolation review","Report","Liang Wu","2 days ago","Draft"],["exec","Executive posture summary","Report","Sam Rivera","4 days ago","Published"],["ident","Identity threat overview","Dashboard","Dana Osei","7 days ago","Published"],["cloud","Cloud posture snapshot","Report","Marcus Bell","14 days ago","Draft"]];
+  const rows = [["mdr","MDR monthly report","Report","P. North","2 hours ago","Published"],["coverage","Detection coverage","Dashboard","M. Sample","5 hours ago","Draft"],["posture","SOC weekly posture","Dashboard","S. Case","yesterday","Published"],["iso","Endpoint isolation review","Report","J. Demo","2 days ago","Draft"],["exec","Executive posture summary","Report","A. Example","4 days ago","Published"],["ident","Identity threat overview","Dashboard","S. Case","7 days ago","Published"],["cloud","Cloud posture snapshot","Report","M. Sample","14 days ago","Draft"]];
   if (r.c) {
     const row = rows.find(x=>x[0]===r.c) || ["","Canvas","","","",""];
     return crumb(["Build","Canvas",row[1]])+`<div class="card"><h1>${esc(row[1])}</h1><p>${esc(row[2])} · Owner ${esc(row[3])} · ${esc(row[5])} · Last edited ${esc(row[4])}.</p></div>`;
@@ -986,7 +989,7 @@ function canvas(r) {
   ${table(["Name","Type","Owner","Last edited","Status"], rows.map(r=>`<tr class="click" data-go="build/canvas/${r[0]}"><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td><td>${esc(r[5])}</td></tr>`))}<div class="pager"><span>Showing 1 – 7 of 7 canvases</span></div>`;
 }
 function chat() {
-  return `<div class="chat"><h1>Good Afternoon, Alex</h1><p>7AI handled 98% of your alerts last night.</p><div class="card"><input type="text" placeholder="Ask anything" style="width:100%"></div>
+  return `<div class="chat"><h1>Good Afternoon, A.</h1><p>7AI handled 98% of your alerts last night.</p><div class="card"><input type="text" placeholder="Ask anything" style="width:100%"></div>
   <div class="grid2" style="margin-top:12px"><button class="card" data-go="pulse" type="button"><b>7AI Pulse</b><p>There are 8 things in your queue</p></button><button class="card" data-go="respond/cases" type="button"><b>3 open cases</b><p>Assign owners</p></button><button class="card" data-go="respond/actions" type="button"><b>5 response actions</b><p>Approve to contain</p></button><button class="card" data-go="memory/skills" type="button"><b>1 skill in draft</b><p>Review and publish</p></button></div></div>`;
 }
 function posture() {
@@ -999,7 +1002,7 @@ function posture() {
     <div class="find">Malicious: LOG.old~RF12797.TMP — uncontained</div>
     <div class="find">C2 beaconing activity — recurring ×4</div>
     <div class="find">S3 public access block disabled · open 12d</div>
-    <div class="find">Impersonating domain okami.ua · open 8d</div></div>
+    <div class="find">Impersonating domain sample.example · open 8d</div></div>
   <div class="card"><h2>Improve posture</h2>
     <div class="hit"><span>1 Confirmed malware contained</span><b>+10</b></div>
     <div class="hit"><span>2 Timely alert resolution</span><b>+8</b></div>
@@ -1043,7 +1046,17 @@ function logsCfg(r) {
   ${table(["Connector","Product","Status","Category","Last 24 hours","Share","Last checked"], rows.map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td class="ok">${esc(row[2])}</td><td>${esc(row[3])}</td><td>${esc(row[4])}</td><td>${esc(row[5])}</td><td>${esc(row[6])}</td></tr>`))}<div class="pager"><span>Showing 1 – 4 of 4 Connections</span></div>`;
 }
 function alertProc() {
-  return crumb(["Configuration","Alert Processing"])+`<div class="row"><span class="chip">Last 7 days</span><span class="chip">6,119 complete</span></div><p>Columns: source, alert time, alert id, workspace, alert name, status, reason. The captured footer reads “Showing 1 – 25 of 768 Investigations (839 without filters)”. The 25 row texts were not readable, so they are not filled in.</p>`;
+  const rows = [
+    ["7AI","Nov 4, 2026, 9:14 AM EST","SAMPLE-ALERT-01","Sample workspace","Sample impossible travel","Complete","Sample reason. Not a real alert."],
+    ["Microsoft Defender","Nov 4, 2026, 8:02 AM EST","SAMPLE-ALERT-02","Sample workspace","Sample mailbox rule","Complete","Sample reason. Not a real alert."],
+    ["CrowdStrike","Nov 3, 2026, 4:40 PM EST","SAMPLE-ALERT-03","Sample workspace","Sample process on SAMPLE-HOST-01","Complete","Sample reason. Not a real alert."],
+    ["SentinelOne","Nov 3, 2026, 1:15 PM EST","SAMPLE-ALERT-04","Sample workspace","Sample binary sample.exe","Complete","Sample reason. Not a real alert."],
+    ["Splunk","Nov 3, 2026, 11:05 AM EST","SAMPLE-ALERT-05","Sample workspace","Sample lookup of example.com","Complete","Sample reason. Not a real alert."],
+    ["AWS","Nov 2, 2026, 6:20 PM EST","SAMPLE-ALERT-06","Sample workspace","Sample role from 192.0.2.55","Complete","Sample reason. Not a real alert."],
+    ["Wiz","Nov 2, 2026, 2:11 PM EST","SAMPLE-ALERT-07","Sample workspace","Sample guest account","Complete","Sample reason. Not a real alert."],
+    ["Microsoft Sentinel","Nov 2, 2026, 9:00 AM EST","SAMPLE-ALERT-08","Sample workspace","Sample phish to p.north@example.com","Complete","Sample reason. Not a real alert."]
+  ];
+  return crumb(["Configuration","Alert Processing"])+`<div class="row"><span class="chip">Last 7 days</span><span class="chip">6,119 complete</span></div>`+table(["Source","Alert time","Alert id","Workspace","Alert name","Status","Reason"], rows.map(row=>`<tr>${row.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`))+`<div class="pager"><span>Showing 8 sample rows. The public table is longer. These rows are not a real tenant.</span></div>`;
 }
 function tiSettings() {
   return crumb(["Configuration","Threat Intelligence"])+`<h1>Threat Intelligence Settings</h1><p>Choose which threat intelligence 7AI hunts on for you.</p>
@@ -1054,9 +1067,9 @@ function tiSettings() {
 }
 function audit() {
   const rows = [
-    ["Nov 5, 2026, 9:14 AM EST", "Alex Morgan", "View", "Investigation", "Investigation", "OKAMI-FIN-074", "Opened a sample investigation"],
-    ["Nov 5, 2026, 8:02 AM EST", "Priya Patel", "Update", "Case", "Case", "1784", "Changed a sample case status"],
-    ["Nov 4, 2026, 4:40 PM EST", "demo@sevenai.com", "Sign-in", "Tenant", "Session", "Enterprise Demo", "Sample sign-in. No password is stored."]
+    ["Nov 5, 2026, 9:14 AM EST", "A. Example", "View", "Investigation", "Investigation", "SAMPLE-HOST-01", "Opened a sample investigation"],
+    ["Nov 5, 2026, 8:02 AM EST", "P. North", "Update", "Case", "Case", "1784", "Changed a sample case status"],
+    ["Nov 4, 2026, 4:40 PM EST", "a.example@example.com", "Sign-in", "Tenant", "Session", "Enterprise Demo", "Sample sign-in. No password is stored."]
   ].map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`);
   return crumb(["Configuration","Audit Events"])+`<div class="row"><span class="chip">Last 7 days</span><span class="chip">Actor Type (2)</span></div>${table(["Timestamp","Actor","Action","Domain","Resource Type","Resource Identifier","Description"], rows)}<div class="pager"><span>Showing 3 of 3 Audit Events</span></div>`;
 }
@@ -1065,7 +1078,7 @@ function lookups(r) {
   const tabs = pageTabs([["tables","Tables","#/config/lookups"],["definitions","Definitions","#/config/lookups/definitions"]], tab==="create"?"definitions":tab);
   if (tab==="create") return crumb(["Configuration","Lookup Tables","Create definition"])+`<div class="row"><h1 style="margin:0">Create definition</h1><span class="grow"></span><button class="chip" data-go="config/lookups/definitions" type="button">Cancel</button><button class="chip" type="button" style="background:#14171c;color:#fff">Save</button></div><p>Attach a lookup table to a target table.</p><div class="card" style="max-width:640px"><label>Definition name<br><input type="text" placeholder="lowercase_sql_name" style="width:100%;margin-top:4px"></label><p class="meta">A lowercase SQL name, with underscores instead of spaces. Can't start with a number.</p><label>Description (optional)<br><input type="text" style="width:100%;margin-top:4px"></label><p class="meta">Additional information about this definition.</p><label>Target table<br><select style="width:100%;margin-top:4px"><option>Select target table</option></select></label><p class="meta">The table this definition attaches lookup columns to. The dropdown choices were not open on the capture.</p></div>`;
   if (tab==="definitions") return crumb(["Configuration","Lookup Tables","Definitions"])+tabs+table(["Definition","Count"], [`<tr><td>device_activity</td><td>1 definition</td></tr>`])+`<p><button class="chip" data-go="config/lookups/create" type="button">Create definition</button></p>`;
-  return crumb(["Configuration","Lookup Tables"])+tabs+table(["Lookup table","Columns","Rows","Used by"], [["asset_inventory","asset_id (text)","—","—"],["broken_table","id (text)","—","—"]].map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td></tr>`))+`<p class="meta">Row counts and “used by” were not readable on the capture.</p><p><button class="chip" data-go="config/lookups/create" type="button">Create definition</button></p>`;
+  return crumb(["Configuration","Lookup Tables"])+tabs+table(["Lookup table","Columns","Rows","Used by"], [["asset_inventory","asset_id (text)","12 sample rows","Sample detections"],["broken_table","id (text)","0 sample rows","Not used"]].map(row=>`<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td><td>${esc(row[3])}</td></tr>`))+`<p class="meta">Row counts are sample numbers. They are not a real tenant.</p><p><button class="chip" data-go="config/lookups/create" type="button">Create definition</button></p>`;
 }
 function imports() {
   const rows = [["Q3 Vendor Runbooks","READY","Confluence export","12 files","Nov 3, 2026, 9:30 AM EST"],["Endpoint Hardening Guides","PROCESSING","File upload","5 files","Nov 3, 2026, 5:05 AM EST"],["Legacy SOC Playbooks","READY WITH ERRORS","SharePoint","8 files","Nov 1, 2026, 8:15 AM EST"],["Phishing Response Draft","DRAFT","File upload","0 files","Oct 31, 2026, 3:00 AM EDT"],["Corrupted Upload Attempt","FAILED","Local files","2 files","Oct 20, 2026, 4:30 AM EDT"]];
@@ -1073,30 +1086,30 @@ function imports() {
   ${table(["Import","Status","Source","Files","Last updated"], rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td></tr>`))}<div class="pager"><span>Showing 1 – 5 of 5 Imports</span></div>`;
 }
 function settings(r) {
-  if (r.b==="my") return crumb(["Settings","My Settings"])+`<div class="card" style="max-width:560px"><h1>Alex Morgan</h1><div class="hit"><span>Email</span><b>demo@sevenai.com</b></div><div class="hit"><span>Role</span><b>Tenant Admin</b></div><div class="hit"><span>Tenant</span><b>Enterprise Demo · Okami</b></div><div class="hit"><span>Timezone</span><b>America/New_York</b></div><p><button class="link" data-go="settings/company">Company settings</button></p></div>`;
+  if (r.b==="my") return crumb(["Settings","My Settings"])+`<div class="card" style="max-width:560px"><h1>A. Example</h1><div class="hit"><span>Email</span><b>a.example@example.com</b></div><div class="hit"><span>Role</span><b>Sample admin</b></div><div class="hit"><span>Tenant</span><b>Enterprise Demo · Sample Co</b></div><div class="hit"><span>Timezone</span><b>America/New_York</b></div><p><button class="link" data-go="settings/company">Company settings</button></p></div>`;
   const mark = (id) => theme===id ? "on" : "";
   return crumb(["Settings","Settings"])+`<div class="card"><div class="row"><h2 style="margin:0">Customer Profile</h2><span class="grow"></span><span class="ok">ACTIVE</span></div><p class="meta">Your company profile and key contacts for security operations</p>
-  <div class="grid2"><div><h3>Company Info</h3><div class="hit"><span>Company</span><b>Okami AI</b></div><div class="hit"><span>Industry</span><b>TECHNOLOGY</b></div><div class="hit"><span>Regions</span><b>NORTH AMERICA · EMEA</b></div><div class="hit"><span>Subscription</span><b>Platform + PLAID Elite</b></div><div class="hit"><span>Compliance Frameworks</span><b>ISO 27001 · NIST CSF · GDPR · CCPA</b></div></div>
-  <div><h3>Escalation & Operations</h3><p><b>Primary Contact</b><br>Sarah Johnson · CISO<br>+1 (415) 555-0182<br>sarah.johnson@okami-ai.com</p><p><b>After-Hours Escalation</b><br>Michael Torres · SOC Director<br>+1 (415) 555-0199<br>michael.torres@okami-ai.com</p><p>Call Tree 2</p><p>Business Hours<br>Mon – Fri: 9:00 AM – 6:00 PM EST</p><p>Leave history 5</p><p><button class="link" data-go="settings/company">Open company settings</button></p></div></div></div>
+  <div class="grid2"><div><h3>Company Info</h3><div class="hit"><span>Company</span><b>Sample Co</b></div><div class="hit"><span>Industry</span><b>TECHNOLOGY</b></div><div class="hit"><span>Regions</span><b>NORTH AMERICA · EMEA</b></div><div class="hit"><span>Subscription</span><b>Platform + PLAID Elite</b></div><div class="hit"><span>Compliance Frameworks</span><b>ISO 27001 · NIST CSF · GDPR · CCPA</b></div></div>
+  <div><h3>Escalation & Operations</h3><p><b>Primary Contact</b><br>M. Sample · CISO<br>+1 (415) 555-0182<br>m.sample@example.com</p><p><b>After-Hours Escalation</b><br>J. Demo · SOC Director<br>+1 (415) 555-0199<br>j.demo@example.com</p><p>Call Tree 2</p><p>Business Hours<br>Mon – Fri: 9:00 AM – 6:00 PM EST</p><p>Leave history 5</p><p><button class="link" data-go="settings/company">Open company settings</button></p></div></div></div>
   <div class="card" style="margin-top:12px"><h2>Appearance</h2><p>Choose your theme:</p><div class="row"><button class="chip ${mark("light")}" type="button" data-set="theme:light">Light</button><button class="chip ${mark("dark")}" type="button" data-set="theme:dark">Dark</button><button class="chip ${mark("system")}" type="button" data-set="theme:system">System</button></div>
   <p>Animated transitions when navigating between pages</p><div class="row"><button class="chip ${animOn?"on":""}" type="button" data-set="anim:on">Enable animations</button><button class="chip ${animOn?"":"on"}" type="button" data-set="anim:off">Animations off</button></div>
   <p>Display dates and times in:</p><select id="tzmode"><option value="local" ${dateMode==="local"?"selected":""}>Local (browser timezone)</option><option value="utc" ${dateMode==="utc"?"selected":""}>UTC</option></select><p class="meta">${dateMode==="utc"?"Dates on this mock stay as captured. The selector is set to UTC.":"Dates on this mock stay as captured. The selector is set to local browser time."}</p></div>
   <p class="meta">© 2026 Seven AI Inc. All rights reserved. · Privacy Policy · Support</p>`;
 }
 function company() {
-  return crumb(["Settings","Company"])+`<div class="grid2"><div class="card"><h2>Company info</h2><div class="hit"><span>Company</span><b>Okami AI</b></div><div class="hit"><span>Industry</span><b>Technology</b></div><div class="hit"><span>Regions</span><b>North America, EMEA</b></div><div class="hit"><span>Subscription</span><b>Platform + PLAID Elite</b></div><div class="hit"><span>Frameworks</span><b>ISO 27001, NIST CSF, GDPR, CCPA</b></div></div>
-  <div class="card"><h2>Escalation and operations</h2><p><b>Primary contact</b><br>Sarah Johnson · CISO<br>+1 (415) 555-0182<br>sarah.johnson@okami-ai.com</p><p><b>After-hours escalation</b><br>Michael Torres · SOC Director<br>+1 (415) 555-0199<br>michael.torres@okami-ai.com</p><p>Business hours: Mon–Fri 9:00 AM – 6:00 PM EST. Call tree 2.</p></div></div>
+  return crumb(["Settings","Company"])+`<div class="grid2"><div class="card"><h2>Company info</h2><div class="hit"><span>Company</span><b>Sample Co</b></div><div class="hit"><span>Industry</span><b>Technology</b></div><div class="hit"><span>Regions</span><b>North America, EMEA</b></div><div class="hit"><span>Subscription</span><b>Platform + PLAID Elite</b></div><div class="hit"><span>Frameworks</span><b>ISO 27001, NIST CSF, GDPR, CCPA</b></div></div>
+  <div class="card"><h2>Escalation and operations</h2><p><b>Primary contact</b><br>M. Sample · CISO<br>+1 (415) 555-0182<br>m.sample@example.com</p><p><b>After-hours escalation</b><br>J. Demo · SOC Director<br>+1 (415) 555-0199<br>j.demo@example.com</p><p>Business hours: Mon–Fri 9:00 AM – 6:00 PM EST. Call tree 2.</p></div></div>
   <h2>User management</h2><div class="row"><input type="search" placeholder="Search"><span class="chip">Delete</span><span class="chip">Reset password</span></div>
-  ${table(["Login ID","Status","Name","Email","Phone"], [`<tr><td>demo@sevenai.com</td><td class="ok">ACTIVE</td><td>Alex Morgan</td><td>demo@sevenai.com</td><td>—</td></tr>`,`<tr><td>priya.patel@okami-ai.com</td><td class="ok">ACTIVE</td><td>Priya Patel</td><td>priya.patel@okami-ai.com</td><td>—</td></tr>`,`<tr><td>sarah.chen@okami-ai.com</td><td class="ok">ACTIVE</td><td>Sarah Chen</td><td>sarah.chen@okami-ai.com</td><td>—</td></tr>`])}`;
+  ${table(["Login ID","Status","Name","Email","Phone"], [`<tr><td>a.example@example.com</td><td class="ok">ACTIVE</td><td>A. Example</td><td>a.example@example.com</td><td>—</td></tr>`,`<tr><td>p.north@example.com</td><td class="ok">ACTIVE</td><td>P. North</td><td>p.north@example.com</td><td>—</td></tr>`,`<tr><td>s.case@example.com</td><td class="ok">ACTIVE</td><td>S. Case</td><td>s.case@example.com</td><td>—</td></tr>`])}`;
 }
 function resources(r) {
   const docs = {
-    overview:["Platform Overview","Overview of the 7AI platform's capabilities. Detect, investigate, respond, hunt, data lakes, memory, and build sit on one tenant. The Enterprise Demo tenant is Okami. Alex Morgan is Tenant Admin."],
+    overview:["Platform Overview","Overview of the 7AI platform's capabilities. Detect, investigate, respond, hunt, data lakes, memory, and build sit on one tenant. The Enterprise Demo tenant is Sample Co. A. Example is Sample admin."],
     cases:["Case Management","How cases work, and how to link related cases. The board columns are Open, Triage, In Progress, and Waiting on Customer. Each card carries priority, tags, customer impact, affected hosts, and SLA."],
     workflows:["Workflows","Build, run, and troubleshoot workflow automations. Triggers include Investigation Completed and Case Updated. 23 workflows are enabled in this demo, including case creation, guarded host isolation, credential lockdown, phishing quarantine, and notifications."],
     remediation:["Remediation Actions","What actions 7AI proposes, when they run automatically, and how to control them. Block Domain, Isolate Device, and Kill Threat require confirmation. Hash blocks, forensics, and detection creation can run automatically."],
-    rbac:["Identity & Access Management","Set up SSO and provisioning, and manage roles and permissions. This demo signs in as Tenant Admin. Company settings hold the user table."],
-    support:["Support","Ways to reach the 7AI team. Primary customer contact on this tenant is Sarah Johnson, CISO."],
+    rbac:["Identity & Access Management","Set up SSO and provisioning, and manage roles and permissions. This demo signs in as Sample admin. Company settings hold the user table."],
+    support:["Support","Ways to reach the 7AI team. Primary customer contact on this tenant is M. Sample, CISO."],
     api:["API Reference","REST API for reading investigations and cases."],
     ips:["Static IPs","7AI's fixed egress and platform addresses for firewall allowlisting. Add them on the identity provider and the web gateway before federated search runs from the platform."],
     notes:["Release Notes","What's new on the 7AI platform. This mock follows the Enterprise Demo screens: Pulse queue, detection coverage, investigations, cases, hunts, and PLAID Elite."]
@@ -1105,7 +1118,7 @@ function resources(r) {
   return crumb(["Resources","Overview"])+`<h1>Resources</h1><p>Guides and references for the 7AI platform.</p><div class="grid3">${Object.entries(docs).map(([id,d])=>`<a class="card" href="#/resources/${id}"><h3>${esc(d[0])}</h3><p class="meta">${esc(d[1].slice(0,110))}…</p></a>`).join("")}</div>`;
 }
 function login() {
-  return `<div class="card" style="max-width:420px;margin:8vh auto"><div class="logo" style="color:#14171c">7AI</div><h1>Welcome</h1><label>Email<br><input type="text" placeholder="Email address" style="width:100%;margin-top:6px" value="demo@sevenai.com"></label><p><button class="chip" style="background:#14171c;color:#fff" data-go="pulse" type="button">Continue</button></p><p class="meta">Enterprise Demo · Okami. Continue opens the sample tenant.</p></div>`;
+  return `<div class="card" style="max-width:420px;margin:8vh auto"><div class="logo" style="color:#14171c">7AI</div><h1>Welcome</h1><label>Email<br><input type="text" placeholder="Email address" style="width:100%;margin-top:6px" value="a.example@example.com"></label><p><button class="chip" style="background:#14171c;color:#fff" data-go="pulse" type="button">Continue</button></p><p class="meta">Enterprise Demo is the public tenant name. Continue opens sample data, not a real tenant.</p></div>`;
 }
 function view(r) {
   if (r.a==="login") return login();
@@ -1150,7 +1163,8 @@ function render() {
   document.getElementById("assist").hidden = sec!=="detect";
   const tabs = TABS[sec] || [];
   const bar = tabs.length ? `<div class="sub">${tabs.map(([h,l])=>`<a href="#/${h}" class="${tabOn(h,r)?"on":""}">${l}</a>`).join("")}</div>` : "";
-  document.getElementById("app").innerHTML = bar + view(r);
+  const flag = `<div class="sample-flag">Sample data. This is the public 7AI layout. These rows are not a real tenant.</div>`;
+  document.getElementById("app").innerHTML = flag + bar + view(r);
   document.querySelectorAll("[data-go]").forEach(el=>el.addEventListener("click",(e)=>{ e.preventDefault(); location.hash = "#/"+el.getAttribute("data-go"); }));
   document.querySelectorAll("[data-set]").forEach(el=>el.addEventListener("click", ()=>{
     const [k,v] = el.getAttribute("data-set").split(":");
