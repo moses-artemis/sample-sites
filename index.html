@@ -3,22 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mock sites</title>
+<title>Sample sites</title>
 <link rel="icon" href="data:,">
 <style>
-  body { font: 16px/1.45 ui-sans-serif, system-ui, sans-serif; margin: 48px auto; max-width: 640px; padding: 0 20px; color: #1a1f27; }
+  body { font: 16px/1.5 ui-sans-serif, system-ui, sans-serif; margin: 48px auto; max-width: 680px; padding: 0 20px; color: #1a1f27; }
   a { color: #1d3fbf; }
   li { margin: 12px 0; }
   .muted { color: #5d6775; font-size: 14px; }
+  .note p { margin: 0 0 12px; }
 </style>
 </head>
 <body>
-<h1>Mock sites</h1>
-<p class="muted">Clickable apps filled with sample data from the public product screens. Each one is the site, with its own pages.</p>
+<h1>Sample sites</h1>
+<div class="note">
+  <p>I built these from public files only. Each product is a single-page app, so the browser already downloads its HTML, CSS, and JavaScript before anyone signs in. I rebuilt the screens from those files. No source code, and no logged-in account.</p>
+  <p>7AI and Vega include the signed-in layout in that public JavaScript, so those samples can be clicked through. Where a screen had the design but no rows, I filled in sample data and labeled it. It is not a real tenant.</p>
+  <p>Artemis is the one that keeps the product private. The signed-in app is not in the public files. The Artemis pages here are the only ones a visitor can open without logging in.</p>
+</div>
 <ul>
   <li><a href="sevenai/#/pulse">7AI</a> <span class="muted">Public demo layout. Rows are sample data, not a real tenant.</span></li>
   <li><a href="vega/#/alerts">Vega</a> <span class="muted">Public app layout. Rows are sample data, not a real tenant.</span></li>
-  <li><a href="artemis/#/welcome">Artemis</a> <span class="muted">Public sign-in shell. The live portal stops at sign-in.</span></li>
+  <li><a href="artemis/#/welcome">Artemis</a> <span class="muted">Only the pages visible without login. The signed-in app is not in the public files.</span></li>
 </ul>
 </body>
 </html>
