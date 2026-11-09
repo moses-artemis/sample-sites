@@ -1,825 +1,355 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Artemis</title>
-<link rel="icon" href="logos/Artemis.svg">
+<title>Artemis Portal</title>
+<meta name="description" content="AI-Native Detection Platform">
+<meta name="application-name" content="Artemis">
+<meta name="author" content="Artemis Team">
+<meta name="keywords" content="security,SIEM,artemis,portal,cybersecurity">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f4f4f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)">
+<meta name="msapplication-TileColor" content="#000000">
+<meta name="apple-mobile-web-app-title" content="Artemis">
+<meta property="og:title" content="Artemis Portal">
+<meta property="og:description" content="AI-Native Detection Platform">
+<meta property="og:site_name" content="Artemis Portal">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Artemis Portal">
+<meta name="twitter:description" content="AI-Native Detection Platform">
+<link rel="icon" href="favicon/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+<link rel="apple-touch-icon" href="favicon/apple-touch-icon.png" sizes="180x180">
+<link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#000000">
+<link rel="stylesheet" href="app.css">
 <style>.banner{position:fixed;top:0;left:0;right:0;z-index:80;height:32px;display:flex;align-items:center;justify-content:center;background:#245c43;color:#fff;font:13px/1 sans-serif}body{padding-top:32px!important;box-sizing:border-box}header.top{top:32px}
-@font-face { font-family: Geist; src: url("fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: "Geist Mono"; src: url("fonts/GeistMono-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-:root {
-  --bg: #f4f4f5; --card: #fff; --ink: #09090b; --muted: #71717a; --faint: #a1a1aa;
-  --line: #e4e4e7; --hover: #fafafa; --active: #e4e4e7; --blue: #334deb; --blue-text: #0337ae;
-  --sans: Geist, ui-sans-serif, system-ui, sans-serif;
-  --mono: "Geist Mono", ui-monospace, Menlo, monospace;
-}
-* { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; }
-body { font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--bg); }
-button, input { font: inherit; color: inherit; background: none; border: 0; padding: 0; }
-button { cursor: pointer; }
-.app { display: flex; height: 100vh; }
-.rail { width: 240px; flex: none; display: flex; flex-direction: column; background: var(--bg); border-right: 1px solid var(--line); transition: width .2s; overflow: hidden; }
-.rail.closed { width: 52px; }
-.brand { display: flex; align-items: center; gap: 8px; height: 56px; padding: 0 12px; flex: none; }
-.rail.closed .brand { flex-wrap: wrap; justify-content: center; height: auto; padding: 8px 0 4px; gap: 4px; }
-.brand img { width: 22px; height: 22px; flex: none; }
-.word { height: 14px; width: auto; color: var(--ink); }
-.rail.closed .word, .rail.closed .lbl, .rail.closed .sec, .rail.closed .badge, .rail.closed .orgname, .rail.closed .who { display: none; }
-.navscroll { flex: 1; overflow: auto; padding: 4px 8px 12px; }
-.sec { margin: 14px 8px 6px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.nav, .sub { display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; padding: 0 8px; border-radius: 6px; color: var(--ink); text-align: left; }
-.nav:hover, .sub:hover { background: #ececee; }
-.nav.on, .sub.on { background: var(--active); font-weight: 500; }
-.sub { padding-left: 32px; height: 30px; color: #3f3f46; }
-.ico { width: 16px; height: 16px; flex: none; }
-.lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.badge { margin-left: auto; font-size: 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; }
-.foot { flex: none; border-top: 1px solid var(--line); padding: 8px; display: flex; align-items: center; gap: 8px; }
-.rail.closed .foot { flex-direction: column; padding: 8px 0; }
-.av { width: 28px; height: 28px; border-radius: 999px; background: #d6e86a; color: #30360d; display: grid; place-items: center; font-size: 12px; font-weight: 600; flex: none; }
-.orgname { font-size: 13px; font-weight: 500; }
-.who { font-size: 12px; color: var(--muted); }
-.collapse { margin-left: auto; width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center; color: var(--muted); }
-.collapse:hover { background: #ececee; color: var(--ink); }
-.rail.closed .collapse { margin: 0; }
-.main { flex: 1; min-width: 0; background: var(--card); display: flex; flex-direction: column; }
-.top { min-height: 56px; flex: none; display: flex; align-items: center; gap: 12px; padding: 8px 24px; border-bottom: 1px solid var(--line); position: relative; flex-wrap: wrap; }
-.top h1 { font-size: 16px; font-weight: 600; margin: 0; }
-.grow { flex: 1; }
-.scroll { flex: 1; overflow: auto; padding: 20px 24px 32px; }
-.muted { color: var(--muted); }
-.row { display: flex; align-items: center; gap: 8px; }
-.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
-.kpi, .card { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 14px; }
-.kpi b { display: block; font-size: 22px; font-weight: 560; margin-top: 4px; }
-.tools { display: flex; gap: 8px; margin-bottom: 12px; }
-.search { display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 6px; padding: 0 8px; height: 32px; min-width: 220px; }
-.search input { outline: none; width: 100%; }
-.btn { height: 32px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--line); background: #fff; }
-.btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
-table { width: 100%; border-collapse: collapse; }
-th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
-td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-tr.click { cursor: pointer; }
-tr.click:hover td { background: var(--hover); }
-.pill { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; background: #f4f4f5; color: #3f3f46; }
-.pill.critical { background: #fee2e2; color: #991b1b; }
-.pill.high { background: #ffedd5; color: #9a3412; }
-.pill.medium { background: #fef9c3; color: #854d0e; }
-.pill.low { background: #f4f4f5; color: #3f3f46; }
-.pill.ok { background: #dcfce7; color: #166534; }
-.pill.warn { background: #fef9c3; color: #854d0e; }
-.pill.bad { background: #fee2e2; color: #991b1b; }
-.pill.tp { background: #dbeafe; color: #1e3a8a; }
-.logo { width: 18px; height: 18px; display: inline-block; vertical-align: middle; }
-.logo img, .logo svg { width: 18px; height: 18px; display: block; }
-.tabs { display: flex; gap: 16px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
-.tabs button { height: 36px; color: var(--muted); border-bottom: 2px solid transparent; }
-.tabs button.on { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
-.h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
-.grid2 { display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px; }
-.stack { display: flex; flex-direction: column; gap: 8px; }
-.find { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.chat { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; min-height: 100%; }
-.bubble { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
-.bubble.user { background: #f4f4f5; }
-.composer { display: flex; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 8px; margin-top: auto; }
-.composer input { flex: 1; outline: none; }
-.bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
-.bars i { flex: 1; background: #c7d2fe; border-radius: 4px 4px 0 0; display: block; }
-.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.check { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.box { width: 16px; height: 16px; border: 1px solid #a1a1aa; border-radius: 4px; flex: none; margin-top: 2px; }
-.box.on { background: var(--blue); border-color: var(--blue); }
-.path { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.node { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: #fff; }
-.signin { min-height: 100vh; display: grid; place-items: center; background: #f3f3f4; }
-.card-login { width: 400px; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.06); padding: 36px 28px 28px; text-align: center; }
-.card-login h1 { font-size: 22px; margin: 16px 0 22px; }
-.sso { width: 100%; height: 42px; border: 1px solid #e4e4e7; border-radius: 8px; margin: 8px 0; display: flex; align-items: center; justify-content: center; gap: 8px; background: #fff; }
-.sso:hover { background: #fafafa; }
-.fine { font-size: 13px; margin-top: 16px; }
-.note { font-size: 12px; color: var(--muted); margin-top: 14px; }
-.crumbs { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 12px; margin-bottom: 2px; }
-.crumbs button { color: var(--blue-text); }
-.range { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-.range button { height: 32px; padding: 0 10px; }
-.range button.on { background: #18181b; color: #fff; }
-.search { position: relative; min-width: 240px; }
-.hits, .pop { position: absolute; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.08); z-index: 6; }
-.hits { top: 36px; left: 0; width: 360px; padding: 6px; }
-.pop { right: 16px; top: 48px; width: 340px; padding: 8px; }
-.hits button, .pop button, .linkrow, .bcard, .sess button { display: flex; gap: 8px; align-items: center; width: 100%; text-align: left; padding: 8px; border-radius: 6px; }
-.hits button:hover, .pop button:hover, .linkrow:hover, .sess button:hover, .bcard:hover { background: #f4f4f5; }
-.sess button.on { background: var(--active); }
-.bell { position: relative; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; }
-.bell:hover, .bell.on { background: #ececee; }
-.dot { position: absolute; top: 4px; right: 4px; min-width: 14px; height: 14px; border-radius: 99px; background: #334deb; color: #fff; font-size: 10px; display: grid; place-items: center; }
-.filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; align-items: center; }
-.chip { height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 12px; }
-.chip.on { background: #18181b; color: #fff; border-color: #18181b; }
-.tablewrap { overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
-.tablewrap table { border: 0; }
-.hrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-.hrow .h2 { margin: 0; }
-.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.vrow { display: grid; grid-template-columns: 130px 1fr 36px; gap: 8px; align-items: center; margin: 6px 0; font-size: 13px; }
-.track { height: 8px; background: #f4f4f5; border-radius: 99px; }
-.track i { display: block; height: 100%; border-radius: 99px; }
-.donut { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; flex: none; }
-.donut span { width: 60px; height: 60px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-weight: 600; }
-.sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-.tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: #f4f4f5; font-size: 12px; margin: 0 4px 4px 0; }
-.lanes, .board { display: grid; gap: 8px; }
-.lanes { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.board { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
-.lane, .bcol { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #fff; }
-.bcol { background: #fafafa; }
-.lane b, .big { display: block; font-size: 22px; font-weight: 560; }
-.bcard { display: block; background: #fff; border: 1px solid var(--line); margin-bottom: 8px; }
-.matrix { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
-.mcol h3 { margin: 0 0 6px; font-size: 11px; font-weight: 500; color: var(--muted); }
-.cell { height: 18px; border-radius: 3px; margin-bottom: 3px; }
-.cell.cov { background: #86efac; }
-.cell.part { background: #fde68a; }
-.cell.gap { background: #fecaca; }
-.split, .set, .aiwrap { display: grid; gap: 16px; }
-.split { grid-template-columns: 1.4fr .8fr; }
-.set { grid-template-columns: 220px 1fr; }
-.aiwrap { grid-template-columns: 240px 1fr; min-height: 520px; }
-.side .kv { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
-.ask h2 { margin: 0 0 8px; font-size: 20px; }
-.toast { position: fixed; bottom: 16px; right: 16px; background: #18181b; color: #fff; padding: 10px 14px; border-radius: 8px; z-index: 8; display: flex; gap: 12px; align-items: center; }
-.tool { border: 1px dashed var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; font-size: 13px; }
-.mono { font-family: var(--mono); font-size: 13px; }
-@media (max-width: 1000px) { .kpis, .cards, .grid2, .grid3, .lanes, .board, .split, .set, .aiwrap, .matrix { grid-template-columns: 1fr; } }
+[hidden]{display:none!important}
+body{margin:0;font-family:geistSans,"geistSans Fallback",sans-serif;color:var(--foreground);background:var(--background)}
+.frame{width:min(538px,calc(100vw - 32px))}
+.sheet{box-sizing:border-box}
+.stack{display:flex;flex-direction:column;align-items:stretch;gap:.75rem;width:100%}
+.auth-title{margin:0;text-align:center;font-size:1.5rem;font-weight:600;line-height:1.3}
+.auth-copy{margin:0;text-align:center;color:var(--muted-foreground);font-size:.875rem;line-height:1.45}
+.auth-label{font-size:.875rem}
+.auth-field{box-sizing:border-box;width:100%;height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font:inherit;background:var(--card);color:var(--foreground)}
+.auth-btn{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:40px;padding:8px 16px;border-radius:8px;font:inherit;cursor:pointer;text-decoration:none}
+.auth-btn.block{width:100%}
+.auth-btn.outline{background:var(--card);color:var(--foreground);border:1px solid var(--border)}
+.auth-btn.solid{background:var(--primary);color:var(--primary-foreground);border:0}
+.auth-btn.dark{background:#000;color:#fff;border:0;border-radius:6px;padding:8px 24px;font-size:14px}
+.auth-error{min-height:1.25rem;margin:0;text-align:center;color:var(--color-red-600);font-size:.875rem}
+.alert{box-sizing:border-box;margin:0;padding:1rem;border:1px solid var(--border);border-radius:10px;background:var(--muted);color:var(--foreground);text-align:center}
+.mark{width:46px;height:46px;align-self:center;color:var(--foreground)}
+.below{margin:16px 0 0;text-align:center}
+.below a,.picker a{color:var(--foreground)}
+.picker{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:12px 0 0;padding:0;list-style:none;text-align:left}
+.plain{min-height:calc(100vh - 32px);display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.panel{max-width:400px}
+.err-copy{margin:0 0 24px;color:#666}
+.next-error{font-family:system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#000;background:#fff}
+.next-error-h1{display:inline-block;margin:0 20px 0 0;padding:0 23px 0 0;font-size:24px;font-weight:500;vertical-align:top;line-height:49px;border-right:1px solid rgba(0,0,0,.3)}
+.next-error h2{display:inline-block;font-size:14px;font-weight:400;line-height:49px;margin:0}
+.row{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center}
 </style>
 </head>
 <body><div class="banner">Sample of artdogfood.portal.goartemis.ai. Rows are invented. This file does not contact the original site.</div>
-<div id="root"></div>
+<div aria-hidden="false" id="boot" data-testid="descope-config-loading" hidden class="fixed inset-0 z-10 flex items-center justify-center bg-background transition-opacity duration-200 ease-out"><span role="status" aria-label="Loading" style="width:48px;height:48px" class="inline-flex shrink-0 items-center justify-center"><span class="artemis-thinking size-full!" style="--artemis-thinking-size:24px" data-artemis-spinner="" aria-hidden="true"><div class="artemis-thinking-layer artemis-thinking-spin"><div class="artemis-thinking-layer artemis-thinking-short"><div class="artemis-thinking-layer artemis-thinking-tail"><div class="artemis-thinking-half"><div class="artemis-thinking-unclip artemis-thinking-tail-counter"><div class="artemis-thinking-layer artemis-thinking-back"><div class="artemis-thinking-half"><div class="artemis-thinking-unclip artemis-thinking-back-counter"><svg viewBox="0 0 40 40" class="artemis-thinking-layer"><circle cx="20" cy="20" r="17" stroke="url(#artemis-mark)" stroke-width="2.5" fill="none"></circle></svg></div></div></div></div></div></div></div><div class="artemis-thinking-layer artemis-thinking-long"><div class="artemis-thinking-layer artemis-thinking-tail"><div class="artemis-thinking-half"><div class="artemis-thinking-unclip artemis-thinking-tail-counter"><svg viewBox="0 0 40 40" class="artemis-thinking-layer"><circle cx="20" cy="20" r="17" stroke="url(#artemis-mark)" stroke-width="2.5" fill="none"></circle></svg></div></div></div><div class="artemis-thinking-layer artemis-thinking-back"><div class="artemis-thinking-half"><div class="artemis-thinking-unclip artemis-thinking-back-counter"><svg viewBox="0 0 40 40" class="artemis-thinking-layer"><circle cx="20" cy="20" r="17" stroke="url(#artemis-mark)" stroke-width="2.5" fill="none"></circle></svg></div></div></div></div><div class="artemis-thinking-layer artemis-thinking-tail"><div class="artemis-thinking-cap"><div class="artemis-thinking-cap-fill artemis-thinking-tail-counter"><svg viewBox="0 0 40 40" class="artemis-thinking-layer"><rect width="40" height="40" fill="url(#artemis-mark)"></rect></svg></div></div></div><div class="artemis-thinking-layer artemis-thinking-head"><div class="artemis-thinking-cap"><div class="artemis-thinking-cap-fill artemis-thinking-head-counter"><svg viewBox="0 0 40 40" class="artemis-thinking-layer"><rect width="40" height="40" fill="url(#artemis-mark)"></rect></svg></div></div></div></div><svg viewBox="0 0 40 40" class="artemis-thinking-layer"><defs><linearGradient id="artemis-mark" gradientUnits="userSpaceOnUse" x1="3" y1="3" x2="37" y2="37"><stop offset="0%" stop-color="#3B82F6"></stop><stop offset="100%" stop-color="#F97316"></stop></linearGradient></defs><g transform="translate(5, 5) scale(1.071)"><path d="M23.874 4.324C24.02 4.476 24.163 4.631 24.302 4.789C18.312 13.172 14.122 21.2 12.27 27.803C10.34 27.584 8.529 26.972 6.921 26.047C10.072 20.836 16.087 13.137 23.874 4.324ZM24.884 5.494C26.696 7.842 28 10.785 28 13.983C28 20.219 23.895 25.497 18.243 27.266C18.979 20.235 21.313 12.78 25.107 5.494ZM22.916 3.428C23.075 3.564 23.23 3.704 23.383 3.848C14.584 11.803 6.978 17.851 1.84 21.007C0.892 19.391 0.26 17.568 0.03 15.621C6.575 13.793 14.535 9.569 22.916 3.428ZM13.858 0.067C16.994 0.067 19.891 1.106 22.221 2.858C14.962 6.756 7.552 9.116 0.564 9.829C2.332 4.171 7.612 0.067 13.858 0.067Z" fill="currentColor"></path></g></svg></span><span class="sr-only">Loading</span></span></div>
+<section aria-label="Notifications alt+T" tabindex="-1" aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section>
+<div id="stage">
+  <div id="card" class="min-h-screen bg-background flex items-center justify-center">
+    <div class="frame">
+      <div class="bg-card rounded-lg p-8 max-w-[538px] w-full sheet">
+        <section data-screen="welcome">
+          <div class="stack">
+            <div id="reason" class="alert" role="status" hidden></div>
+            <svg class="mark" viewBox="0 0 40 40" role="img" aria-label="Logo"><g transform="translate(5, 5) scale(1.071)"><path d="M23.874 4.324C24.02 4.476 24.163 4.631 24.302 4.789C18.312 13.172 14.122 21.2 12.27 27.803C10.34 27.584 8.529 26.972 6.921 26.047C10.072 20.836 16.087 13.137 23.874 4.324ZM24.884 5.494C26.696 7.842 28 10.785 28 13.983C28 20.219 23.895 25.497 18.243 27.266C18.979 20.235 21.313 12.78 25.107 5.494ZM22.916 3.428C23.075 3.564 23.23 3.704 23.383 3.848C14.584 11.803 6.978 17.851 1.84 21.007C0.892 19.391 0.26 17.568 0.03 15.621C6.575 13.793 14.535 9.569 22.916 3.428ZM13.858 0.067C16.994 0.067 19.891 1.106 22.221 2.858C14.962 6.756 7.552 9.116 0.564 9.829C2.332 4.171 7.612 0.067 13.858 0.067Z" fill="currentColor"></path></g></svg>
+            <h1 class="auth-title">Welcome to Artemis</h1>
+            <button type="button" class="auth-btn outline block" data-go="#/unavailable" aria-label="Sign in with Google"><svg width="1.5em" height="1.5em" viewBox="0 0 20 20" ><path d="m19.6 10.2274c0-.70912-.0636-1.39092-.1818-2.04552h-9.4182v3.86822h5.3818c-.2318 1.25-.9363 2.3091-1.9954 3.0182v2.5091h3.2318c1.8909-1.7409 2.9818-4.3046 2.9818-7.35z" fill="#4285f4" /><path d="m10 19.9999c2.7 0 4.9636-.8955 6.6181-2.4227l-3.2318-2.5091c-.8954.6-2.0409.9545-3.3863.9545-2.6046 0-4.8091-1.7591-5.5955-4.1227h-3.3409v2.5909c1.6455 3.2682 5.0273 5.5091 8.9364 5.5091z" fill="#34a853" /><path d="m4.4045 11.8999c-.2-.6-.3136-1.2409-.3136-1.89997 0-.6591.1136-1.3.3136-1.9v-2.5909h-3.3409c-.6772 1.35-1.0636 2.8773-1.0636 4.4909 0 1.61357.3864 3.14087 1.0636 4.49087z" fill="#fbbc04" /><path d="m10 3.9773c1.4681 0 2.7863.5045 3.8227 1.4954l2.8682-2.8682c-1.7318-1.6136-3.9955-2.6045-6.6909-2.6045-3.9091 0-7.2909 2.2409-8.9364 5.5091l3.3409 2.5909c.7864-2.3636 2.9909-4.1227 5.5955-4.1227z" fill="#e94235" /></svg>Continue with Google</button>
+            <button type="button" class="auth-btn outline block" data-go="#/unavailable" aria-label="Sign in with Microsoft"><svg width="1.5em" height="1.5em" viewBox="3 3 24 24" ><rect x="5" y="15.7143" width="9.28571" height="9.28571" fill="#05A6F0" /><rect x="5" y="5" width="9.28571" height="9.28571" fill="#F35325" /><rect x="15.7143" y="15.7143" width="9.28571" height="9.28571" fill="#FFBA08" /><rect x="15.7143" y="5" width="9.28571" height="9.28571" fill="#81BC06" /></svg>Continue with Microsoft</button>
+            <label class="auth-label" for="email">or enter your email to receive a Magic Link</label>
+            <input id="email" class="auth-field" type="email" name="email" placeholder="Email" autocomplete="off" maxlength="100">
+            <p id="email-error" class="auth-error" role="alert"></p>
+            <button type="button" class="auth-btn solid block" id="magic" data-go="#/unavailable">Send Magic Link</button>
+            <p class="auth-copy">By continuing, I agree to the Company's Privacy Statement and Terms of Service</p>
+          </div>
+        </section>
+        <section data-screen="wait" hidden>
+          <div class="stack">
+            <h1 class="auth-title">Still trying to connect</h1>
+            <p class="auth-copy">We haven't heard back after <span data-elapsed>0</span> seconds. A slow or interrupted connection, a VPN or proxy blocking the request, or a wider internet outage can all cause this.</p>
+            <div class="row"><button type="button" class="auth-btn outline" data-reload="1">Retry now</button></div>
+            <p class="auth-copy">Waiting for <span data-elapsed>0</span>s</p>
+          </div>
+        </section>
+        <section data-screen="slow" hidden>
+          <div class="stack">
+            <h1 class="auth-title">This is taking longer than usual</h1>
+            <p class="auth-copy">Your network, or a service we rely on, is responding slowly. We're still connecting to Artemis and will continue automatically.</p>
+            <div class="row"><button type="button" class="auth-btn outline" data-reload="1">Retry now</button></div>
+            <p class="auth-copy">Waiting for <span data-elapsed>0</span>s</p>
+          </div>
+        </section>
+        <section data-screen="offline" hidden>
+          <div class="stack">
+            <h1 class="auth-title">You appear to be offline</h1>
+            <p class="auth-copy">Your device has no network connection. We'll keep connecting to Artemis and continue as soon as you're back online.</p>
+            <div class="row"><button type="button" class="auth-btn outline" data-reload="1">Retry now</button></div>
+          </div>
+        </section>
+        <section data-screen="stalled" hidden>
+          <div class="stack">
+            <h1 class="auth-title">Still trying to connect</h1>
+            <p class="auth-copy">We haven't heard back after <span data-elapsed>0</span> seconds. A slow or interrupted connection, a VPN or proxy blocking the request, or a wider internet outage can all cause this.</p>
+            <div class="alert" role="status">
+              <strong>We're still trying in the background</strong>
+              <p class="auth-copy">You can keep waiting and this page will continue on its own, or choose an option below.</p>
+            </div>
+            <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button><button type="button" class="auth-btn outline" data-go="#/welcome">Sign out and sign in again</button></div>
+            <p class="auth-copy">Waiting for <span data-elapsed>0</span>s</p>
+          </div>
+        </section>
+        <section data-screen="unavailable" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">We can't reach the sign-in service right now. This is usually temporary: wait a minute, then reload the page.</p>
+        
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="unavailable/load" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">We couldn't load the sign-in configuration. Check your connection and try again.</p>
+        
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="unavailable/org" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">We couldn't confirm which organization this portal belongs to. Try again in a moment.</p>
+        
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="unavailable/migration" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">Authentication configuration changed and could not be applied automatically. Refresh the page, or contact support if the issue persists.</p>
+        <p class="auth-copy">Error code: DESCOPE_PROJECT_MIGRATION_UNRESOLVED</p>
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="unavailable/fetch" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">Unable to load authentication configuration after 1 attempts. Refresh the page or contact support if the issue persists.</p>
+        <p class="auth-copy">Error code: DESCOPE_CONFIG_FETCH_FAILED</p>
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="unavailable/project" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">No Descope project ID configured for this organization.</p>
+        <p class="auth-copy">Error code: DESCOPE_PROJECT_ID_MISSING</p>
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="unavailable/base" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">Cookie-mode authentication requires a Descope custom-domain base URL.</p>
+        <p class="auth-copy">Error code: DESCOPE_BASE_URL_MISSING</p>
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="unavailable/sso" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">Could not start SSO login</p>
+        
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="unavailable/sso-url" hidden>
+      <div class="stack">
+        <h1 class="auth-title">Sign-in is unavailable</h1>
+        <p class="auth-copy">SSO login URL response was missing a URL</p>
+        
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="access/check" hidden>
+      <div class="stack">
+        
+        <p class="auth-copy">Failed to check organization</p>
+        
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+<section data-screen="access/unknown" hidden>
+      <div class="stack">
+        
+        <p class="auth-copy">Unable to determine current organization</p>
+        
+        <div class="row"><button type="button" class="auth-btn solid" data-reload="1">Retry now</button></div>
+      </div>
+    </section>
+        <section data-screen="preview" hidden>
+          <div class="stack">
+            <h1 class="auth-title">Sign in from your terminal</h1>
+            <p class="auth-copy">This PR preview reads artdogfood's live data. That org only accepts sign-in on its own portal, so the usual sign-in can't finish here. From an up-to-date checkout of the Artemis repo, with AWS access, run:</p>
+            <p class="auth-copy">It opens this preview in your browser, signed in with a read-only session. The sign-in link it creates works once, within 45 seconds.</p>
+          </div>
+        </section>
+        <section data-screen="screens" hidden>
+          <div class="stack">
+            <h1 class="auth-title">Public screens</h1>
+            <ul class="picker">
+              <li><a href="#/welcome">Welcome to Artemis</a></li>
+<li><a href="#/loading">Loading</a></li>
+<li><a href="#/wait">Still trying to connect</a></li>
+<li><a href="#/slow">This is taking longer than usual</a></li>
+<li><a href="#/offline">You appear to be offline</a></li>
+<li><a href="#/stalled">We're still trying in the background</a></li>
+<li><a href="#/unavailable">Sign-in is unavailable</a></li>
+<li><a href="#/unavailable/load">We couldn't load the sign-in configuration</a></li>
+<li><a href="#/unavailable/org">We couldn't confirm which organization this portal belongs to</a></li>
+<li><a href="#/unavailable/migration">Authentication configuration changed</a></li>
+<li><a href="#/unavailable/fetch">Unable to load authentication configuration</a></li>
+<li><a href="#/unavailable/project">No Descope project ID configured for this organization.</a></li>
+<li><a href="#/unavailable/base">Cookie-mode authentication requires a Descope custom-domain base URL.</a></li>
+<li><a href="#/unavailable/sso">Could not start SSO login</a></li>
+<li><a href="#/unavailable/sso-url">SSO login URL response was missing a URL</a></li>
+<li><a href="#/session/expired">Your session expired. Please sign in again.</a></li>
+<li><a href="#/session/connection">We couldn't verify your session. Please sign in to continue.</a></li>
+<li><a href="#/session/signed-out">You've been signed out. Please sign in again.</a></li>
+<li><a href="#/session/rotated">Your authentication was securely updated. Please sign in again to continue.</a></li>
+<li><a href="#/access">Your account does not have access to this organization. Please contact Artemis for access.</a></li>
+<li><a href="#/access/provider">Your account does not have access to this organization. Please contact your managed security provider for access.</a></li>
+<li><a href="#/access/check">Failed to check organization</a></li>
+<li><a href="#/access/unknown">Unable to determine current organization</a></li>
+<li><a href="#/preview">Sign in from your terminal</a></li>
+<li><a href="#/update">Application Update Available</a></li>
+<li><a href="#/error">Something went wrong</a></li>
+<li><a href="#/missing">404: This page could not be found.</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+      <p class="below"><a href="#/screens">Public screens</a></p>
+    </div>
+  </div>
+  <section data-screen="update" class="plain" hidden>
+    <div class="panel">
+      <h2>Application Update Available</h2>
+      <p class="err-copy">A new version has been deployed. Please hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R) to load the latest version.</p>
+      <button type="button" class="auth-btn dark" data-reload="1">Reload Page</button>
+      <p class="below"><a href="#/screens">Public screens</a></p>
+    </div>
+  </section>
+  <section data-screen="error" class="plain" hidden>
+    <div class="panel">
+      <h2>Something went wrong</h2>
+      <p class="err-copy">An unexpected error occurred. Please try refreshing the page.</p>
+      <button type="button" class="auth-btn dark" data-reload="1">Reload Page</button>
+      <p class="below"><a href="#/screens">Public screens</a></p>
+    </div>
+  </section>
+  <section data-screen="missing" class="plain next-error" hidden>
+    <div>
+      <h1 class="next-error-h1">404</h1>
+      <h2>This page could not be found.</h2>
+      <p class="below"><a href="#/screens">Public screens</a></p>
+    </div>
+  </section>
+</div>
 <script>
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-const WORD = `<svg class="word" viewBox="0 0 72.8412 15.046" aria-hidden="true"><g fill="currentColor"><path d="M63.3868 11.4163H66.2211C66.3223 12.4099 67.1524 13.0182 68.3064 13.0182C69.2781 13.0182 70.0879 12.6127 70.0879 11.8218C70.0879 11.254 69.7437 10.9296 68.9542 10.7674L66.5045 10.2807C64.9457 9.95625 63.731 9.20596 63.731 7.40122C63.731 5.49508 65.4721 3.95395 68.1039 3.95395C70.8977 3.95395 72.4971 5.35314 72.7198 7.4215H69.9664C69.8652 6.54954 69.2174 5.96148 68.0634 5.96148C67.1321 5.96148 66.4236 6.42787 66.4236 7.1376C66.4236 7.70539 66.8082 7.969 67.4561 8.09067L70.0069 8.59762C71.8492 8.98291 72.8412 9.97653 72.8412 11.5785C72.8412 13.7077 70.8167 15.046 68.2861 15.046C65.4518 15.046 63.5893 13.6063 63.3868 11.4163Z"/><path d="M59.1587 2.59559V0H62.0538V2.59559H59.1587ZM62.0133 4.19755V14.803H59.179V4.19755H62.0133Z"/><path d="M41.8381 14.8027V4.19729H44.6724V5.53564C45.1987 4.72452 46.2515 3.95395 47.6686 3.95395C48.8428 3.95395 49.9158 4.56229 50.5029 5.53564C51.1508 4.7448 52.244 3.95395 53.8433 3.95395C56.0703 3.95395 57.4874 5.53564 57.4874 7.86761V14.8027H54.6531V8.4354C54.6531 7.21872 54.147 6.34676 52.9526 6.34676C51.9808 6.34676 51.0698 7.11733 51.0698 8.49623V14.8027H48.2355V8.4354C48.2355 7.21872 47.7294 6.34676 46.5349 6.34676C45.5631 6.34676 44.6724 7.11733 44.6724 8.49623V14.8027H41.8381Z"/><path d="M40.4029 11.4163C40.0385 13.586 38.1759 15.046 35.6858 15.046C32.6288 15.046 30.4828 12.7749 30.4828 9.51013C30.4828 6.32648 32.7503 3.95395 35.6858 3.95395C38.7225 3.95395 40.5243 6.3062 40.5243 9.28708C40.5243 9.53041 40.5243 9.8143 40.4636 10.159H33.1552C33.3374 11.9841 34.3699 12.856 35.6655 12.856C36.8195 12.856 37.5888 12.3085 37.8318 11.4163H40.4029ZM35.6453 6.14398C34.2686 6.14398 33.4993 7.05649 33.2159 8.37456H37.8115C37.771 7.1376 36.9815 6.14398 35.6453 6.14398Z"/><path d="M24.8459 11.8623V6.46832H23.1858V4.19718H24.8459V1.47993H27.6194V4.19718H30.0488V6.46832H27.6194V11.3351C27.6194 12.1867 27.9838 12.4909 28.8139 12.4909H30.0488V14.8026H27.8219C26.0606 14.8026 24.8459 13.8698 24.8459 11.8623Z"/><path d="M22.1371 4.07585V6.91478H21.388C19.5458 6.91478 18.3311 8.25313 18.3311 9.87537V14.8029H15.4968V4.19752H18.3311V6.32671C18.9586 4.86669 20.1733 4.07585 21.631 4.07585H22.1371Z"/><path d="M5.64835 2.61693e-05H8.96852L14.6169 14.803H11.5396L10.2237 11.2543H4.29193L2.99625 14.803H0L5.64835 2.61693e-05ZM7.2477 3.14312L5.18271 8.82097H9.33293L7.2477 3.14312Z"/></g></svg>`;
-const ICONS = {
-  rocket: "M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3m4.5-6.5a8 8 0 0 1 6 6M9 12a8 8 0 0 1 9-9",
-  spark: "M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3zM5 19l.6 1.6L7.2 21 5.6 21.6 5 23.2 4.4 21.6 2.8 21l1.6-.4L5 19z",
-  case: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16M4 8h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z",
-  cross: "M12 12m-8 0a8 8 0 1 0 16 0a8 8 0 1 0-16 0M12 2v4M12 18v4M2 12h4M18 12h4",
-  compass: "M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M16 8l-2.5 6.5L7 17l2.5-6.5L16 8z",
-  dash: "M3 3v18h18M7 14l4-4 3 3 5-6",
-  bulb: "M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c.6.6 1 1.5 1 2h6c0-.5.4-1.4 1-2a7 7 0 0 0-4-12z",
-  scope: "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0",
-  box: "M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8",
-  path: "M6 6h.01M6 18h.01M18 6h.01M18 18h.01M6 6l12 12M18 6L6 18",
-  shield: "M12 3l8 3v6c0 5-3.4 7.6-8 9-4.6-1.4-8-4-8-9V6l8-3z",
-  finger: "M8 11V7a4 4 0 0 1 8 0v4M6 11h12v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-8z",
-  flow: "M7 7h.01M17 17h.01M7 7a2 2 0 1 0 0 .01M17 17a2 2 0 1 0 0 .01M8.5 8.5l7 7",
-  plug: "M9 7v4M15 7v4M8 11h8v2a4 4 0 0 1-8 0v-2zM12 17v4",
-  route: "M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 17h6a4 4 0 0 0 0-8H10",
-  cog: "M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4",
-  key: "M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4",
-  panel: "M4 4h16v16H4zM9 4v16",
-  bell: "M6 8a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9M10 21a2 2 0 0 0 4 0"
-};
-function icon(name) {
-  return `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICONS[name] || ICONS.dash}"/></svg>`;
-}
-const cases = [
-  { id: "mfa", num: "CASE-1042", sev: "Critical", title: "MFA fatigue against Avery Chen", status: "In progress", judgement: "True positive", created: "Nov 4, 2026", updated: "Nov 4, 2026", who: "Sam Ortiz", assets: ["Avery Chen", "FIN-LT-14"], obs: ["185.220.101.42", "avery.chen@example.com"], source: "Detectors", vector: "Valid accounts", response: "Acknowledged", rank: 1, sla: false, summary: "Thirty denied push prompts from 185.220.101.42, then one accepted prompt and a new Okta session into Microsoft 365." },
-  { id: "token", num: "CASE-1044", sev: "High", title: "Stale access key used from a new network", status: "Open", judgement: "True positive", created: "Nov 4, 2026", updated: "Nov 4, 2026", who: "Unassigned", assets: ["analytics-export"], obs: ["AKIAIOSFODNN7EXAMPLE", "203.0.113.20"], source: "Detectors", vector: "Valid accounts", response: "Awaiting ack", rank: 1, sla: true, summary: "A key that had been quiet for 180 days called s3:GetObject from a network the role does not use." },
-  { id: "spray", num: "CASE-1038", sev: "High", title: "Password spray across finance mailboxes", status: "Open", judgement: "True positive", created: "Nov 3, 2026", updated: "Nov 4, 2026", who: "Sam Ortiz", assets: ["Finance mailboxes"], obs: ["198.51.100.14"], source: "Threat Hunt", vector: "Valid accounts", response: "Escalated", rank: 2, sla: false, summary: "One hosting address failed sign-in against 40 mailboxes, then succeeded once." },
-  { id: "beacon", num: "CASE-1033", sev: "Medium", title: "Rare outbound beacon from a finance laptop", status: "In progress", judgement: "Needs review", created: "Nov 3, 2026", updated: "Nov 4, 2026", who: "Jordan Hale", assets: ["FIN-LT-14"], obs: ["login-help-desk.example"], source: "Detectors", vector: "Command and control", response: "Acknowledged", rank: 2, sla: false, summary: "FIN-LT-14 called a lookalike help-desk host every nine minutes for two hours." },
-  { id: "priv", num: "CASE-1028", sev: "High", title: "Unexpected role assumption into analytics-export", status: "Open", judgement: "True positive", created: "Nov 3, 2026", updated: "Nov 3, 2026", who: "Priya Shah", assets: ["analytics-export", "Avery Chen"], obs: ["arn:aws:iam::111122223333:role/analytics-export"], source: "AI Mode", vector: "Privilege escalation", response: "Pending approval", rank: 2, sla: false, summary: "Avery Chen assumed analytics-export outside the change window and listed the export bucket." },
-  { id: "s3", num: "CASE-1031", sev: "High", title: "Unusual GetObject burst on customer-export", status: "In progress", judgement: "Benign", created: "Nov 2, 2026", updated: "Nov 3, 2026", who: "Priya Shah", assets: ["customer-export"], obs: ["customer-export"], source: "Detectors", vector: "Exfiltration", response: "Acknowledged", rank: 3, sla: false, summary: "A scheduled analytics role listed and read the export bucket inside its normal window." },
-  { id: "oauth", num: "CASE-1024", sev: "Medium", title: "New OAuth app consented in Entra", status: "Open", judgement: "Needs review", created: "Nov 1, 2026", updated: "Nov 2, 2026", who: "Unassigned", assets: ["Jordan Hale"], obs: ["Mail.Read", "app-9f3c2a"], source: "Detectors", vector: "OAuth", response: "Awaiting ack", rank: 3, sla: false, summary: "A newly registered application was granted Mail.Read by a user outside the app catalog." },
-  { id: "task", num: "CASE-1019", sev: "Medium", title: "Scheduled task created on a finance laptop", status: "Closed", judgement: "False positive", created: "Oct 28, 2026", updated: "Oct 29, 2026", who: "Priya Shah", assets: ["FIN-LT-14"], obs: ["UpdateHelper"], source: "Detectors", vector: "Execution", response: "Acknowledged", rank: 4, sla: false, summary: "The task matched a software deployment package already allowlisted." },
-  { id: "phish", num: "CASE-1011", sev: "Low", title: "Reported payroll message was a drill", status: "Closed", judgement: "False positive", created: "Oct 21, 2026", updated: "Oct 22, 2026", who: "Sam Ortiz", assets: ["Avery Chen"], obs: ["payroll-notice.example"], source: "Workflow", vector: "Phishing", response: "Acknowledged", rank: 4, sla: false, summary: "The message was the quarterly phishing drill. No mailbox rule was changed." },
-  { id: "share", num: "CASE-1004", sev: "Medium", title: "External share of a finance workbook", status: "Closed", judgement: "Benign", created: "Oct 12, 2026", updated: "Oct 13, 2026", who: "Jordan Hale", assets: ["Q3-forecast.xlsx"], obs: ["auditor@example-audit.com"], source: "Finding", vector: "Collection", response: "Acknowledged", rank: 4, sla: false, summary: "The share went to the named external auditor for the open review." }
-];
-const findings = [
-  { id: "F-2201", caseId: "mfa", sev: "Critical", title: "Repeated MFA denials then one accept", source: "Okta", detector: "mfa-det", entity: "avery.chen@example.com", when: "Nov 4, 15:14", rank: 1 },
-  { id: "F-2202", caseId: "mfa", sev: "High", title: "Okta session opened from a new network", source: "Okta", detector: "mfa-det", entity: "185.220.101.42", when: "Nov 4, 15:16", rank: 1 },
-  { id: "F-2208", caseId: "token", sev: "High", title: "Quiet access key called GetObject", source: "AWS CloudTrail", detector: "key-det", entity: "AKIAIOSFODNN7EXAMPLE", when: "Nov 4, 11:02", rank: 1 },
-  { id: "F-2188", caseId: "spray", sev: "High", title: "Many failed sign-ins, one success", source: "Entra ID", detector: "spray-det", entity: "198.51.100.14", when: "Nov 3, 22:40", rank: 2 },
-  { id: "F-2181", caseId: "beacon", sev: "Medium", title: "Repeating outbound calls to a lookalike host", source: "CrowdStrike", detector: "beacon-det", entity: "FIN-LT-14", when: "Nov 3, 18:12", rank: 2 },
-  { id: "F-2177", caseId: "priv", sev: "High", title: "AssumeRole outside the change window", source: "AWS CloudTrail", detector: "role-det", entity: "analytics-export", when: "Nov 3, 09:04", rank: 2 },
-  { id: "F-2170", caseId: "s3", sev: "Medium", title: "GetObject volume above the 30-day baseline", source: "AWS CloudTrail", detector: "s3-det", entity: "customer-export", when: "Nov 2, 02:16", rank: 3 },
-  { id: "F-2162", caseId: "oauth", sev: "Medium", title: "User consented to an uncatalogued app", source: "Entra ID", detector: "oauth-det", entity: "Jordan Hale", when: "Nov 1, 16:44", rank: 3 },
-  { id: "F-2140", caseId: "task", sev: "Low", title: "Scheduled task created by a deployment", source: "CrowdStrike", detector: "task-det", entity: "FIN-LT-14", when: "Oct 28, 08:01", rank: 4 },
-  { id: "F-2112", caseId: "phish", sev: "Low", title: "User reported a payroll message", source: "Google Workspace", detector: "phish-det", entity: "Avery Chen", when: "Oct 21, 13:20", rank: 4 }
-];
-const insights = [
-  { id: "stale", sev: "High", title: "Twelve service accounts have not rotated keys in 180 days", category: "Cloud", source: "AWS", status: "Open", updated: "Nov 4, 2026", rank: 1, detail: "The keys belong to analytics roles, not people. One of them was used today." },
-  { id: "mfa-gap", sev: "Medium", title: "Six privileged users have no phishing-resistant MFA", category: "Identity", source: "Okta", status: "Open", updated: "Nov 3, 2026", rank: 2, detail: "The six accounts can still approve a push prompt. Avery Chen is one of them." },
-  { id: "public", sev: "Low", title: "One S3 bucket still allows public list", category: "Cloud", source: "AWS", status: "Open", updated: "Nov 1, 2026", rank: 3, detail: "The bucket is a sandbox log archive, not customer-export." },
-  { id: "agent", sev: "Medium", title: "Four laptops have no CrowdStrike check-in this week", category: "Endpoint", source: "CrowdStrike", status: "Open", updated: "Nov 3, 2026", rank: 2, detail: "The four hosts are in the finance OU. FIN-LT-14 is not one of them." },
-  { id: "share-gap", sev: "Low", title: "External sharing is on for the finance drive", category: "SaaS", source: "Google Workspace", status: "Snoozed", updated: "Oct 30, 2026", rank: 4, detail: "Sharing is limited to the named auditor domain." },
-  { id: "consent", sev: "High", title: "Three users can consent to applications without a review", category: "Identity", source: "Entra ID", status: "Open", updated: "Nov 2, 2026", rank: 3, detail: "Jordan Hale consented to Mail.Read under this setting." }
-];
-const detectors = [
-  { id: "mfa-det", name: "MFA fatigue followed by a new session", status: "Enabled", sev: "Critical", tactic: "Credential Access", source: "Okta", health: "Healthy", signals: 18, wentLive: true, changed: false, quieter: false, summary: "Fires when many push denials are followed by one accept and a new session." },
-  { id: "spray-det", name: "Password spray, many users, one source", status: "Enabled", sev: "High", tactic: "Credential Access", source: "Entra ID", health: "Healthy", signals: 6, wentLive: false, changed: true, quieter: true, summary: "Fires when one address fails against many mailboxes and then succeeds." },
-  { id: "key-det", name: "Quiet access key used again", status: "Enabled", sev: "High", tactic: "Credential Access", source: "AWS", health: "Healthy", signals: 4, wentLive: true, changed: false, quieter: false, summary: "Fires when a key idle for 90 days calls a data-plane API." },
-  { id: "role-det", name: "AssumeRole outside the change window", status: "Enabled", sev: "High", tactic: "Privilege Escalation", source: "AWS", health: "Healthy", signals: 3, wentLive: false, changed: true, quieter: false, summary: "Fires when a sensitive role is assumed outside the approved hours." },
-  { id: "beacon-det", name: "Repeating outbound to a new host", status: "Enabled", sev: "Medium", tactic: "Command and Control", source: "CrowdStrike", health: "Healthy", signals: 2, wentLive: true, changed: false, quieter: false, summary: "Fires when a laptop calls one new host on a steady interval." },
-  { id: "s3-det", name: "Mass GetObject from one principal", status: "Disabled", sev: "High", tactic: "Exfiltration", source: "AWS", health: "Healthy", signals: 0, wentLive: false, changed: false, quieter: false, summary: "Turned off after the scheduled export was allowlisted." },
-  { id: "oauth-det", name: "Consent to an uncatalogued OAuth app", status: "Test", sev: "Medium", tactic: "Initial Access", source: "Entra ID", health: "Tuning", signals: 2, wentLive: false, changed: false, quieter: false, summary: "Still in the learning period. Two consents are waiting." },
-  { id: "phish-det", name: "Reported message with a payroll lure", status: "Test", sev: "Low", tactic: "Initial Access", source: "Google Workspace", health: "Tuning", signals: 1, wentLive: false, changed: false, quieter: false, summary: "Learning period. The last report was the quarterly drill." }
-];
-const connectors = [
-  { id: "okta", name: "Okta", logo: "logos/Okta.svg", status: "Connected", lag: "2 hours ago", day: "1.2M events", streams: ["System Log", "Users", "Groups"] },
-  { id: "cs", name: "CrowdStrike", logo: "logos/Crowdstrike.svg", status: "Connected", lag: "14 minutes ago", day: "640k events", streams: ["Detections", "Host inventory"] },
-  { id: "entra", name: "Microsoft Entra ID", logo: "logos/Entra.svg", status: "Connected", lag: "6 minutes ago", day: "840k events", streams: ["Sign-in", "Audit", "Applications"] },
-  { id: "aws", name: "AWS CloudTrail", logo: "logos/AWS.svg", status: "Connected", lag: "4 minutes ago", day: "2.1M events", streams: ["Management", "S3 data"] },
-  { id: "defender", name: "Microsoft Defender", logo: "logos/MicrosoftDefender.svg", status: "Degraded", lag: "9 hours ago", day: "0 events", streams: ["Alerts", "Devices"], note: "No events for 9 hours. The sample feed is quiet." },
-  { id: "s1", name: "SentinelOne", logo: "logos/SentinelOne.svg", status: "Connected", lag: "21 minutes ago", day: "80k events", streams: ["Threats", "Agents"] },
-  { id: "splunk", name: "Splunk", logo: "logos/Splunk.svg", status: "Connected", lag: "1 hour ago", day: "410k events", streams: ["Notable events"] },
-  { id: "wiz", name: "Wiz", logo: "logos/Wiz.svg", status: "Connected", lag: "33 minutes ago", day: "22k events", streams: ["Issues", "Inventory"] },
-  { id: "snow", name: "Snowflake", logo: "logos/Snowflake.svg", status: "Connected", lag: "2 hours ago", day: "15k events", streams: ["Login history", "Query history"] },
-  { id: "gh", name: "GitHub", logo: "logos/Github.svg", status: "Error", lag: "1 day ago", day: "0 events", streams: ["Audit log"], note: "Webhook delivery failed. The sample endpoint returned 401." },
-  { id: "google", name: "Google Workspace", logo: "logos/Google.svg", status: "Connected", lag: "8 minutes ago", day: "300k events", streams: ["Login", "Drive", "Admin"] }
-];
-const hunts = [
-  { id: "spray", name: "Password spray, last 24 hours", status: "Complete", scope: "Entra sign-ins", hits: "41 accounts", updated: "Nov 4, 2026", who: "Sam Ortiz", query: "SigninLogs | where ResultType != 0 | summarize fails=count() by IPAddress, UserPrincipalName" },
-  { id: "token", name: "New OAuth grants this week", status: "Running", scope: "Entra audit", hits: "7 grants", updated: "Nov 4, 2026", who: "Priya Shah", query: "AuditLogs | where OperationName == 'Consent to application' | where TimeGenerated > ago(7d)" },
-  { id: "bucket", name: "Public object storage", status: "Scheduled", scope: "AWS", hits: "1 bucket", updated: "Nov 1, 2026", who: "Jordan Hale", query: "CloudTrail | where eventName == 'PutBucketAcl' or eventName == 'PutBucketPolicy'" },
-  { id: "beacon", name: "Steady outbound from finance laptops", status: "Complete", scope: "CrowdStrike", hits: "1 host", updated: "Nov 3, 2026", who: "Jordan Hale", query: "DeviceNetworkEvents | summarize calls=count() by DeviceName, RemoteUrl | where calls > 20" },
-  { id: "keys", name: "Access keys idle for 90 days", status: "Complete", scope: "AWS IAM", hits: "12 keys", updated: "Nov 4, 2026", who: "Priya Shah", query: "IAM | where keyAge > 90 and lastUsed > ago(1d)" }
-];
-const iocs = [
-  { value: "185.220.101.42", type: "IPv4", reputation: "Malicious", confidence: "High", status: "Active", source: "Case CASE-1042", hits: 30, by: "Sam Ortiz" },
-  { value: "login-help-desk.example", type: "Domain", reputation: "Suspicious", confidence: "Medium", status: "Active", source: "Case CASE-1033", hits: 14, by: "Jordan Hale" },
-  { value: "198.51.100.14", type: "IPv4", reputation: "Malicious", confidence: "High", status: "Active", source: "Hunt: password spray", hits: 41, by: "Sam Ortiz" },
-  { value: "44d88612fea8a8f36de82e1278abb02f", type: "MD5", reputation: "Benign", confidence: "High", status: "Expired", source: "File allowlist", hits: 0, by: "Priya Shah" },
-  { value: "payroll-notice.example", type: "Domain", reputation: "Benign", confidence: "Low", status: "Expired", source: "Phishing drill", hits: 1, by: "Sam Ortiz" },
-  { value: "app-9f3c2a", type: "Application", reputation: "Suspicious", confidence: "Medium", status: "Active", source: "Entra consent", hits: 1, by: "Unassigned" }
-];
-const assets = [
-  { name: "Avery Chen", type: "User", area: "Finance", source: "Okta", owner: "Finance", risk: "High", note: "Privileged. Push MFA only." },
-  { name: "Jordan Hale", type: "User", area: "IT", source: "Entra ID", owner: "IT", risk: "Medium", note: "Can consent to applications." },
-  { name: "FIN-LT-14", type: "Laptop", area: "Finance", source: "CrowdStrike", owner: "Avery Chen", risk: "High", note: "Online. Beacon case is open." },
-  { name: "analytics-export", type: "Role", area: "Data", source: "AWS", owner: "Data", risk: "High", note: "Assumed outside the change window." },
-  { name: "customer-export", type: "Bucket", area: "Data", source: "AWS", owner: "Data", risk: "Medium", note: "Private. Read by the scheduled export." },
-  { name: "sandbox-logs", type: "Bucket", area: "Platform", source: "AWS", owner: "Platform", risk: "Low", note: "Public list is still on." },
-  { name: "Q3-forecast.xlsx", type: "File", area: "Finance", source: "Google Workspace", owner: "Jordan Hale", risk: "Low", note: "Shared with the named auditor." },
-  { name: "Finance mailboxes", type: "Group", area: "Finance", source: "Entra ID", owner: "Finance", risk: "High", note: "40 mailboxes in the spray." }
-];
-const workflows = [
-  { id: "isolate", name: "Isolate a host in CrowdStrike", state: "Ready", trigger: "Case severity is critical", steps: ["Case opened", "Confirm the host", "Contain the sensor"], runs: [["Nov 4, 2026", "Not run", "Waiting on an analyst"]] },
-  { id: "reset", name: "Reset Okta factors and revoke sessions", state: "Ready", trigger: "True positive on an identity case", steps: ["Case judged true positive", "Reset factors", "Revoke sessions"], runs: [["Nov 2, 2026", "Success", "Drill on a test user"]] },
-  { id: "ticket", name: "Open a ticket with the case summary", state: "Draft", trigger: "Case unassigned for 4 hours", steps: ["Wait", "Post the summary"], runs: [["Nov 4, 2026", "Skipped", "Still a draft"]] },
-  { id: "block", name: "Block a domain at the proxy", state: "Ready", trigger: "IOC reputation is malicious", steps: ["IOC activated", "Push the domain", "Confirm the block"], runs: [["Nov 3, 2026", "Success", "login-help-desk.example"]] }
-];
-const logs = [
-  { t: "15:02", source: "Okta", user: "avery.chen@example.com", action: "MFA push denied", result: "Denied", ip: "185.220.101.42" },
-  { t: "15:11", source: "Okta", user: "avery.chen@example.com", action: "MFA push accepted", result: "Success", ip: "185.220.101.42" },
-  { t: "15:14", source: "Entra ID", user: "avery.chen@example.com", action: "SSO to Microsoft 365", result: "Success", ip: "185.220.101.42" },
-  { t: "11:02", source: "AWS CloudTrail", user: "analytics-export", action: "GetObject", result: "Success", ip: "203.0.113.20" },
-  { t: "22:40", source: "Entra ID", user: "finance-users", action: "Sign-in failed", result: "Denied", ip: "198.51.100.14" },
-  { t: "18:12", source: "CrowdStrike", user: "FIN-LT-14", action: "Network connection", result: "Allowed", ip: "10.4.20.14" },
-  { t: "09:04", source: "AWS CloudTrail", user: "Avery Chen", action: "AssumeRole", result: "Success", ip: "203.0.113.20" },
-  { t: "16:44", source: "Entra ID", user: "jordan.hale@example.com", action: "Consent to application", result: "Success", ip: "192.0.2.40" }
-];
-const portalUsers = [
-  ["Sam Ortiz", "sam.ortiz@example.com", "Analyst", "Nov 4, 2026"],
-  ["Priya Shah", "priya.shah@example.com", "Admin", "Nov 4, 2026"],
-  ["Jordan Hale", "jordan.hale@example.com", "Analyst", "Nov 3, 2026"]
-];
-const auditRows = [
-  ["Nov 4, 15:20", "Sam Ortiz", "Acknowledged", "CASE-1042"],
-  ["Nov 4, 11:10", "Priya Shah", "Turned off", "Mass GetObject detector"],
-  ["Nov 3, 09:30", "Jordan Hale", "Started", "Beacon hunt"],
-  ["Nov 1, 16:50", "Priya Shah", "Edited", "Organization context"]
-];
-const comments = {
-  mfa: [["Sam Ortiz", "Nov 4, 15:40", "The accepted prompt was the thirtieth try. I am resetting factors next."], ["Priya Shah", "Nov 4, 16:05", "Hold the host isolation until the session list is attached."]],
-  spray: [["Sam Ortiz", "Nov 4, 08:12", "Forty mailboxes, one success. Escalated to identity."]]
-};
-const agentic = {
-  mfa: [["Hypothesis", "Push fatigue from one hosting address, then a new session."], ["Okta", "30 MFA denials and 1 accept for avery.chen@example.com."], ["Session", "The accepted prompt opened Microsoft 365 from 185.220.101.42."], ["Conclusion", "True positive. The prompt was approved after the denials."]],
-  token: [["Hypothesis", "A retired key was used from a network the role does not use."], ["CloudTrail", "GetObject from AKIAIOSFODNN7EXAMPLE at 11:02."], ["Key age", "The key had not been used for 180 days."], ["Conclusion", "True positive. The key should be disabled."]],
-  spray: [["Hypothesis", "One source sprayed finance mailboxes."], ["Entra", "41 accounts, one success."], ["Conclusion", "True positive. The success needs a password reset."]]
-};
-const ATTACK = [
-  ["Initial Access", ["cov", "part", "cov", "gap"]],
-  ["Execution", ["cov", "cov", "part", "gap"]],
-  ["Persistence", ["part", "cov", "gap", "gap"]],
-  ["Privilege Escalation", ["cov", "cov", "cov", "part"]],
-  ["Defense Evasion", ["gap", "part", "gap", "cov"]],
-  ["Credential Access", ["cov", "cov", "part", "cov"]],
-  ["Discovery", ["part", "cov", "gap", "part"]],
-  ["Lateral Movement", ["gap", "part", "cov", "gap"]],
-  ["Collection", ["gap", "gap", "part", "cov"]],
-  ["Exfiltration", ["part", "cov", "gap", "part"]],
-  ["Command and Control", ["cov", "gap", "part", "gap"]],
-  ["Impact", ["part", "gap", "gap", "cov"]]
-];
-const ATLAS = [
-  ["Reconnaissance", ["part", "gap", "cov", "gap"]],
-  ["ML Model Access", ["gap", "part", "gap", "cov"]],
-  ["Initial Access", ["cov", "gap", "part", "gap"]],
-  ["Execution", ["part", "gap", "gap", "cov"]],
-  ["Exfiltration", ["gap", "cov", "part", "gap"]],
-  ["Impact", ["gap", "gap", "part", "cov"]]
-];
-const SETTINGS = [
-  ["general", "General"], ["license", "Licenses"], ["users", "Users"], ["authentication", "Authentication"],
-  ["api-keys", "API Keys"], ["secrets", "Secrets"], ["ai-mode", "AI Mode"], ["ai-actions", "AI Mode actions"],
-  ["audit-trail", "Audit Trail"], ["organization-context", "Organization Context"], ["lookup-tables", "Lookup Tables"],
-  ["roles", "Roles"], ["ioc-management", "IOC Management"], ["file-allowlist", "File Allowlist"],
-  ["detectors", "Detectors"], ["reports", "Reports"]
-];
-const RANGE = {
-  "24h": { short: "24h", label: "Last 24 hours", ingested: "18 GB", mttr: "22m", mtres: "4.2h", hunt: "6m", flow: "40s", know: "1.1k", series: [2, 1, 3, 2, 4, 1, 3] },
-  "7d": { short: "7d", label: "Last 7 days", ingested: "126 GB", mttr: "18m", mtres: "6.5h", hunt: "11m", flow: "55s", know: "4.8k", series: [4, 6, 5, 8, 7, 9, 5] },
-  "30d": { short: "30d", label: "Last 30 days", ingested: "540 GB", mttr: "26m", mtres: "9.1h", hunt: "14m", flow: "1.2m", know: "18k", series: [12, 18, 14, 20, 16, 22, 15] },
-  "90d": { short: "90d", label: "Last 90 days", ingested: "1.6 TB", mttr: "31m", mtres: "11h", hunt: "16m", flow: "1.4m", know: "52k", series: [30, 42, 38, 55, 48, 60, 40] }
-};
-const RANK = { "24h": 1, "7d": 2, "30d": 3, "90d": 4 };
-const JCOLOR = { "True positive": "#86efac", Benign: "#93c5fd", "False positive": "#fca5a5", "Needs review": "#fde68a" };
-const SCOLOR = { Critical: "#fca5a5", High: "#fdba74", Medium: "#fde68a", Low: "#e4e4e7" };
-let q = "", railOpen = true, dashOpen = true, lastPage = "", range = "7d", framework = "attack", caseView = "table", notesOpen = false, toast = "", askText = "";
-let logQuery = 'SigninLogs | where TimeGenerated > ago(1d) | where IPAddress == "185.220.101.42"';
-let filters = { sev: "", status: "", judge: "", type: "" };
-const DASH_PAGES = { home: 1, operational: 1, ei: 1, coverage: 1, lifecycle: 1, performance: 1, mdr: 1, templates: 1, custom: 1 };
-function route() {
-  const [page, id, tab] = (location.hash.replace(/^#\/?/, "") || "home").split("/");
-  return { page: page || "home", id: id || "", tab: tab || "" };
-}
-function go(path) { location.hash = "#/" + path; }
-function inWindow(rank) { return rank <= RANK[range]; }
-function win() { return RANGE[range]; }
-function tally(rows, key) {
-  const out = {};
-  rows.forEach((row) => { const k = row[key] || "Unknown"; out[k] = (out[k] || 0) + 1; });
-  return out;
-}
-function sev(s) { return `<span class="pill ${esc(s).toLowerCase()}">${esc(s)}</span>`; }
-function statusPill(s) {
-  const ok = ["Connected", "Enabled", "Healthy", "Complete", "Ready", "Open", "Live", "Acknowledged", "Success", "Active"];
-  const bad = ["Error", "Degraded", "Retired"];
-  const k = ok.includes(s) ? "ok" : bad.includes(s) ? "bad" : s === "Closed" || s === "Expired" || s === "Snoozed" ? "" : "warn";
-  return `<span class="pill ${k}">${esc(s)}</span>`;
-}
-function judgementPill(s) {
-  const k = s === "True positive" ? "ok" : s === "False positive" ? "bad" : "warn";
-  return `<span class="pill ${k}">${esc(s)}</span>`;
-}
-function logo(src) { return `<span class="logo"><img src="${src}" alt=""></span>`; }
-function match(text) {
-  const s = q.trim().toLowerCase();
-  return !s || String(text).toLowerCase().includes(s);
-}
-function table(heads, rows) {
-  const body = rows.length ? rows.join("") : `<tr><td class="muted" colspan="${heads.length}">No sample rows match.</td></tr>`;
-  return `<div class="tablewrap"><table><thead><tr>${heads.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table></div>`;
-}
-function card(title, body, extra) {
-  return `<div class="card"><div class="hrow"><div class="h2">${title}</div>${extra || ""}</div>${body}</div>`;
-}
-function kpiRow(items) {
-  return `<div class="kpis">${items.map((k) => `<div class="kpi"><span class="muted">${esc(k[0])}</span><b>${esc(k[1])}</b>${k[2] ? `<span class="muted">${esc(k[2])}</span>` : ""}</div>`).join("")}</div>`;
-}
-function vbars(parts) {
-  const max = Math.max(...parts.map((p) => p[1]), 1);
-  return parts.map((p) => `<div class="vrow"><span>${esc(p[0])}</span><div class="track"><i style="width:${Math.round(p[1] / max * 100)}%;background:${p[2] || "#c7d2fe"}"></i></div><b>${p[1]}</b></div>`).join("");
-}
-function hbars(values) {
-  const max = Math.max(...values, 1);
-  return `<div class="bars">${values.map((v) => `<i style="height:${Math.round(v / max * 100)}%"></i>`).join("")}</div>`;
-}
-function donut(parts) {
-  const total = parts.reduce((s, p) => s + p[1], 0) || 1;
-  let acc = 0;
-  const stops = parts.map((p) => { const start = acc; acc += (p[1] / total) * 100; return `${p[2]} ${start.toFixed(2)}% ${acc.toFixed(2)}%`; }).join(",");
-  const legend = parts.map((p) => `<div><i class="sw" style="background:${p[2]}"></i> ${esc(p[0])} <b>${p[1]}</b></div>`).join("");
-  return `<div class="row" style="align-items:center;gap:16px"><div class="donut" style="background:conic-gradient(${stops})"><span>${total}</span></div><div class="stack">${legend}</div></div>`;
-}
-function chip(label, key, value) {
-  const cur = key === "sev" ? filters.sev : key === "status" ? filters.status : key === "judge" ? filters.judge : key === "type" ? filters.type : key === "view" ? caseView : key === "framework" ? framework : "";
-  return `<button class="chip${cur === value ? " on" : ""}" data-set="${key}:${esc(value)}" type="button">${esc(label)}</button>`;
-}
-function caseLinks(rows) {
-  if (!rows.length) return `<p class="muted">Nothing in ${esc(win().label.toLowerCase())}.</p>`;
-  return rows.map((c) => `<button class="linkrow" data-go="case/${c.id}" type="button">${sev(c.sev)}<span><b>${esc(c.num)}</b> ${esc(c.title)}</span><span class="muted">${esc(c.who)}</span></button>`).join("");
-}
-function tags(list) { return (list || []).map((t) => `<span class="tag">${esc(t)}</span>`).join(""); }
-function matrix(cols) {
-  return `<div class="matrix">${cols.map((c) => `<div class="mcol"><h3>${esc(c[0])}</h3>${c[1].map((s) => `<div class="cell ${s}"></div>`).join("")}</div>`).join("")}</div><div class="filters" style="margin-top:8px"><span class="muted"><i class="sw cell cov" style="width:10px;height:10px"></i> Covered</span><span class="muted"><i class="sw cell part" style="width:10px;height:10px"></i> Partial</span><span class="muted"><i class="sw cell gap" style="width:10px;height:10px"></i> Gap</span></div>`;
-}
-function coverPct(cols) {
-  const cells = cols.flatMap((c) => c[1]);
-  const score = cells.reduce((s, x) => s + (x === "cov" ? 1 : x === "part" ? 0.5 : 0), 0);
-  return Math.round(score / cells.length * 100);
-}
-function windowCases() { return cases.filter((c) => inWindow(c.rank)); }
-function windowFindings() { return findings.filter((f) => inWindow(f.rank)); }
-function windowInsights() { return insights.filter((i) => inWindow(i.rank)); }
-function filteredCases() {
-  return cases.filter((c) => match([c.title, c.num, c.who, c.vector, ...(c.assets || []), ...(c.obs || [])].join(" ")) && (!filters.sev || c.sev === filters.sev) && (!filters.status || c.status === filters.status) && (!filters.judge || c.judgement === filters.judge));
-}
-function parentOf(page) {
-  const map = { case: "cases", finding: "findings", hunt: "hunts", insight: "insights", detector: "detectors", connector: "connectors", workflow: "workflows" };
-  if (map[page]) return map[page];
-  if (page === "custom" || page in DASH_PAGES) return "dash";
-  return page;
-}
-function crumbs(parts) {
-  if (!parts) return "";
-  return parts.map((p, i) => `${i ? "<span>/</span>" : ""}${p[1] ? `<button type="button" data-go="${p[1]}">${esc(p[0])}</button>` : `<span>${esc(p[0])}</span>`}`).join("");
-}
-function searchHits() {
-  const s = q.trim().toLowerCase();
-  if (!s) return "";
-  const rows = [];
-  cases.forEach((c) => { if ((c.num + c.title + c.who).toLowerCase().includes(s)) rows.push([`case/${c.id}`, `${c.num} · ${c.title}`]); });
-  findings.forEach((f) => { if ((f.id + f.title + f.entity).toLowerCase().includes(s)) rows.push([`finding/${f.id}`, `${f.id} · ${f.title}`]); });
-  insights.forEach((item) => { if (item.title.toLowerCase().includes(s)) rows.push([`insight/${item.id}`, item.title]); });
-  detectors.forEach((d) => { if (d.name.toLowerCase().includes(s)) rows.push([`detector/${d.id}`, d.name]); });
-  connectors.forEach((c) => { if (c.name.toLowerCase().includes(s)) rows.push([`connector/${c.id}`, c.name]); });
-  const body = rows.slice(0, 8).map((r) => `<button type="button" data-go="${r[0]}">${esc(r[1])}</button>`).join("") || `<div class="muted" style="padding:8px">No sample matches.</div>`;
-  return `<div class="hits">${body}</div>`;
-}
-function rangeBar() {
-  return `<div class="range">${Object.entries(RANGE).map(([k, v]) => `<button type="button" class="${range === k ? "on" : ""}" data-set="range:${k}">${v.short}</button>`).join("")}</div>`;
-}
-function shell(title, body, opts) {
-  opts = opts || {};
-  const r = route();
-  const dashIds = { home: "Overview", operational: "Operational", ei: "Environment Intelligence", coverage: "Detection Coverage", lifecycle: "Detection Lifecycle", performance: "Performance", mdr: "Apollo MDR", templates: "Templates" };
-  const items = [
-    ["start", "Getting started", "rocket", null],
-    ["ai", "AI Mode", "spark", null],
-    ["cases", "Cases", "case", "Investigate"],
-    ["hunts", "Threat Hunts", "cross", "Investigate"],
-    ["logs", "Log Explorer", "compass", "Investigate"],
-    ["dash", "Dashboards", "dash", "Monitor"],
-    ["insights", "Insights", "bulb", "Monitor"],
-    ["findings", "Findings", "scope", "Monitor"],
-    ["inventory", "Inventory", "box", "Monitor", "Beta"],
-    ["paths", "Critical Paths", "path", "Monitor", "Beta"],
-    ["detectors", "Detectors", "shield", "Detect & automate"],
-    ["iocs", "IOC Management", "finger", "Detect & automate", "Beta"],
-    ["workflows", "Workflows", "flow", "Detect & automate"],
-    ["connectors", "Connectors", "plug", "Configure"],
-    ["pipelines", "Pipelines", "route", "Configure"],
-    ["settings", "Settings", "cog", "Configure"]
-  ];
-  let last = "";
-  const active = parentOf(r.page);
-  const nav = items.map((it) => {
-    const sec = it[3] && it[3] !== last ? `<div class="sec">${esc(it[3])}</div>` : "";
-    last = it[3] || last;
-    const on = it[0] === active;
-    const tip = railOpen ? "" : ` title="${esc(it[1])}" aria-label="${esc(it[1])}"`;
-    const goAttr = it[0] === "dash" ? (railOpen ? `data-toggle="dash"` : `data-go="home"`) : `data-go="${it[0]}"`;
-    const badge = it[4] ? `<span class="badge">${it[4]}</span>` : "";
-    const sub = it[0] === "dash" && railOpen && dashOpen ? Object.entries(dashIds).map(([id, label]) => `<button class="sub${r.page === id ? " on" : ""}" data-go="${id}" type="button">${esc(label)}</button>`).join("") : "";
-    return `${sec}<button class="nav${on ? " on" : ""}" ${goAttr} type="button"${tip}>${icon(it[2])}<span class="lbl">${esc(it[1])}</span>${badge}</button>${sub}`;
-  }).join("");
-  const tools = `${opts.framework ? `<div class="filters" style="margin:0">${chip("ATT&CK", "framework", "attack")}${chip("ATLAS", "framework", "atlas")}</div>` : ""}${opts.range ? `<span class="pill">Updated just now</span>${rangeBar()}<button class="btn" data-set="toast:Sample only. No report file is created." type="button">Download PDF</button>` : ""}`;
-  const notePop = notesOpen ? `<div class="pop"><div class="h2">Notifications</div>${[["connector/defender", "Defender has been quiet for 9 hours"], ["case/mfa", "CASE-1042 is still in progress"], ["connector/gh", "GitHub webhook returned an error"]].map((n) => `<button type="button" data-go="${n[0]}">${esc(n[1])}</button>`).join("")}</div>` : "";
-  return `<div class="app"><nav class="rail${railOpen ? "" : " closed"}" id="rail">
-    <div class="brand"><img src="logos/Artemis.svg" alt="Artemis">${WORD}<button class="collapse" id="rail-toggle" type="button" title="${railOpen ? "Collapse sidebar" : "Expand sidebar"}" aria-label="${railOpen ? "Collapse sidebar" : "Expand sidebar"}">${icon("panel")}</button></div>
-    <div class="navscroll">${nav}</div>
-    <div class="foot"><span class="av">A</span><span><div class="orgname">artdogfood</div><div class="who">Sample analyst</div></span><button class="collapse" data-go="signin" type="button" title="Sign-in card" aria-label="Sign-in card">${icon("cog")}</button></div>
-  </nav><section class="main"><header class="top"><div><div class="crumbs">${crumbs(opts.crumbs)}</div><h1>${esc(title)}</h1></div><span class="grow"></span>${tools}<label class="search">${icon("scope")}<input id="q" placeholder="Search the sample" value="${esc(q)}">${searchHits()}</label><button class="bell${notesOpen ? " on" : ""}" data-toggle="notes" type="button" aria-label="Notifications">${icon("bell")}<span class="dot">3</span></button>${notePop}</header><div class="scroll">${opts.range ? `<p class="muted">${esc(win().label)}</p>` : ""}${body}</div></section></div>${toast ? `<div class="toast"><span>${esc(toast)}</span><button data-set="toast:" type="button">Dismiss</button></div>` : ""}`;
-}
-function homePage() {
-  const rows = windowCases();
-  const open = rows.filter((c) => c.status !== "Closed");
-  const byJ = tally(rows, "judgement");
-  const byS = tally(rows, "sev");
-  const byA = tally(open, "who");
-  const pipe = [["New", rows.filter((c) => c.status === "Open").length, "#93c5fd"], ["Investigating", rows.filter((c) => c.status === "In progress").length, "#fde68a"], ["Resolved", rows.filter((c) => c.status === "Closed").length, "#86efac"]];
-  const prompts = ["What should I look at first?", "Which connectors are unhealthy?", "Who is on the MFA fatigue case?"];
-  return shell("Executive Overview", `<section class="ask" aria-label="Ask Artemis"><h2>What's up</h2><div class="composer"><input id="askq" placeholder="Ask Artemis" value="${esc(askText)}"><button class="btn primary" id="ask" type="button">Ask</button></div><div class="filters">${prompts.map((p) => `<button class="chip" data-ask="${esc(p)}" type="button">${esc(p)}</button>`).join("")}</div></section>
-    ${kpiRow([["Open cases", open.length, win().label], ["New findings", windowFindings().length, "in the window"], ["Connectors healthy", connectors.filter((c) => c.status === "Connected").length + "/" + connectors.length, ""], ["Mean time to response", win().mttr, "sample"]])}
-    <div class="grid2">
-      ${card("Cases by Judgement", donut(Object.entries(byJ).map(([k, n]) => [k, n, JCOLOR[k] || "#e4e4e7"])))}
-      ${card("Mean Time to Response", `<div class="big">${esc(win().mttr)}</div><p class="muted">From case open to first acknowledgement.</p>`)}
-      ${card("Mean Time to Resolution", `<div class="big">${esc(win().mtres)}</div><p class="muted">From case open to a recorded judgement.</p>`)}
-      ${card("Cases by Severity", vbars(Object.entries(byS).map(([k, n]) => [k, n, SCOLOR[k]])))}
-    </div>
-    <div class="grid2" style="margin-top:12px">
-      ${card("Cases Pipeline", vbars(pipe))}
-      ${card("Cases by Assignment", vbars(Object.entries(byA).map(([k, n]) => [k, n, "#c7d2fe"])))}
-      ${card("Open Cases", caseLinks(open.slice(0, 5)) + `<p><button class="btn" data-go="cases" type="button">All cases</button></p>`)}
-      ${card("Open Insights", windowInsights().filter((i) => i.status === "Open").map((i) => `<button class="linkrow" data-go="insight/${i.id}" type="button">${sev(i.sev)}<span>${esc(i.title)}</span></button>`).join("") || `<p class="muted">None in this window.</p>`)}
-    </div>
-    <div class="grid3" style="margin-top:12px">
-      ${card("Overall Coverage", `<div class="big">${coverPct(ATTACK)}%</div><p class="muted">ATT&CK techniques with a detector, counting partial as half.</p><button class="btn" data-go="coverage" type="button">Open coverage</button>`)}
-      ${card("Emerging Threats", `<button class="linkrow" data-go="case/mfa" type="button">${sev("Critical")}<span>MFA fatigue campaigns</span><span class="tag">Covered</span></button><button class="linkrow" data-go="case/oauth" type="button">${sev("Medium")}<span>OAuth consent phishing</span><span class="tag">Partial</span></button><button class="linkrow" data-go="insight/public" type="button">${sev("Low")}<span>Public bucket listing</span><span class="tag">Gap</span></button>`)}
-      ${card("Taken by Artemis", `<div class="vrow"><span>Cases opened</span><b>${rows.length}</b></div><div class="vrow"><span>Judgements recorded</span><b>${rows.filter((c) => c.status === "Closed" || c.judgement === "True positive").length}</b></div><div class="vrow"><span>Hunts finished</span><b>${hunts.filter((h) => h.status === "Complete").length}</b></div>`)}
-      ${card("Time Saved with Workflows", `<div class="big">6.5h</div><p class="muted">Sample estimate from ready workflows that have a successful drill.</p>`)}
-      ${card("Custom Detectors", `<div class="big">${detectors.length}</div><p class="muted">${detectors.filter((d) => d.status === "Enabled").length} live, ${detectors.filter((d) => d.status === "Test").length} in learning.</p><button class="btn" data-go="detectors" type="button">Open detectors</button>`)}
-      ${card("Response Actions", workflows.map((w) => `<button class="linkrow" data-go="workflow/${w.id}" type="button">${statusPill(w.state)}<span>${esc(w.name)}</span></button>`).join(""))}
-    </div>
-    <div class="card" style="margin-top:12px"><div class="h2">Insights by Categories</div>${vbars([["Identity", insights.filter((i) => i.category === "Identity").length, "#c7d2fe"], ["Cloud", insights.filter((i) => i.category === "Cloud").length, "#93c5fd"], ["Endpoint", insights.filter((i) => i.category === "Endpoint").length, "#86efac"], ["SaaS", insights.filter((i) => i.category === "SaaS").length, "#fde68a"]])}</div>`, { range: true, crumbs: [["Dashboards", "home"], ["Executive Overview"]] });
-}
-function operationalPage() {
-  const rows = windowCases();
-  const byV = tally(rows, "vector");
-  return shell("Operational", `<div class="grid2">
-      ${card("What's New?", `<button class="linkrow" data-go="case/mfa" type="button">CASE-1042 opened</button><button class="linkrow" data-go="connector/defender" type="button">Defender went quiet</button><button class="linkrow" data-go="connector/gh" type="button">GitHub returned an error</button>`)}
-      ${card("Getting started", `<p>Connect a source, review a case, and ask AI Mode.</p><button class="btn" data-go="start" type="button">Open the checklist</button>`)}
-      ${card("Cases by Severity", vbars(Object.entries(tally(rows, "sev")).map(([k, n]) => [k, n, SCOLOR[k]])))}
-      ${card("Cases by initial attack vector", vbars(Object.entries(byV).map(([k, n]) => [k, n, "#c7d2fe"])))}
-      ${card("Insights Scoreboard", vbars([["Open", insights.filter((i) => i.status === "Open").length, "#fdba74"], ["Snoozed", insights.filter((i) => i.status === "Snoozed").length, "#e4e4e7"]]))}
-      ${card("Open Cases", caseLinks(rows.filter((c) => c.status !== "Closed").slice(0, 4)))}
-      ${card("Connectors Health", connectors.map((c) => `<button class="linkrow" data-go="connector/${c.id}" type="button">${logo(c.logo)}<span>${esc(c.name)}</span>${statusPill(c.status)}</button>`).join(""))}
-      ${card("Data Ingested", `<div class="big">${esc(win().ingested)}</div>${hbars(win().series)}`)}
-      ${card("Detection Coverage by Sourcetype", vbars([["Okta", 80, "#86efac"], ["Entra ID", 71, "#86efac"], ["AWS", 64, "#fde68a"], ["CrowdStrike", 58, "#fde68a"], ["Defender", 20, "#fca5a5"], ["GitHub", 0, "#fca5a5"]]))}
-      ${card("Riskiest Assets", assets.filter((a) => a.risk === "High").map((a) => `<button class="linkrow" data-go="inventory" type="button">${sev(a.risk)}<span>${esc(a.name)}</span><span class="muted">${esc(a.type)}</span></button>`).join(""))}
-    </div>`, { range: true, crumbs: [["Dashboards", "home"], ["Operational"]] });
-}
-function eiPage() {
-  const cats = ["Identity", "Cloud", "Endpoint", "SaaS"];
-  return shell("Environment Intelligence", `<p class="muted">Posture cards for the sample workspace.</p><div class="grid2">${cats.map((cat) => {
-    const rows = insights.filter((i) => i.category === cat);
-    return card(cat, rows.map((i) => `<button class="linkrow" data-go="insight/${i.id}" type="button">${sev(i.sev)}<span>${esc(i.title)}</span>${statusPill(i.status)}</button>`).join("") || `<p class="muted">No sample insight.</p>`, `<span class="muted">${rows.filter((i) => i.status === "Open").length} open</span>`);
-  }).join("")}</div><p><button class="btn" data-go="insights" type="button">All insights</button></p>`, { range: true, crumbs: [["Dashboards", "home"], ["Environment Intelligence"]] });
-}
-function coveragePage() {
-  const cols = framework === "atlas" ? ATLAS : ATTACK;
-  const title = framework === "atlas" ? "ATLAS Coverage" : "ATT&CK Enterprise Coverage";
-  const byT = tally(detectors, "tactic");
-  return shell("Detection Coverage", `<p class="muted">${framework === "atlas" ? "MITRE ATLAS" : "MITRE ATT&CK"} coverage and emerging-threat readiness, scoped to the connected sources in this sample.</p>
-    <div class="grid3">
-      ${card("Overall Coverage", `<div class="big">${coverPct(cols)}%</div><p class="muted">Partial cells count as half.</p>`)}
-      ${card("Emerging Threats", `<button class="linkrow" data-go="case/mfa" type="button">MFA fatigue <span class="tag">Covered</span></button><button class="linkrow" data-go="case/oauth" type="button">OAuth consent <span class="tag">Partial</span></button><button class="linkrow" data-go="insight/public" type="button">Public buckets <span class="tag">Gap</span></button>`)}
-      ${card("Covered Techniques", `<div class="big">${cols.flatMap((c) => c[1]).filter((s) => s === "cov").length}</div><p class="muted">of ${cols.flatMap((c) => c[1]).length} sample cells</p>`)}
-    </div>
-    <div class="grid2" style="margin-top:12px">
-      ${card("Recommended Connectors", `<div class="linkrow"><span>Cisco Duo</span><button class="btn" data-set="toast:Sample only. No connector is added." type="button">Add</button></div><div class="linkrow"><span>Proofpoint</span><button class="btn" data-set="toast:Sample only. No connector is added." type="button">Add</button></div>`)}
-      ${card("Top Detection Activity", detectors.slice().sort((a, b) => b.signals - a.signals).slice(0, 4).map((d) => `<button class="linkrow" data-go="detector/${d.id}" type="button"><span>${esc(d.name)}</span><b>${d.signals}</b></button>`).join(""))}
-      ${card("Detectors by Tactic", vbars(Object.entries(byT).map(([k, n]) => [k, n, "#c7d2fe"])))}
-      ${card("Federated Detection Health", connectors.filter((c) => ["okta", "defender", "gh", "aws"].includes(c.id)).map((c) => `<button class="linkrow" data-go="connector/${c.id}" type="button">${logo(c.logo)}<span>${esc(c.name)}</span>${statusPill(c.status)}</button>`).join(""))}
-    </div>
-    <div class="card" style="margin-top:12px"><div class="h2">${title}</div>${matrix(cols)}</div>`, { range: true, framework: true, crumbs: [["Dashboards", "home"], ["Detection Coverage"]] });
-}
-function lifecyclePage() {
-  const live = detectors.filter((d) => d.status === "Enabled");
-  const learning = detectors.filter((d) => d.status === "Test");
-  const off = detectors.filter((d) => d.status === "Disabled");
-  return shell("Detection Lifecycle", `<p class="muted">How Artemis runs, changes and retires detections in this sample.</p>
-    <div class="lanes">
-      ${[["Live now", live.length], ["Went live", detectors.filter((d) => d.wentLive).length], ["Detectors changed", detectors.filter((d) => d.changed).length], ["Quieter after tuning", detectors.filter((d) => d.quieter).length], ["Turned off", off.length]].map((t) => `<div class="lane"><span class="muted">${esc(t[0])}</span><b>${t[1]}</b></div>`).join("")}
-    </div>
-    <div class="grid2" style="margin-top:12px">
-      ${card("Went live vs turned off", vbars([["Went live", detectors.filter((d) => d.wentLive).length, "#86efac"], ["Turned off", off.length, "#fca5a5"]]))}
-      ${card("Changes to live detectors", detectors.filter((d) => d.changed).map((d) => `<button class="linkrow" data-go="detector/${d.id}" type="button">${esc(d.name)}</button>`).join("") || `<p class="muted">No logic changes in the sample.</p>`)}
-      ${card("Changes by source", vbars(Object.entries(tally(detectors.filter((d) => d.changed || d.wentLive), "source")).map(([k, n]) => [k, n, "#c7d2fe"])))}
-      ${card("Tuning outcomes", detectors.filter((d) => d.quieter).map((d) => `<button class="linkrow" data-go="detector/${d.id}" type="button">${esc(d.name)} <span class="tag">Quieter</span></button>`).join("") || `<p class="muted">No tuning outcome in the sample.</p>`)}
-      ${card("Findings by source", vbars(Object.entries(tally(windowFindings(), "source")).map(([k, n]) => [k, n, "#93c5fd"])))}
-      ${card("Sources without findings", connectors.filter((c) => !findings.some((f) => f.source === c.name)).map((c) => `<button class="linkrow" data-go="connector/${c.id}" type="button">${logo(c.logo)}<span>${esc(c.name)}</span></button>`).join(""))}
-      ${card("Intel detectors expiring", `<button class="linkrow" data-go="iocs" type="button">login-help-desk.example <span class="tag">6 days</span></button>`)}
-      ${card("Learning period", learning.map((d) => `<button class="linkrow" data-go="detector/${d.id}" type="button">${esc(d.name)} <span class="muted">${d.signals} signals</span></button>`).join(""))}
-    </div>
-    ${card("Change log", table(["When", "Change", "Detector"], [
-      ["Nov 4", "Went live", "mfa-det"],
-      ["Nov 4", "Went live", "key-det"],
-      ["Nov 3", "Logic change", "spray-det"],
-      ["Nov 2", "Turned off", "s3-det"]
-    ].map((r) => `<tr class="click" data-go="detector/${r[2]}"><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(detectors.find((d) => d.id === r[2]).name)}</td></tr>`)))}`, { range: true, crumbs: [["Dashboards", "home"], ["Detection Lifecycle"]] });
-}
-function performancePage() {
-  const w = win();
-  return shell("Performance", `<p class="muted">How long the sample takes to investigate, hunt and run workflows. Days are UTC.</p>
-    <div class="grid3">
-      ${card("Investigation duration", `<div class="big">${esc(w.mtres)}</div>${hbars(w.series)}`)}
-      ${card("Median stage duration", vbars([["Triage", 6, "#c7d2fe"], ["Correlate", 11, "#93c5fd"], ["Judgement", 18, "#334deb"], ["Respond", 24, "#1e3a8a"]]))}
-      ${card("Signal → case → verdict", `<p>Signal to case <b>4m</b></p><p>Case to verdict <b>${esc(w.mtres)}</b></p>`)}
-      ${card("Threat hunt duration (p50)", `<div class="big">${esc(w.hunt)}</div>`)}
-      ${card("Workflow run duration", `<div class="big">${esc(w.flow)}</div>`)}
-      ${card("Knowledge tokens per investigation", `<div class="big">${esc(w.know)}</div><p class="muted">Sample size of the organization context read.</p>`)}
-      ${card("Consults and citations per investigation", vbars([["Consults", 3, "#c7d2fe"], ["Citations", 7, "#93c5fd"]]))}
-    </div>`, { range: true, crumbs: [["Dashboards", "home"], ["Performance"]] });
-}
-function mdrPage() {
-  return shell("Apollo MDR", `<p class="muted">What the Apollo team did on the cases Artemis raised for you.</p>${kpiRow([["Cases raised", "0", ""], ["Escalations", "0", ""], ["Response actions", "0", ""], ["Hunts run", "0", ""]])}<div class="card"><b>This sample is a single workspace.</b><p>It is not an Apollo parent, so the service tiles stay at zero. The case queue for this workspace is on Cases.</p><button class="btn" data-go="cases" type="button">Open cases</button></div>`, { range: true, crumbs: [["Dashboards", "home"], ["Apollo MDR"]] });
-}
-function templatesPage() {
-  const cards = [["Case operations", "custom", "Open cases, SLA, and assignee load."], ["Source health", "operational", "Connector status and ingest."], ["Detection health", "lifecycle", "Live, learning, and turned off."], ["Executive overview", "home", "Judgement, pipeline, and coverage."]];
-  return shell("Templates", `<div class="cards">${cards.map((c) => `<button class="card" data-go="${c[1]}" type="button" style="text-align:left"><b>${esc(c[0])}</b><p class="muted">${esc(c[2])}</p></button>`).join("")}</div>`, { crumbs: [["Dashboards", "home"], ["Templates"]] });
-}
-function customPage() {
-  const late = cases.filter((c) => c.sla);
-  const free = cases.filter((c) => c.who === "Unassigned" && c.status !== "Closed");
-  return shell("Case operations", `<div class="grid3">
-    ${card("Past SLA", late.map((c) => `<button class="linkrow" data-go="case/${c.id}" type="button">${esc(c.num)} ${esc(c.title)}</button>`).join("") || `<p class="muted">None.</p>`)}
-    ${card("Unassigned", free.map((c) => `<button class="linkrow" data-go="case/${c.id}" type="button">${esc(c.num)} ${esc(c.who)}</button>`).join(""))}
-    ${card("Assignee load", vbars(Object.entries(tally(cases.filter((c) => c.status !== "Closed"), "who")).map(([k, n]) => [k, n, "#c7d2fe"])))}
-  </div>`, { crumbs: [["Dashboards", "templates"], ["Case operations"]] });
-}
-function casesPage() {
-  const rows = filteredCases();
-  const filtersHtml = `<div class="filters"><span class="muted">Severity</span>${["Critical", "High", "Medium", "Low"].map((v) => chip(v, "sev", v)).join("")}<span class="muted">Status</span>${["Open", "In progress", "Closed"].map((v) => chip(v, "status", v)).join("")}<span class="muted">Judgement</span>${["True positive", "Benign", "False positive", "Needs review"].map((v) => chip(v, "judge", v)).join("")}<span class="grow"></span>${chip("Table", "view", "table")}${chip("Board", "view", "board")}</div>`;
-  const tableHtml = table(["Severity", "Case", "Status", "Judgement", "Assignee", "Assets"], rows.map((c) => `<tr class="click" data-go="case/${c.id}"><td>${sev(c.sev)}</td><td><b>${esc(c.num)}</b><div class="muted">${esc(c.title)}</div><div class="muted">${esc(c.created)}</div></td><td>${statusPill(c.status)}</td><td>${judgementPill(c.judgement)}</td><td>${esc(c.who)}</td><td>${tags(c.assets)}</td></tr>`));
-  const board = ["Open", "In progress", "Closed"].map((status) => `<div class="bcol"><b>${esc(status)}</b><div class="muted">${rows.filter((c) => c.status === status).length}</div>${rows.filter((c) => c.status === status).map((c) => `<button class="bcard" data-go="case/${c.id}" type="button"><div>${sev(c.sev)} ${esc(c.num)}</div><div>${esc(c.title)}</div><div class="muted">${esc(c.who)}</div></button>`).join("")}</div>`).join("");
-  return shell("Cases", `${filtersHtml}${caseView === "board" ? `<div class="board">${board}</div>` : tableHtml}<p class="muted">Showing ${rows.length} of ${cases.length} sample cases.</p>`, { crumbs: [["Cases"]] });
-}
-function caseById(id) { return cases.find((c) => c.id === id) || cases[0]; }
-function casePage() {
-  const c = caseById(route().id);
-  const alias = { summary: "overview", findings: "agentic", timeline: "activity" };
-  const tab = alias[route().tab] || route().tab || "overview";
-  const tabs = [["overview", "Overview"], ["agentic", "Agentic Investigation"], ["graph", "Graph"], ["relationships", "Relationships"], ["respond", "Respond & Remediate"], ["discussion", "Discussion"], ["activity", "Activity"]].map((t) => `<button data-go="case/${c.id}/${t[0]}" class="${tab === t[0] ? "on" : ""}" type="button">${t[1]}</button>`).join("");
-  const rel = findings.filter((f) => f.caseId === c.id);
-  const steps = agentic[c.id] || [["Hypothesis", c.summary], ["Conclusion", c.judgement + "."]];
-  let body = "";
-  if (tab === "overview") body = `<div class="split"><div><p>${esc(c.summary)}</p><p class="muted">Created ${esc(c.created)} · Updated ${esc(c.updated)} · Source ${esc(c.source)}</p><button class="btn" data-go="detectors" type="button">Related detectors</button> <button class="btn" data-go="ai" type="button">Ask AI Mode</button></div><div class="card side"><div class="kv"><span>Assignee</span><b>${esc(c.who)}</b></div><div class="kv"><span>Response</span><b>${esc(c.response)}</b></div><div class="kv"><span>Vector</span><b>${esc(c.vector)}</b></div><div class="kv"><span>SLA</span><b>${c.sla ? "Past" : "Inside"}</b></div><div style="margin-top:8px"><div class="muted">Assets</div>${tags(c.assets)}</div><div><div class="muted">Observables</div>${tags(c.obs)}</div></div></div>`;
-  if (tab === "agentic") body = steps.map((s, i) => `<div class="tool"><b>${i + 1}. ${esc(s[0])}</b><div>${esc(s[1])}</div></div>`).join("") + `<p class="muted">Sample investigation. Nothing here calls the live portal.</p>`;
-  if (tab === "graph") body = `<div class="path">${[c.who === "Unassigned" ? "Unassigned" : c.who, ...c.assets, ...c.obs].map((n) => `<div class="node">${esc(n)}</div>`).join("<span>→</span>")}</div>`;
-  if (tab === "relationships") body = rel.map((f) => `<button class="linkrow" data-go="finding/${f.id}" type="button">${esc(f.id)} ${esc(f.title)}</button>`).join("") + `<p><button class="btn" data-go="hunts" type="button">Threat hunts</button></p>`;
-  if (tab === "respond") body = `<p>Suggested actions for this judgement. This sample does not run them.</p>` + workflows.slice(0, 3).map((w) => `<button class="linkrow" data-go="workflow/${w.id}" type="button">${statusPill(w.state)}<span>${esc(w.name)}</span></button>`).join("");
-  if (tab === "discussion") body = (comments[c.id] || [["Sample analyst", c.updated, "No comment on this case yet."]]).map((cm) => `<div class="card"><b>${esc(cm[0])}</b> <span class="muted">${esc(cm[1])}</span><p>${esc(cm[2])}</p></div>`).join("");
-  if (tab === "activity") body = ["Alert opened", "Entities linked", c.who === "Unassigned" ? "Left unassigned" : "Assigned to " + c.who, "Judgement set to " + c.judgement].map((s, i) => `<div class="linkrow"><b>${i + 1}</b><span>${esc(s)}</span></div>`).join("");
-  return shell(c.title, `<div class="row" style="margin-bottom:12px">${sev(c.sev)} ${statusPill(c.status)} ${judgementPill(c.judgement)}<span class="muted">${esc(c.num)}</span></div><div class="tabs">${tabs}</div>${body}`, { crumbs: [["Cases", "cases"], [c.num]] });
-}
-function findingPage() {
-  const f = findings.find((x) => x.id === route().id) || findings[0];
-  const c = caseById(f.caseId);
-  const d = detectors.find((x) => x.id === f.detector);
-  return shell(f.title, `<div class="row" style="margin-bottom:12px">${sev(f.sev)} <span class="muted">${esc(f.id)} · ${esc(f.when)}</span></div><div class="split"><div class="card"><p>Source ${esc(f.source)}. Entity ${esc(f.entity)}.</p><p><button class="btn" data-go="case/${c.id}" type="button">Open ${esc(c.num)}</button> ${d ? `<button class="btn" data-go="detector/${d.id}" type="button">Open detector</button>` : ""}</p></div><div class="card side"><div class="kv"><span>Case</span><b>${esc(c.num)}</b></div><div class="kv"><span>Detector</span><b>${esc(d ? d.name : f.detector)}</b></div><div class="kv"><span>Entity</span><b>${esc(f.entity)}</b></div></div></div>`, { crumbs: [["Findings", "findings"], [f.id]] });
-}
-function listHead(title, chipsHtml) { return `<div class="filters">${chipsHtml || ""}</div>`; }
-function findingsPage() {
-  const rows = findings.filter((f) => match([f.id, f.title, f.source, f.entity].join(" ")) && (!filters.sev || f.sev === filters.sev));
-  return shell("Findings", `${listHead("", ["Critical", "High", "Medium", "Low"].map((v) => chip(v, "sev", v)).join(""))}${table(["Finding", "Severity", "Title", "Source", "Entity", "When"], rows.map((f) => `<tr class="click" data-go="finding/${f.id}"><td>${esc(f.id)}</td><td>${sev(f.sev)}</td><td>${esc(f.title)}</td><td>${esc(f.source)}</td><td>${esc(f.entity)}</td><td>${esc(f.when)}</td></tr>`))}`, { crumbs: [["Findings"]] });
-}
-function insightsPage() {
-  const rows = insights.filter((i) => match([i.title, i.category, i.source].join(" ")) && (!filters.type || i.category === filters.type));
-  return shell("Insights", `<div class="filters">${["Identity", "Cloud", "Endpoint", "SaaS"].map((v) => chip(v, "type", v)).join("")}</div>${table(["Severity", "Insight", "Category", "Source", "Status", "Updated"], rows.map((i) => `<tr class="click" data-go="insight/${i.id}"><td>${sev(i.sev)}</td><td>${esc(i.title)}</td><td>${esc(i.category)}</td><td>${esc(i.source)}</td><td>${statusPill(i.status === "Open" ? "Open" : "Snoozed")}</td><td>${esc(i.updated)}</td></tr>`))}`, { crumbs: [["Insights"]] });
-}
-function insightPage() {
-  const item = insights.find((x) => x.id === route().id) || insights[0];
-  const related = cases.filter((c) => c.vector && item.detail.toLowerCase().includes(c.assets[0].toLowerCase().split(" ")[0].toLowerCase()));
-  return shell(item.title, `<p>${sev(item.sev)} ${esc(item.category)} · ${esc(item.source)} · ${statusPill(item.status === "Open" ? "Open" : "Snoozed")}</p><p>${esc(item.detail)}</p><p><button class="btn" data-go="inventory" type="button">Show the assets</button> <button class="btn" data-go="insights" type="button">All insights</button></p>${related.slice(0, 2).map((c) => `<button class="linkrow" data-go="case/${c.id}" type="button">${esc(c.num)} ${esc(c.title)}</button>`).join("")}`, { crumbs: [["Insights", "insights"], [item.category]] });
-}
-function inventoryPage() {
-  const rows = assets.filter((a) => match([a.name, a.type, a.owner, a.source].join(" ")) && (!filters.type || a.type === filters.type));
-  return shell("Inventory", `<div class="filters">${["User", "Laptop", "Role", "Bucket", "File", "Group"].map((v) => chip(v, "type", v)).join("")}</div>${table(["Name", "Type", "Area", "Source", "Owner", "Risk"], rows.map((a) => `<tr class="click" data-go="paths"><td>${esc(a.name)}</td><td>${esc(a.type)}</td><td>${esc(a.area)}</td><td>${esc(a.source)}</td><td>${esc(a.owner)}</td><td>${sev(a.risk === "High" ? "High" : a.risk === "Medium" ? "Medium" : "Low")}</td></tr>`))}`, { crumbs: [["Inventory"]] });
-}
-function pathsPage() {
-  return shell("Critical Paths", `<p class="muted">Two sample paths. Each hop is an asset in this workspace.</p>
-    <div class="card"><div class="h2">Avery Chen to the export bucket</div><div class="path"><div class="node">Avery Chen<br><span class="muted">User</span></div><span>→</span><div class="node">Okta<br><span class="muted">SSO</span></div><span>→</span><div class="node">analytics-export<br><span class="muted">AWS role</span></div><span>→</span><div class="node">customer-export<br><span class="muted">S3</span></div></div><button class="btn" data-go="case/priv" type="button">Open the role case</button> <button class="btn" data-go="case/s3" type="button">Open the bucket case</button></div>
-    <div class="card"><div class="h2">Hosting address to finance mailboxes</div><div class="path"><div class="node">198.51.100.14<br><span class="muted">IPv4</span></div><span>→</span><div class="node">Entra ID<br><span class="muted">Sign-in</span></div><span>→</span><div class="node">Finance mailboxes<br><span class="muted">Group</span></div></div><button class="btn" data-go="case/spray" type="button">Open the spray case</button></div>`, { crumbs: [["Critical Paths"]] });
-}
-function detectorsPage() {
-  const rows = detectors.filter((d) => match([d.name, d.source, d.tactic].join(" ")) && (!filters.status || d.status === filters.status));
-  return shell("Detectors", `<div class="filters">${["Enabled", "Test", "Disabled"].map((v) => chip(v, "status", v)).join("")}</div>${table(["Name", "Status", "Severity", "Tactic", "Source", "Health", "Signals"], rows.map((d) => `<tr class="click" data-go="detector/${d.id}"><td>${esc(d.name)}</td><td>${statusPill(d.status)}</td><td>${sev(d.sev)}</td><td>${esc(d.tactic)}</td><td>${esc(d.source)}</td><td>${statusPill(d.health === "Tuning" ? "Test" : "Healthy")}</td><td>${d.signals}</td></tr>`))}`, { crumbs: [["Detectors"]] });
-}
-function detectorPage() {
-  const d = detectors.find((x) => x.id === route().id) || detectors[0];
-  const raised = findings.filter((f) => f.detector === d.id);
-  return shell(d.name, `<p>${statusPill(d.status)} ${sev(d.sev)} ${esc(d.tactic)} · ${esc(d.source)}</p><p>${esc(d.summary)}</p><div class="card"><div class="muted">Sample logic</div><p class="mono">${esc(d.name)} on ${esc(d.source)}, severity ${esc(d.sev)}.</p></div><div class="h2" style="margin-top:12px">Signals in the sample</div>${raised.map((f) => `<button class="linkrow" data-go="finding/${f.id}" type="button">${esc(f.id)} ${esc(f.title)}</button>`).join("") || `<p class="muted">No sample signal.</p>`}<p class="muted">Health ${esc(d.health)}. Signals recorded: ${d.signals}.</p>`, { crumbs: [["Detectors", "detectors"], [d.tactic]] });
-}
-function iocsPage() {
-  const rows = iocs.filter((r) => match([r.value, r.type, r.source, r.by].join(" ")) && (!filters.status || r.status === filters.status));
-  return shell("IOC Management", `<div class="hrow"><div class="filters" style="margin:0">${chip("Active", "status", "Active")}${chip("Expired", "status", "Expired")}</div><button class="btn" data-set="toast:Sample only. No indicator is added." type="button">Add indicator</button></div>${table(["Value", "Type", "Reputation", "Confidence", "Status", "Source", "Hits", "Added by"], rows.map((r) => `<tr><td class="mono">${esc(r.value)}</td><td>${esc(r.type)}</td><td>${esc(r.reputation)}</td><td>${esc(r.confidence)}</td><td>${statusPill(r.status === "Active" ? "Active" : "Expired")}</td><td>${esc(r.source)}</td><td>${r.hits}</td><td>${esc(r.by)}</td></tr>`))}`, { crumbs: [["IOC Management"]] });
-}
-function workflowsPage() {
-  const rows = workflows.filter((w) => match(w.name + w.trigger));
-  return shell("Workflows", `<div class="hrow"><span></span><button class="btn" data-go="workflows" type="button">Templates</button></div>${table(["Name", "Trigger", "State", "Steps"], rows.map((w) => `<tr class="click" data-go="workflow/${w.id}"><td>${esc(w.name)}</td><td>${esc(w.trigger)}</td><td>${statusPill(w.state)}</td><td>${w.steps.length}</td></tr>`))}`, { crumbs: [["Workflows"]] });
-}
-function workflowPage() {
-  const w = workflows.find((x) => x.id === route().id) || workflows[0];
-  return shell(w.name, `<p>${statusPill(w.state)} Trigger: ${esc(w.trigger)}</p><div class="path">${w.steps.map((s) => `<div class="node">${esc(s)}</div>`).join("<span>→</span>")}</div><div class="h2" style="margin-top:12px">Runs</div>${table(["When", "Result", "Note"], w.runs.map((r) => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`))}<p class="muted">This sample does not run the action.</p><button class="btn" data-set="toast:Sample only. The action was not sent." type="button">Run</button>`, { crumbs: [["Workflows", "workflows"], [w.name]] });
-}
-function connectorsPage() {
-  const rows = connectors.filter((c) => match(c.name + c.status));
-  const bad = connectors.filter((c) => c.status !== "Connected").length;
-  return shell("Connectors", `${kpiRow([["Connected", connectors.filter((c) => c.status === "Connected").length + "/" + connectors.length, ""], ["Need a look", bad, ""], ["Events today", "5.6M", "sample"]])}<div class="hrow"><span></span><button class="btn primary" data-set="toast:Sample only. No connector is added." type="button">Add connector</button></div><div class="cards">${rows.map((c) => `<button class="card" data-go="connector/${c.id}" type="button" style="text-align:left">${logo(c.logo)} <b>${esc(c.name)}</b><div style="margin-top:8px">${statusPill(c.status)}</div><div class="muted">${esc(c.day)}</div><div class="muted">Checked ${esc(c.lag)}</div></button>`).join("")}</div>`, { crumbs: [["Connectors"]] });
-}
-function connectorPage() {
-  const c = connectors.find((x) => x.id === route().id) || connectors[0];
-  return shell(c.name, `<p>${logo(c.logo)} ${statusPill(c.status)} <span class="muted">Checked ${esc(c.lag)} · ${esc(c.day)}</span></p>${c.note ? `<div class="card"><b>Health</b><p>${esc(c.note)}</p></div>` : `<div class="card"><b>Health</b><p>The last sample check succeeded.</p></div>`}<div class="h2">Streams</div>${table(["Stream", "State"], c.streams.map((s) => `<tr><td>${esc(s)}</td><td>${statusPill(c.status === "Connected" ? "Healthy" : c.status)}</td></tr>`))}<p><button class="btn" data-go="pipelines" type="button">See it on the pipeline</button> <button class="btn" data-go="logs" type="button">Open Log Explorer</button></p>`, { crumbs: [["Connectors", "connectors"], [c.name]] });
-}
-function pipelinesPage() {
-  return shell("Pipelines", `<div class="path"><div class="node">Sources<br><span class="muted">${connectors.length}</span></div><span>→</span><div class="node">Normalize<br><span class="muted">OCSF</span></div><span>→</span><div class="node">Detections<br><span class="muted">${detectors.filter((d) => d.status === "Enabled").length} live</span></div><span>→</span><div class="node">Findings and cases<br><span class="muted">${findings.length} / ${cases.length}</span></div></div>
-    ${table(["Source", "Today", "State", "Lag"], connectors.map((c) => `<tr class="click" data-go="connector/${c.id}"><td>${logo(c.logo)} ${esc(c.name)}</td><td>${esc(c.day)}</td><td>${statusPill(c.status)}</td><td>${esc(c.lag)}</td></tr>`))}<p class="muted">Defender is the quiet source. GitHub is the source in error.</p>`, { crumbs: [["Pipelines"]] });
-}
-function logsPage() {
-  const ip = (logQuery.match(/(\d+\.\d+\.\d+\.\d+)/) || [])[1];
-  const rows = logs.filter((r) => !ip || r.ip === ip || logQuery.toLowerCase().includes(r.source.toLowerCase()));
-  return shell("Log Explorer", `<div class="card"><div class="muted">Query</div><textarea id="logq" class="mono" style="width:100%;min-height:64px;border:1px solid var(--line);border-radius:8px;padding:8px;margin:8px 0">${esc(logQuery)}</textarea><button class="btn primary" id="runlog" type="button">Run</button> <button class="btn" data-go="case/mfa" type="button">Open matching case</button></div>
-    <div class="card"><div class="h2">Volume</div>${hbars(win().series)}</div>
-    ${table(["Time", "Source", "User", "Action", "Result", "IP"], (rows.length ? rows : logs).map((r) => `<tr><td>${esc(r.t)}</td><td>${esc(r.source)}</td><td>${esc(r.user)}</td><td>${esc(r.action)}</td><td>${esc(r.result)}</td><td class="mono">${esc(r.ip)}</td></tr>`))}<p class="muted">${ip ? "Filtered to " + ip + "." : "Showing the sample window."} ${rows.length || logs.length} rows.</p>`, { crumbs: [["Log Explorer"]] });
-}
-function huntsPage() {
-  const rows = hunts.filter((h) => match([h.name, h.scope, h.who].join(" ")));
-  return shell("Threat Hunts", table(["Hunt", "Status", "Scope", "Hits", "Updated", "Owner"], rows.map((h) => `<tr class="click" data-go="hunt/${h.id}"><td>${esc(h.name)}</td><td>${statusPill(h.status)}</td><td>${esc(h.scope)}</td><td>${esc(h.hits)}</td><td>${esc(h.updated)}</td><td>${esc(h.who)}</td></tr>`)), { crumbs: [["Threat Hunts"]] });
-}
-function huntPage() {
-  const h = hunts.find((x) => x.id === route().id) || hunts[0];
-  const dest = h.id === "spray" ? "case/spray" : h.id === "keys" ? "case/token" : h.id === "beacon" ? "case/beacon" : "logs";
-  return shell(h.name, `<p>${statusPill(h.status)} ${esc(h.hits)} · ${esc(h.who)}</p><div class="card"><div class="muted">Query</div><p class="mono">${esc(h.query)}</p><button class="btn" data-go="logs" type="button">Open in Log Explorer</button> <button class="btn" data-go="${dest}" type="button">Open the related record</button></div>`, { crumbs: [["Threat Hunts", "hunts"], [h.scope]] });
-}
-function aiPage() {
-  const session = route().id === "quiet" ? "quiet" : "mfa";
-  const answer = session === "quiet"
-    ? "Defender has been quiet for 9 hours, and GitHub last failed a day ago. Okta, Entra, CloudTrail, and CrowdStrike are connected."
-    : "Start with CASE-1042, MFA fatigue against Avery Chen. It is in progress, critical, and judged a true positive. The stale key on CASE-1044 is unassigned and past SLA.";
-  const link = session === "quiet" ? `<button class="btn" data-go="connector/defender" type="button">Open Defender</button> <button class="btn" data-go="connector/gh" type="button">Open GitHub</button>` : `<button class="btn" data-go="case/mfa" type="button">CASE-1042</button> <button class="btn" data-go="case/token" type="button">CASE-1044</button>`;
-  return shell("AI Mode", `<div class="aiwrap"><div class="sess card"><b>Sessions</b><button class="${session === "mfa" ? "on" : ""}" data-go="ai/mfa" type="button">MFA fatigue</button><button class="${session === "quiet" ? "on" : ""}" data-go="ai/quiet" type="button">Quiet connectors</button></div><div class="chat"><div class="bubble user">${esc(askText || (session === "quiet" ? "Which connectors are unhealthy?" : "What should I look at first?"))}</div><div class="bubble"><b>AI Mode</b><div class="tool">Searched the sample cases and connector health.</div><p>${answer}</p><p>${link}</p><p class="muted">Sample answer. Nothing here calls the live portal.</p></div><div class="composer"><input id="askq" placeholder="Ask Artemis" value="${esc(askText)}"><button class="btn primary" id="ask" type="button">Send</button></div></div></div>`, { crumbs: [["AI Mode"]] });
-}
-function settingsBody(id) {
-  if (id === "users") return table(["Name", "Email", "Role", "Last seen"], portalUsers.map((u) => `<tr><td>${esc(u[0])}</td><td>${esc(u[1])}</td><td>${esc(u[2])}</td><td>${esc(u[3])}</td></tr>`));
-  if (id === "authentication") return `<div class="card"><b>Methods</b><p>Google, Microsoft, and SSO are shown on the sample sign-in card. No identity provider is connected from this page.</p><button class="btn" data-go="signin" type="button">View the sign-in card</button></div>`;
-  if (id === "api-keys" || id === "secrets") return `<div class="card"><b>Nothing stored</b><p class="muted">No token is stored here.</p></div>`;
-  if (id === "ai-mode" || id === "ai-actions") return `<div class="card"><b>Sample budget</b><p>200 questions a day for this workspace. Nothing is sent.</p><button class="btn" data-go="ai" type="button">Open AI Mode</button></div>`;
-  if (id === "audit-trail") return table(["When", "Actor", "Action", "Target"], auditRows.map((r) => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`));
-  if (id === "organization-context") return `<div class="card"><b>Knowledge</b><p>Finance laptops use the FIN-LT prefix. The analytics-export role is a scheduled job. Push prompts are still allowed for six privileged users.</p></div>`;
-  if (id === "lookup-tables") return table(["Table", "Rows", "Used by"], [[ "vip-users", "12", "MFA fatigue detector" ], [ "export-roles", "3", "GetObject detector" ]].map((r) => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`));
-  if (id === "roles") return table(["Role", "People", "Can"], [["Admin", "1", "Settings and workflows"], ["Analyst", "2", "Cases, hunts, and response"], ["Viewer", "0", "Read lists"]].map((r) => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`));
-  if (id === "ioc-management") return `<div class="card"><p>${iocs.filter((i) => i.status === "Active").length} active indicators in the sample.</p><button class="btn" data-go="iocs" type="button">Open IOC Management</button></div>`;
-  if (id === "file-allowlist") return table(["Hash", "Note"], [["44d88612fea8a8f36de82e1278abb02f", "Known installer"]].map((r) => `<tr><td class="mono">${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`));
-  if (id === "detectors") return `<div class="card"><p>New detectors in this sample start in a learning period. ${detectors.filter((d) => d.status === "Test").length} are there now.</p><button class="btn" data-go="lifecycle" type="button">Open lifecycle</button></div>`;
-  if (id === "reports") return `${table(["Report", "Schedule", "Status"], [["Weekly sample summary", "Mondays", "Not sent"], ["Connector health", "Daily", "Not sent"]].map((r) => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`))}<p class="muted">No scheduled report is sent from this sample.</p><button class="btn" data-set="toast:Sample only. No report file is created." type="button">Download PDF</button>`;
-  if (id === "license") return `<div class="card"><b>Sample workspace</b><p>artdogfood · one workspace · not an Apollo parent.</p></div>`;
-  return `<div class="card"><b>Organization</b><p>artdogfood · sample workspace · UTC.</p><p class="muted">Display name, timezone, and retention are shown here. Nothing is saved.</p></div>`;
-}
-function settingsPage() {
-  const id = SETTINGS.some((s) => s[0] === route().id) ? route().id : "general";
-  const label = SETTINGS.find((s) => s[0] === id)[1];
-  return shell("Settings", `<div class="set"><div class="card">${SETTINGS.map((s) => `<button class="linkrow${s[0] === id ? " on" : ""}" data-go="settings/${s[0]}" type="button">${esc(s[1])}</button>`).join("")}</div><div><div class="h2">${esc(label)}</div>${settingsBody(id)}</div></div>`, { crumbs: [["Settings", "settings/general"], [label]] });
-}
-function startPage() {
-  const steps = [["Connect a source", "connectors", true], ["Invite an analyst", "settings/users", true], ["Review the first case", "cases", true], ["Ask AI Mode", "ai", false], ["Enable a detector", "detectors", false], ["Save a threat hunt", "hunts", false]];
-  return shell("Getting started", steps.map((s, i) => `<div class="check"><span class="box${s[2] ? " on" : ""}"></span><div><b>${i + 1}. ${esc(s[0])}</b><div><button class="btn" data-go="${s[1]}" type="button">Open</button></div></div></div>`).join(""), { crumbs: [["Getting started"]] });
-}
-function signinPage() {
-  return `<div class="signin"><div class="card-login"><img src="logos/Artemis.svg" width="42" height="42" alt="Artemis"><h1>Welcome to Artemis</h1>
-    <button class="sso" data-go="home" type="button"><img src="logos/Google.svg" width="16" height="16" alt=""> Continue with Google</button>
-    <button class="sso" data-go="home" type="button"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect width="7" height="7" fill="#f25022"/><rect x="9" width="7" height="7" fill="#7fba00"/><rect y="9" width="7" height="7" fill="#00a4ef"/><rect x="9" y="9" width="7" height="7" fill="#ffb900"/></svg> Continue with Microsoft</button>
-    <button class="sso" data-go="home" type="button">${icon("key")} Continue with SSO</button>
-    <p class="fine">By continuing, I agree to the Company's Privacy Statement and Terms of Service</p>
-    <p class="note">Sample only. These buttons open the sample workspace. They do not sign in to artdogfood.portal.goartemis.ai.</p>
-  </div></div>`;
-}
-const pages = {
-  home: homePage, ai: aiPage, cases: casesPage, case: casePage, finding: findingPage, hunts: huntsPage, hunt: huntPage, logs: logsPage,
-  operational: operationalPage, ei: eiPage, coverage: coveragePage, lifecycle: lifecyclePage, performance: performancePage, mdr: mdrPage, templates: templatesPage, custom: customPage,
-  insights: insightsPage, insight: insightPage, findings: findingsPage, inventory: inventoryPage, paths: pathsPage,
-  detectors: detectorsPage, detector: detectorPage, iocs: iocsPage, workflows: workflowsPage, workflow: workflowPage,
-  connectors: connectorsPage, connector: connectorPage, pipelines: pipelinesPage, settings: settingsPage, start: startPage, signin: signinPage
-};
-function bind() {
-  document.querySelectorAll("[data-go]").forEach((el) => el.addEventListener("click", (e) => { e.preventDefault(); q = ""; notesOpen = false; go(el.getAttribute("data-go")); }));
-  document.querySelectorAll("[data-toggle]").forEach((el) => el.addEventListener("click", (e) => {
-    e.preventDefault();
-    const t = el.getAttribute("data-toggle");
-    if (t === "dash") dashOpen = !dashOpen;
-    if (t === "notes") notesOpen = !notesOpen;
+(function () {
+  var reasons = {
+    "#/session/expired": "Your session expired. Please sign in again.",
+    "#/session/connection": "We couldn't verify your session. Please sign in to continue.",
+    "#/session/signed-out": "You've been signed out. Please sign in again.",
+    "#/session/rotated": "Your authentication was securely updated. Please sign in again to continue.",
+    "#/access": "Your account does not have access to this organization. Please contact Artemis for access.",
+    "#/access/provider": "Your account does not have access to this organization. Please contact your managed security provider for access."
+  };
+  var opened = Date.now();
+  var emailPattern = /^[\w.%+\-']+@[\w.\-]+\.[A-Za-z]{2,}$/;
+
+  function tick() {
+    var seconds = String(Math.max(0, Math.floor((Date.now() - opened) / 1000)));
+    var nodes = document.querySelectorAll("[data-elapsed]");
+    for (var i = 0; i < nodes.length; i++) nodes[i].textContent = seconds;
+  }
+
+  function render() {
+    var hash = location.hash || "#/welcome";
+    if (hash === "#" || hash === "#/" || hash === "#/signin") hash = "#/welcome";
+    var screen = hash.slice(2);
+    if (reasons[hash]) screen = "welcome";
+    var nodes = document.querySelectorAll("[data-screen]");
+    var found = false;
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].getAttribute("data-screen") === screen) found = true;
+    }
+    if (screen !== "loading" && !found) screen = "missing";
+    for (var j = 0; j < nodes.length; j++) {
+      nodes[j].hidden = nodes[j].getAttribute("data-screen") !== screen;
+    }
+    var loading = screen === "loading";
+    var plain = screen === "missing" || screen === "update" || screen === "error";
+    document.getElementById("boot").hidden = !loading;
+    document.getElementById("stage").hidden = loading;
+    document.getElementById("card").hidden = plain;
+    var reason = document.getElementById("reason");
+    var text = reasons[hash] || "";
+    reason.hidden = !text;
+    reason.textContent = text;
+    if (screen === "missing") document.title = "404: This page could not be found.";
+    else if (loading || plain) document.title = "Artemis Portal";
+    else document.title = "Login";
+  }
+
+  document.addEventListener("click", function (event) {
+    var node = event.target && event.target.closest ? event.target.closest("[data-go],[data-reload]") : null;
+    if (!node) return;
+    if (node.id === "magic") {
+      var input = document.getElementById("email");
+      var err = document.getElementById("email-error");
+      var value = input.value.trim();
+      if (!value) {
+        err.textContent = "Please fill out this field.";
+        return;
+      }
+      if (!emailPattern.test(value)) {
+        err.textContent = "Must be a valid email";
+        return;
+      }
+      err.textContent = "";
+    }
+    if (node.hasAttribute("data-reload")) {
+      location.reload();
+      return;
+    }
+    location.hash = node.getAttribute("data-go");
+  });
+
+  window.addEventListener("hashchange", function () {
+    opened = Date.now();
+    tick();
     render();
-  }));
-  document.querySelectorAll("[data-set]").forEach((el) => el.addEventListener("click", (e) => {
-    e.preventDefault();
-    const raw = el.getAttribute("data-set");
-    const i = raw.indexOf(":");
-    const k = raw.slice(0, i);
-    const v = raw.slice(i + 1);
-    if (k === "range") range = v;
-    if (k === "framework") framework = v;
-    if (k === "view") caseView = v;
-    if (k === "toast") toast = v;
-    if (k === "sev") filters.sev = filters.sev === v ? "" : v;
-    if (k === "status") filters.status = filters.status === v ? "" : v;
-    if (k === "judge") filters.judge = filters.judge === v ? "" : v;
-    if (k === "type") filters.type = filters.type === v ? "" : v;
-    render();
-  }));
-  document.querySelectorAll("[data-ask]").forEach((el) => el.addEventListener("click", () => { askText = el.getAttribute("data-ask"); go("ai"); }));
-  const tog = document.getElementById("rail-toggle");
-  if (tog) tog.addEventListener("click", () => { railOpen = !railOpen; render(); });
-  const qel = document.getElementById("q");
-  if (qel) qel.addEventListener("input", () => { q = qel.value; const pos = qel.selectionStart; render(); const n = document.getElementById("q"); if (n) { n.focus(); n.setSelectionRange(pos, pos); } });
-  const ask = document.getElementById("ask");
-  if (ask) ask.addEventListener("click", () => { const n = document.getElementById("askq"); askText = n ? n.value : askText; if (route().page !== "ai") go("ai"); else render(); });
-  const run = document.getElementById("runlog");
-  if (run) run.addEventListener("click", () => { const n = document.getElementById("logq"); if (n) logQuery = n.value; render(); });
-}
-function render() {
-  const page = route().page;
-  if (page in DASH_PAGES && page !== lastPage) dashOpen = true;
-  lastPage = page;
-  const draw = pages[page] || (() => shell("Not in this sample", `<p>This route is not one of the sample screens.</p><button class="btn" data-go="home" type="button">Overview</button>`));
-  document.getElementById("root").innerHTML = draw();
-  document.title = page === "signin" ? "Login - Artemis" : "Artemis";
-  bind();
-}
-window.addEventListener("hashchange", () => {
-  if (route().page !== "ai") q = "";
-  filters = { sev: "", status: "", judge: "", type: "" };
-  notesOpen = false;
-  toast = "";
+  });
+  tick();
   render();
-});
-if (!location.hash) location.hash = "#/home";
-render();
+  setInterval(tick, 1000);
+})();
 </script>
 </body>
 </html>
